@@ -1,0 +1,11 @@
+#
+# Liferay App Version 1.0.0
+#
+
+app.artifacts-1.0.0=\
+	com.liferay.bean.portlet.api-1.0.3.jar,\
+	com.liferay.bean.portlet.cdi.extension-1.0.12.jar
+
+app.change.log-1.0.0=LPS-81670 LPS-83992 LPS-84119 LPS-86079 LPS-86394 LPS-86806 LPS-86824 LPS-89601 LPS-89603 LPS-91247 LPS-91305 LPS-91310 LPS-91328 LPS-91348 LPS-91398 LPS-91404
+
+app.git.id-1.0.0=ec512d12aee7014a53112b6f73a09f0d49c9d301
