@@ -39,11 +39,15 @@ portletDisplay.setURLBack(redirect);
 renderResponse.setTitle(title);
 %>
 
-<portlet:actionURL name="/document_library/ddm/add_data_definition" var="addDataDefinitionURL" />
+<portlet:actionURL name="/document_library/ddm/add_data_definition" var="addDataDefinitionURL">
+	<portlet:param name="mvcRenderCommandName" value="/document_library/ddm/edit_ddm_structure" />
+</portlet:actionURL>
 
-<portlet:actionURL name="/document_library/ddm/update_data_definition" var="updateDataDefinitionURL" />
+<portlet:actionURL name="/document_library/ddm/update_data_definition" var="updateDataDefinitionURL">
+	<portlet:param name="mvcRenderCommandName" value="/document_library/ddm/edit_ddm_structure" />
+</portlet:actionURL>
 
-<aui:form action="<%= (ddmStructure == null) ? addDataDefinitionURL : updateDataDefinitionURL %>" cssClass="edit-metadata-type-form" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "saveDDMStructure();" %>'>
+<aui:form action="<%= (ddmStructure == null) ? addDataDefinitionURL : updateDataDefinitionURL %>" cssClass="edit-metadata-type-form" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + liferayPortletResponse.getNamespace() + "saveDDMStructure();" %>'>
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
 	<aui:input name="dataDefinitionId" type="hidden" value="<%= ddmStructureId %>" />
 	<aui:input name="groupId" type="hidden" value="<%= groupId %>" />
@@ -63,39 +67,41 @@ renderResponse.setTitle(title);
 					<div class="metadata-type-button-row tbar-section text-right">
 						<aui:button cssClass="btn-sm mr-3" href="<%= redirect %>" type="cancel" />
 
-						<aui:button cssClass="btn-sm mr-3" onClick='<%= renderResponse.getNamespace() + "saveDDMStructure();" %>' primary="<%= true %>" value='<%= LanguageUtil.get(request, "save") %>' />
+						<aui:button cssClass="btn-sm mr-3" primary="<%= true %>" type="submit" value='<%= LanguageUtil.get(request, "save") %>' />
 					</div>
 				</li>
 			</ul>
 		</clay:container-fluid>
 	</nav>
 
-	<clay:container-fluid
-		cssClass="container-view"
-	>
-		<c:if test="<%= (ddmStructure != null) && (DDMStorageLinkLocalServiceUtil.getStructureStorageLinksCount(ddmStructure.getPrimaryKey()) > 0) %>">
-			<div class="alert alert-warning">
-				<liferay-ui:message key="there-are-content-references-to-this-structure.-you-may-lose-data-if-a-field-name-is-renamed-or-removed" />
-			</div>
-		</c:if>
+	<div class="contextual-sidebar-content">
+		<clay:container-fluid
+			cssClass="container-view"
+		>
+			<c:if test="<%= (ddmStructure != null) && (DDMStorageLinkLocalServiceUtil.getStructureStorageLinksCount(ddmStructure.getPrimaryKey()) > 0) %>">
+				<div class="alert alert-warning">
+					<liferay-ui:message key="there-are-content-references-to-this-structure.-you-may-lose-data-if-a-field-name-is-renamed-or-removed" />
+				</div>
+			</c:if>
 
-		<c:if test="<%= (ddmStructure != null) && (groupId != scopeGroupId) %>">
-			<div class="alert alert-warning">
-				<liferay-ui:message key="this-structure-does-not-belong-to-this-site.-you-may-affect-other-sites-if-you-edit-this-structure" />
-			</div>
-		</c:if>
+			<c:if test="<%= (ddmStructure != null) && (groupId != scopeGroupId) %>">
+				<div class="alert alert-warning">
+					<liferay-ui:message key="this-structure-does-not-belong-to-this-site.-you-may-affect-other-sites-if-you-edit-this-structure" />
+				</div>
+			</c:if>
 
-		<liferay-data-engine:data-layout-builder
-			additionalPanels="<%= dlEditDDMStructureDisplayContext.getAdditionalPanels(npmResolvedPackageName) %>"
-			componentId='<%= renderResponse.getNamespace() + "dataLayoutBuilder" %>'
-			contentType="document-library"
-			dataDefinitionId="<%= ddmStructureId %>"
-			dataLayoutInputId="dataLayout"
-			groupId="<%= groupId %>"
-			localizable="<%= true %>"
-			namespace="<%= renderResponse.getNamespace() %>"
-		/>
-	</clay:container-fluid>
+			<liferay-data-engine:data-layout-builder
+				additionalPanels="<%= dlEditDDMStructureDisplayContext.getAdditionalPanels(npmResolvedPackageName) %>"
+				componentId='<%= liferayPortletResponse.getNamespace() + "dataLayoutBuilder" %>'
+				contentType="document-library"
+				dataDefinitionId="<%= ddmStructureId %>"
+				dataLayoutInputId="dataLayout"
+				groupId="<%= groupId %>"
+				localizable="<%= true %>"
+				namespace="<%= liferayPortletResponse.getNamespace() %>"
+			/>
+		</clay:container-fluid>
+	</div>
 </aui:form>
 
 <aui:script>

@@ -14,7 +14,7 @@
 
 package com.liferay.portal.kernel.upgrade;
 
-import com.liferay.exportimport.kernel.staging.StagingConstants;
+import com.liferay.exportimport.kernel.staging.constants.StagingConstants;
 import com.liferay.layout.admin.kernel.model.LayoutTypePortletConstants;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
@@ -449,7 +449,7 @@ public abstract class BaseUpgradePortletId extends UpgradeProcess {
 					"' where name = '", oldName, "'"));
 		}
 		else {
-			StringBundler sb = new StringBundler(5 + 3 * actionIds.size());
+			StringBundler sb = new StringBundler(5 + (3 * actionIds.size()));
 
 			sb.append("update ResourceAction set name = '");
 			sb.append(newName);

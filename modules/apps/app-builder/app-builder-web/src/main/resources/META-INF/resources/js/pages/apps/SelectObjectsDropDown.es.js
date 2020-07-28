@@ -119,7 +119,9 @@ export default ({defaultValue, label, onSelect, selectedValue, visible}) => {
 
 	const ItemWithLabel = ({name, type}) => (
 		<>
-			<span className="float-left">{name || label}</span>
+			<span className="float-left text-left text-truncate w70">
+				{name || label}
+			</span>
 
 			{type && (
 				<ClayLabel

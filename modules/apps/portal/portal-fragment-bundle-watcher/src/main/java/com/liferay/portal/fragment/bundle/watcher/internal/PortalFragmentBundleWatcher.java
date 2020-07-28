@@ -20,10 +20,9 @@ import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -83,8 +82,17 @@ public class PortalFragmentBundleWatcher {
 					return;
 				}
 
-				Set<String> fragmentHostSymbolicNames = new HashSet<>(
-					installedFragmentBundles.values());
+				Map<String, List<Bundle>> fragmentBundlesMap = new HashMap<>();
+
+				for (Map.Entry<Bundle, String> entry :
+						installedFragmentBundles.entrySet()) {
+
+					List<Bundle> fragmentBundles =
+						fragmentBundlesMap.computeIfAbsent(
+							entry.getValue(), key -> new ArrayList<>());
+
+					fragmentBundles.add(entry.getKey());
+				}
 
 				Bundle originBundle = bundleEvent.getOrigin();
 
@@ -93,15 +101,31 @@ public class PortalFragmentBundleWatcher {
 				List<Bundle> hostBundles = new ArrayList<>();
 
 				for (Bundle bundle : bundleContext.getBundles()) {
-					if (fragmentHostSymbolicNames.remove(
-							bundle.getSymbolicName()) &&
-						(originBundleId != bundle.getBundleId())) {
+					List<Bundle> fragmantBundles = fragmentBundlesMap.remove(
+						bundle.getSymbolicName());
 
-						hostBundles.add(bundle);
+					if (fragmantBundles == null) {
+						continue;
+					}
 
-						if (fragmentHostSymbolicNames.isEmpty()) {
-							break;
+					if (originBundleId != bundle.getBundleId()) {
+						boolean needRefresh = false;
+
+						for (Bundle fragmentBundle : fragmantBundles) {
+							if (fragmentBundle.getState() == Bundle.INSTALLED) {
+								needRefresh = true;
+
+								break;
+							}
 						}
+
+						if (needRefresh) {
+							hostBundles.add(bundle);
+						}
+					}
+
+					if (fragmentBundlesMap.isEmpty()) {
+						break;
 					}
 				}
 

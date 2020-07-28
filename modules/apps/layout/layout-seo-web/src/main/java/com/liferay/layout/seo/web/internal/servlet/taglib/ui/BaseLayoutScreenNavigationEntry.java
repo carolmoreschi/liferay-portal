@@ -20,7 +20,7 @@ import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.frontend.taglib.servlet.taglib.ScreenNavigationEntry;
 import com.liferay.frontend.taglib.servlet.taglib.util.JSPRenderer;
 import com.liferay.info.display.contributor.InfoDisplayContributorTracker;
-import com.liferay.info.item.provider.InfoItemServiceTracker;
+import com.liferay.info.item.InfoItemServiceTracker;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.layout.admin.constants.LayoutScreenNavigationEntryConstants;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
@@ -92,11 +92,8 @@ public abstract class BaseLayoutScreenNavigationEntry
 			return false;
 		}
 
-		Layout draftLayout = layoutLocalService.fetchLayout(
-			portal.getClassNameId(Layout.class), layout.getPlid());
-
 		if ((layout.isTypeAssetDisplay() || layout.isTypeContent()) &&
-			(draftLayout == null)) {
+			(layout.fetchDraftLayout() == null)) {
 
 			return false;
 		}

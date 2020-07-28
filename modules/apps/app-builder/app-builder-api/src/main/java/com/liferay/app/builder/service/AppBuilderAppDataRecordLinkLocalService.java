@@ -65,6 +65,10 @@ public interface AppBuilderAppDataRecordLinkLocalService
 	/**
 	 * Adds the app builder app data record link to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AppBuilderAppDataRecordLinkLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param appBuilderAppDataRecordLink the app builder app data record link
 	 * @return the app builder app data record link that was added
 	 */
@@ -72,8 +76,17 @@ public interface AppBuilderAppDataRecordLinkLocalService
 	public AppBuilderAppDataRecordLink addAppBuilderAppDataRecordLink(
 		AppBuilderAppDataRecordLink appBuilderAppDataRecordLink);
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 #addAppBuilderAppDataRecordLink(long, long, long, long, long)}
+	 */
+	@Deprecated
 	public AppBuilderAppDataRecordLink addAppBuilderAppDataRecordLink(
 		long companyId, long appBuilderAppId, long ddlRecordId);
+
+	public AppBuilderAppDataRecordLink addAppBuilderAppDataRecordLink(
+		long groupId, long companyId, long appBuilderAppId,
+		long appBuilderAppVersionId, long ddlRecordId);
 
 	/**
 	 * Creates a new app builder app data record link with the primary key. Does not add the app builder app data record link to the database.
@@ -94,6 +107,10 @@ public interface AppBuilderAppDataRecordLinkLocalService
 	/**
 	 * Deletes the app builder app data record link from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AppBuilderAppDataRecordLinkLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param appBuilderAppDataRecordLink the app builder app data record link
 	 * @return the app builder app data record link that was removed
 	 */
@@ -103,6 +120,10 @@ public interface AppBuilderAppDataRecordLinkLocalService
 
 	/**
 	 * Deletes the app builder app data record link with the primary key from the database. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AppBuilderAppDataRecordLinkLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param appBuilderAppDataRecordLinkId the primary key of the app builder app data record link
 	 * @return the app builder app data record link that was removed
@@ -194,6 +215,10 @@ public interface AppBuilderAppDataRecordLinkLocalService
 		long appBuilderAppDataRecordLinkId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public AppBuilderAppDataRecordLink
+		fetchDDLRecordAppBuilderAppDataRecordLink(long ddlRecordId);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ActionableDynamicQuery getActionableDynamicQuery();
 
 	/**
@@ -260,6 +285,10 @@ public interface AppBuilderAppDataRecordLinkLocalService
 
 	/**
 	 * Updates the app builder app data record link in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AppBuilderAppDataRecordLinkLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param appBuilderAppDataRecordLink the app builder app data record link
 	 * @return the app builder app data record link that was updated

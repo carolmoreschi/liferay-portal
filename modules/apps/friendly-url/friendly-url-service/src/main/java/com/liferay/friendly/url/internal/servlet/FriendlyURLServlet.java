@@ -180,6 +180,11 @@ public class FriendlyURLServlet extends HttpServlet {
 		if ((pos != -1) && ((pos + 1) != path.length())) {
 			friendlyURL = path.substring(pos);
 
+			if (StringUtil.endsWith(friendlyURL, CharPool.SLASH)) {
+				friendlyURL = friendlyURL.substring(
+					0, friendlyURL.length() - 1);
+			}
+
 			RedirectEntry redirectEntry =
 				redirectEntryLocalService.fetchRedirectEntry(
 					group.getGroupId(), _normalizeFriendlyURL(friendlyURL),

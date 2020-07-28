@@ -106,7 +106,7 @@ public class UpgradeDDMStructure extends UpgradeProcess {
 				setProperty("ddmStructureLayoutId", parentStructureLayoutId);
 				setRepeatable(false);
 				setRequired(false);
-				setShowLabel(true);
+				setShowLabel(false);
 				setTip(
 					new LocalizedValue() {
 						{
@@ -267,7 +267,7 @@ public class UpgradeDDMStructure extends UpgradeProcess {
 
 	private void _upgradeDecimalField(JSONObject jsonObject) {
 		jsonObject.put(
-			"dataType", "decimal"
+			"dataType", "double"
 		).put(
 			"type", "numeric"
 		).put(
@@ -381,11 +381,20 @@ public class UpgradeDDMStructure extends UpgradeProcess {
 						"type", type.substring(4)
 					);
 				}
+				else if (StringUtil.equals(type, "select")) {
+					_upgradeSelectField(jsonObject);
+				}
 				else if (StringUtil.equals(type, "text")) {
 					_upgradeTextField(companyId, jsonObject);
 				}
 				else if (StringUtil.equals(type, "textarea")) {
 					_upgradeTextArea(companyId, jsonObject);
+				}
+
+				if (!StringUtil.equals(type, "separator") &&
+					Validator.isNull(jsonObject.getString("indexType"))) {
+
+					jsonObject.put("indexType", "none");
 				}
 
 				if (jsonObject.has("nestedFields")) {
@@ -457,7 +466,7 @@ public class UpgradeDDMStructure extends UpgradeProcess {
 
 	private void _upgradeNumberField(JSONObject jsonObject) {
 		jsonObject.put(
-			"dataType", "decimal"
+			"dataType", "double"
 		).put(
 			"type", "numeric"
 		).put(
@@ -495,6 +504,20 @@ public class UpgradeDDMStructure extends UpgradeProcess {
 		}
 
 		return definition;
+	}
+
+	private void _upgradeSelectField(JSONObject jsonObject) {
+		jsonObject.put(
+			"dataSourceType", "[manual]"
+		).put(
+			"ddmDataProviderInstanceId", "[]"
+		).put(
+			"ddmDataProviderInstanceOutput", "[]"
+		).put(
+			"fieldNamespace", StringPool.BLANK
+		).put(
+			"visibilityExpression", StringPool.BLANK
+		);
 	}
 
 	private void _upgradeSeparatorField(JSONObject jsonObject) {

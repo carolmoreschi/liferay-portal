@@ -15,10 +15,13 @@
 package com.liferay.layout.content.page.editor.web.internal.portlet.action;
 
 import com.liferay.asset.info.display.contributor.util.ContentAccessor;
+import com.liferay.fragment.entry.processor.helper.FragmentEntryProcessorHelper;
 import com.liferay.info.field.InfoFieldValue;
-import com.liferay.info.item.provider.InfoItemFormProvider;
+import com.liferay.info.item.InfoItemReference;
+import com.liferay.info.item.InfoItemServiceTracker;
+import com.liferay.info.item.provider.InfoItemFieldValuesProvider;
 import com.liferay.info.item.provider.InfoItemObjectProvider;
-import com.liferay.info.item.provider.InfoItemServiceTracker;
+import com.liferay.info.type.WebImage;
 import com.liferay.layout.content.page.editor.constants.ContentPageEditorPortletKeys;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -64,12 +67,11 @@ public class GetAssetFieldValueMVCResourceCommand
 
 		String className = _portal.getClassName(classNameId);
 
-		InfoItemFormProvider<Object> infoItemFormProvider =
-			(InfoItemFormProvider<Object>)
-				_infoItemServiceTracker.getInfoItemService(
-					InfoItemFormProvider.class, className);
+		InfoItemFieldValuesProvider<Object> infoItemFieldValuesProvider =
+			_infoItemServiceTracker.getFirstInfoItemService(
+				InfoItemFieldValuesProvider.class, className);
 
-		if (infoItemFormProvider == null) {
+		if (infoItemFieldValuesProvider == null) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Unable to get info item form provider for class " +
@@ -84,7 +86,7 @@ public class GetAssetFieldValueMVCResourceCommand
 		}
 
 		InfoItemObjectProvider<Object> infoItemObjectProvider =
-			_infoItemServiceTracker.getInfoItemService(
+			_infoItemServiceTracker.getFirstInfoItemService(
 				InfoItemObjectProvider.class, className);
 
 		if (infoItemObjectProvider == null) {
@@ -93,7 +95,9 @@ public class GetAssetFieldValueMVCResourceCommand
 
 		long classPK = ParamUtil.getLong(resourceRequest, "classPK");
 
-		Object object = infoItemObjectProvider.getInfoItem(classPK);
+		InfoItemReference infoItemReference = new InfoItemReference(classPK);
+
+		Object object = infoItemObjectProvider.getInfoItem(infoItemReference);
 
 		if (object == null) {
 			JSONPortletResponseUtil.writeJSON(
@@ -120,7 +124,7 @@ public class GetAssetFieldValueMVCResourceCommand
 			resourceRequest, "languageId", themeDisplay.getLanguageId());
 
 		InfoFieldValue<Object> infoFieldValue =
-			infoItemFormProvider.getInfoFieldValue(object, fieldId);
+			infoItemFieldValuesProvider.getInfoItemFieldValue(object, fieldId);
 
 		Object value = StringPool.BLANK;
 
@@ -135,6 +139,16 @@ public class GetAssetFieldValueMVCResourceCommand
 			value = contentAccessor.getContent();
 		}
 
+		if (value instanceof WebImage) {
+			WebImage webImage = (WebImage)value;
+
+			value = webImage.toJSONObject();
+		}
+		else {
+			value = _fragmentEntryProcessorHelper.formatMappedValue(
+				value, themeDisplay.getLocale());
+		}
+
 		jsonObject.put("fieldValue", value);
 
 		JSONPortletResponseUtil.writeJSON(
@@ -143,6 +157,9 @@ public class GetAssetFieldValueMVCResourceCommand
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		GetAssetFieldValueMVCResourceCommand.class);
+
+	@Reference
+	private FragmentEntryProcessorHelper _fragmentEntryProcessorHelper;
 
 	@Reference
 	private InfoItemServiceTracker _infoItemServiceTracker;

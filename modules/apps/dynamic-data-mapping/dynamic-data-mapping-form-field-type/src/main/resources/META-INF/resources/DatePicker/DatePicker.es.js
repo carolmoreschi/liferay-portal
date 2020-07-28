@@ -50,13 +50,13 @@ const getDateMask = (dateFormat, dateDelimiter) => {
 			let currentFormat;
 
 			if (item === '%Y') {
-				currentFormat = 'YYYY';
+				currentFormat = 'yyyy';
 			}
 			else if (item === '%m') {
 				currentFormat = 'MM';
 			}
 			else {
-				currentFormat = 'DD';
+				currentFormat = 'dd';
 			}
 
 			return currentFormat;
@@ -124,6 +124,8 @@ const DatePicker = ({
 	const inputRef = useRef(null);
 	const maskInstance = useRef(null);
 
+	const [expanded, setExpand] = useState(false);
+
 	const initialValueMemoized = useMemo(() => transformToDate(initialValue), [
 		initialValue,
 	]);
@@ -174,16 +176,32 @@ const DatePicker = ({
 			<ClayDatePicker
 				dateFormat={dateMask}
 				disabled={disabled}
+				expanded={expanded}
 				initialMonth={getInitialMonth(value)}
+				onExpandedChange={(expand) => {
+					setExpand(expand);
+				}}
 				onInput={(event) => {
 					maskInstance.current.update(event.target.value);
 				}}
 				onNavigation={handleNavigation}
-				onValueChange={(value) => {
+				onValueChange={(value, eventType) => {
 					setValue(value);
 
+					if (eventType === 'click') {
+						setExpand(false);
+						inputRef.current.focus();
+					}
+
+					if (
+						!value ||
+						value === maskInstance.current.state.previousPlaceholder
+					) {
+						return onChange('');
+					}
+
 					if (moment(value).isValid()) {
-						onChange(moment(value).format(dateMask));
+						onChange(moment(value).format(dateMask.toUpperCase()));
 					}
 				}}
 				ref={inputRef}

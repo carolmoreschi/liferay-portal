@@ -9,7 +9,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(pageName = "Test Page");
@@ -59,15 +58,15 @@ definition {
 
 		Portlet.addPG(portletName = "Wall");
 
-		GlobalMenu.gotoPortlet(
-			category = "Apps",
+		ApplicationsMenu.gotoPortlet(
+			category = "System",
 			panel = "Control Panel",
 			portlet = "App Manager");
 
 		AppManager.uninstallAppCP(appName = "Social Networking");
 
-		GlobalMenu.gotoPortlet(
-			category = "Apps",
+		ApplicationsMenu.gotoPortlet(
+			category = "System",
 			panel = "Control Panel",
 			portlet = "App Manager");
 

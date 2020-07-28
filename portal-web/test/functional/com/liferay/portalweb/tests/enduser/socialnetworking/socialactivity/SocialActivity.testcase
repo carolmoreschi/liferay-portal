@@ -29,7 +29,9 @@ definition {
 	@description = "It ensures that the user statistics are counted when social tracking is enabled."
 	@priority = "5"
 	test CountUserStatisticsAfterEnablingSocialTracking {
-		ProductMenu.gotoPortlet(
+		property test.name.skip.portal.instance = "SocialActivity#CountUserStatisticsAfterEnablingSocialTracking";
+
+		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
 			portlet = "System Settings");
@@ -41,9 +43,10 @@ definition {
 
 		FormFields.viewCheckboxChecked(fieldName = "enableUserSocialActivityTracking");
 
+		Navigator.openURL();
+
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Social Activity");
 
 		SocialActivity.enableBlogsCP();
@@ -83,7 +86,9 @@ definition {
 	@description = "It ensures that the user statistics are not counted when social tracking is disabled."
 	@priority = "5"
 	test DisableSocialTracking {
-		ProductMenu.gotoPortlet(
+		property test.name.skip.portal.instance = "SocialActivity#DisableSocialTracking";
+
+		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
 			portlet = "System Settings");
@@ -99,9 +104,10 @@ definition {
 
 		FormFields.viewCheckboxNotChecked(fieldName = "enable");
 
+		Navigator.openURL();
+
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Social Activity");
 
 		SocialActivity.enableBlogsCP();

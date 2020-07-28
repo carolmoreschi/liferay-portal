@@ -37,7 +37,7 @@ List<DepotEntryGroupRel> depotEntryGroupRels = depotAdminSitesDisplayContext.get
 			<span class="heading-end">
 				<clay:button
 					displayType="secondary"
-					id='<%= renderResponse.getNamespace() + "addConnectedSiteButton" %>'
+					id='<%= liferayPortletResponse.getNamespace() + "addConnectedSiteButton" %>'
 					label="add"
 					small="<%= true %>"
 					title="connect-to-a-site"
@@ -81,13 +81,23 @@ List<DepotEntryGroupRel> depotEntryGroupRels = depotAdminSitesDisplayContext.get
 				<liferay-ui:message key='<%= depotEntryGroupRel.isSearchable() ? "yes" : "no" %>' />
 			</liferay-ui:search-container-column-text>
 
+			<liferay-ui:search-container-column-text
+				cssClass="table-cell-content"
+				helpMessage="makes-the-asset-library-web-content-structures-available-in-the-site"
+				name="web-content-structures"
+			>
+				<liferay-ui:message key='<%= depotEntryGroupRel.isDdmStructuresAvailable() ? "yes" : "no" %>' />
+			</liferay-ui:search-container-column-text>
+
 			<liferay-ui:search-container-column-text>
 				<clay:dropdown-menu
-					defaultEventHandler="<%= DepotAdminWebKeys.CONNECTED_SITE_DROPDOWN_DEFAULT_EVENT_HANDLER %>"
+					borderless="<%= true %>"
+					displayType="secondary"
 					dropdownItems="<%= depotAdminSitesDisplayContext.getConnectedSiteDropdownItems(depotEntryGroupRel) %>"
 					icon="ellipsis-v"
-					style="secondary"
-					triggerCssClasses="btn-monospaced btn-outline-borderless btn-secondary btn-sm"
+					monospaced="<%= true %>"
+					propsTransformer="js/ConnectedSiteDropdownPropsTransformer"
+					small="<%= true %>"
 				/>
 			</liferay-ui:search-container-column-text>
 		</liferay-ui:search-container-row>
@@ -96,11 +106,6 @@ List<DepotEntryGroupRel> depotEntryGroupRels = depotAdminSitesDisplayContext.get
 			markupView="lexicon"
 		/>
 	</liferay-ui:search-container>
-
-	<liferay-frontend:component
-		componentId="<%= DepotAdminWebKeys.CONNECTED_SITE_DROPDOWN_DEFAULT_EVENT_HANDLER %>"
-		module="js/ConnectedSiteDropdownDefaultEventHandler.es"
-	/>
 
 	<aui:script require="metal-dom/src/all/dom as dom">
 		var addConnectedSiteButton = document.querySelector(

@@ -68,8 +68,10 @@ definition {
 	@description = "This is a use case for LPS-95157. It checks the nav-bar menu icons on guest page level after page refresh."
 	@priority = "5"
 	test RefreshHomePage {
+		property app.server.types = "jboss,tcserver,tomcat,weblogic,websphere,wildfly";
+		property database.types = "db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase";
+		property environment.acceptance = "true";
 		property portal.acceptance = "true";
-		property portal.upstream = "quarantine";
 
 		Navigator.gotoPage(pageName = "Home");
 
@@ -77,8 +79,15 @@ definition {
 
 		Refresh();
 
-		SikuliAssertElementPresent(locator1 = "ControlMenu#HOME_HEADING_AND_PRODUCT_MENU_CLOSED_PNG");
-		SikuliAssertElementPresent(locator1 = "ControlMenu#HOME_ICONS_RIGHT_PNG");
+		AssertCssValue(
+			locator1 = "//ul[contains(@id,'controlMenu')]",
+			locator2 = "display",
+			value1 = "flex");
+
+		AssertCssValue(
+			locator1 = "//ul[contains(@id,'controlMenu')]",
+			locator2 = "list-style",
+			value1 = "none outside none");
 
 		takeScreenshot();
 
@@ -86,8 +95,15 @@ definition {
 
 		Refresh();
 
-		SikuliAssertElementPresent(locator1 = "ControlMenu#HOME_HEADING_AND_PRODUCT_MENU_OPENED_PNG");
-		SikuliAssertElementPresent(locator1 = "ControlMenu#HOME_ICONS_RIGHT_PNG");
+		AssertCssValue(
+			locator1 = "//ul[contains(@id,'controlMenu')]",
+			locator2 = "display",
+			value1 = "flex");
+
+		AssertCssValue(
+			locator1 = "//ul[contains(@id,'controlMenu')]",
+			locator2 = "list-style",
+			value1 = "none outside none");
 
 		takeScreenshot();
 	}
@@ -95,30 +111,41 @@ definition {
 	@description = "This is a use case for LPS-95157. It checks the nav-bar menu icons on admin page level after page refresh."
 	@priority = "5"
 	test RefreshWebContent {
+		property app.server.types = "jboss,tcserver,tomcat,weblogic,websphere,wildfly";
+		property database.types = "db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase";
+		property environment.acceptance = "true";
 		property portal.acceptance = "true";
-		property portal.upstream = "quarantine";
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Web Content");
 
 		Refresh();
 
-		SikuliAssertElementPresent(locator1 = "ControlMenu#WC_HEADING_AND_PRODUCT_MENU_OPENED_PNG");
-		SikuliAssertElementPresent(locator1 = "ControlMenu#WC_ICONS_RIGHT_PNG");
+		AssertCssValue(
+			locator1 = "//ul[contains(@id,'controlMenu')]",
+			locator2 = "display",
+			value1 = "flex");
+
+		AssertCssValue(
+			locator1 = "//ul[contains(@id,'controlMenu')]",
+			locator2 = "list-style",
+			value1 = "none outside none");
 
 		takeScreenshot();
 	}
 
 	@priority = "5"
 	test RightToLeftSmoke {
+		property app.server.types = "jboss,tcserver,tomcat,weblogic,websphere,wildfly";
+		property database.types = "db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase";
+		property environment.acceptance = "true";
 		property portal.acceptance = "true";
 		property test.name.skip.portal.instance = "UIInfrastructureUsecase#RightToLeftSmoke";
+		property testray.component.names = "WYSIWYG";
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(pageName = "RTL Test Page");
@@ -141,7 +168,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Web Content");
 
 		WebContentNavigator.gotoAddCP();
@@ -162,11 +188,13 @@ definition {
 	@description = "Ensure that a user can access portlet options and drag and drop portlets."
 	@priority = "5"
 	test Smoke {
+		property app.server.types = "jboss,tcserver,tomcat,weblogic,websphere,wildfly";
+		property database.types = "db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase";
+		property environment.acceptance = "true";
 		property portal.acceptance = "true";
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(pageName = "Test Page");
@@ -232,7 +260,7 @@ definition {
 	test ViewNonASCIICharactersWithSPADisabled {
 		property custom.properties = "javascript.single.page.application.enabled=false";
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -243,7 +271,7 @@ definition {
 			userLastName = "Ääkkönen",
 			userScreenName = "uskandi");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -258,11 +286,13 @@ definition {
 	@description = "Checks for each portlet having defined boundaries."
 	@priority = "5"
 	test ViewPortletBoundaries {
+		property app.server.types = "jboss,tcserver,tomcat,weblogic,websphere,wildfly";
+		property database.types = "db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase";
+		property environment.acceptance = "true";
 		property portal.acceptance = "true";
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(
@@ -325,6 +355,7 @@ definition {
 	}
 
 	@description = "This test validates sign in and sign out UI"
+	@ignore = "true"
 	@priority = "5"
 	test ViewSignInSignOutUI {
 		property portal.acceptance = "false";
@@ -337,7 +368,9 @@ definition {
 
 		takeScreenshot();
 
-		Navigator.openSpecificURL(url = "http://localhost:8080/c/portal/login");
+		var portalURL = PropsUtil.get("portal.url");
+
+		Navigator.openSpecificURL(url = "${portalURL}/c/portal/login");
 
 		WaitForElementPresent(locator1 = "SignIn#PORTLET_TITLE");
 

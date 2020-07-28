@@ -12,9 +12,7 @@
  * details.
  */
 
-import ClayButton from '@clayui/button';
 import ClayEmptyState from '@clayui/empty-state';
-import ClayIcon from '@clayui/icon';
 import React from 'react';
 import {
 	BarChart,
@@ -24,49 +22,38 @@ import {
 	YAxis,
 } from 'recharts';
 
-const EMPTY_DATA = [];
+import {BAR_CHART} from '../utils/constants';
 
-const BAR_CHART = {
-	dotRadiusMax: 35,
-	dotRadiusMin: 5,
-	height: 300,
-	stroke: '#E7E7ED',
-	width: 1150,
-};
+export default function EmptyAuditBarChart({learnHowURL}) {
+	const description = learnHowURL && (
+		<div
+			dangerouslySetInnerHTML={{
+				__html: Liferay.Util.sub(
+					Liferay.Language.get(
+						'x-learn-how-x-to-tailor-categories-to-your-needs'
+					),
+					`<a href=${learnHowURL} target="_blank">`,
+					'</a>'
+				),
+			}}
+		/>
+	);
 
-export default function EmptyAuditBarChart() {
 	return (
 		<>
 			<ClayEmptyState
 				className="empty-state text-center"
-				description={Liferay.Language.get(
-					'create-marketing-categories-to-label-and-audit-your-content'
-				)}
+				description={description}
 				title={Liferay.Language.get('there-is-no-data')}
-			>
-				<ClayButton displayType="secondary">
-					{Liferay.Language.get('add-marketing-categories')}
-					<ClayIcon
-						className="inline-item inline-item-after"
-						symbol="shortcut"
-					/>
-				</ClayButton>
-			</ClayEmptyState>
+			/>
 
-			<ResponsiveContainer height={BAR_CHART.height}>
+			<ResponsiveContainer height={BAR_CHART.emptyHeight}>
 				<BarChart
-					data={EMPTY_DATA}
-					height={BAR_CHART.height}
+					data={[]}
+					height={BAR_CHART.emptyHeight}
 					width={BAR_CHART.width}
 				>
-					<CartesianGrid
-						horizontal={true}
-						horizontalPoints={[
-							BAR_CHART.dotRadiusMin,
-							BAR_CHART.height - BAR_CHART.dotRadiusMax,
-						]}
-						stroke={BAR_CHART.stroke}
-					/>
+					<CartesianGrid stroke={BAR_CHART.stroke} />
 					<XAxis
 						axisLine={{
 							stroke: BAR_CHART.stroke,

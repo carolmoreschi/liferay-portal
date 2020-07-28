@@ -63,17 +63,27 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 			<c:choose>
 				<c:when test="<%= selLayout.isTypeAssetDisplay() %>">
 					<div class="dpt-mapping">
-						<aui:model-context bean="<%= null %>" model="<%= null %>" />
+						<div class="dpt-mapping-placeholder">
+							<aui:model-context bean="<%= null %>" model="<%= null %>" />
 
-						<aui:input disabled="<%= true %>" helpMessage="html-title-help" id="title" label="html-title" localized="<%= false %>" name="title" placeholder="title" />
+							<aui:input disabled="<%= true %>" id="title" label="html-title" localized="<%= false %>" name="title" placeholder="title" />
 
-						<aui:input disabled="<%= true %>" helpMessage="description-help" id="descriptionSEO" localized="<%= false %>" name="description" placeholder="description" />
+							<div class="form-text">
+								<liferay-ui:message arguments='<%= new String[] {"text", "html-title"} %>' key="map-a-x-field-it-will-be-used-as-x" />
+							</div>
 
-						<aui:model-context bean="<%= selLayout %>" model="<%= Layout.class %>" />
+							<aui:input disabled="<%= true %>" id="descriptionSEO" localized="<%= false %>" name="description" placeholder="description" />
+
+							<div class="form-text">
+								<liferay-ui:message arguments='<%= new String[] {"text", "description"} %>' key="map-a-x-field-it-will-be-used-as-x" />
+							</div>
+
+							<aui:model-context bean="<%= selLayout %>" model="<%= Layout.class %>" />
+						</div>
 
 						<react:component
-							data="<%= layoutsSEODisplayContext.getSEOMappingData() %>"
 							module="js/seo/display_page_templates/SeoMapping"
+							props="<%= layoutsSEODisplayContext.getSEOMappingData() %>"
 							servletContext="<%= application %>"
 						/>
 					</div>
@@ -90,8 +100,7 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 						var="infoCanonicalURL"
 					>
 						<clay:alert
-							message='<%= LanguageUtil.get(resourceBundle, "use-custom-canonical-url-alert-info") %>'
-							title='<%= LanguageUtil.get(request, "info") + ":" %>'
+							message="use-custom-canonical-url-alert-info"
 						/>
 					</liferay-util:buffer>
 
@@ -136,7 +145,7 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 						<div>
 
 							<%
-							Map<String, Object> data = HashMapBuilder.<String, Object>put(
+							Map<String, Object> props = HashMapBuilder.<String, Object>put(
 								"targets",
 								HashMapBuilder.<String, Object>put(
 									"description",
@@ -166,8 +175,8 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 							%>
 
 							<react:component
-								data="<%= data %>"
 								module="js/seo/PreviewSeo.es"
+								props="<%= props %>"
 								servletContext="<%= application %>"
 							/>
 						</div>

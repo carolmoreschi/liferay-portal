@@ -205,7 +205,8 @@ export default () => {
 				isClickOutside(
 					target,
 					'.data-layout-builder-sidebar',
-					'.dropdown-menu'
+					'.dropdown-menu',
+					'#ddm-actionable-fields-container'
 				)
 			) {
 				dispatch({

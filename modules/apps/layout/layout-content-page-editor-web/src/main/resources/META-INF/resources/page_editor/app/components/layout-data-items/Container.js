@@ -17,92 +17,133 @@ import PropTypes from 'prop-types';
 import React, {useEffect, useState} from 'react';
 
 import {getLayoutDataItemPropTypes} from '../../../prop-types/index';
+import selectLanguageId from '../../selectors/selectLanguageId';
 import InfoItemService from '../../services/InfoItemService';
+import {useSelector} from '../../store/index';
 
-const Container = React.forwardRef(({children, className, data, item}, ref) => {
-	const {
-		align,
-		backgroundColor,
-		backgroundImage,
-		borderColor,
-		borderRadius,
-		borderWidth,
-		containerWidth,
-		contentDisplay,
-		dropShadow,
-		justify,
-		marginBottom,
-		marginLeft,
-		marginRight,
-		marginTop,
-		opacity,
-		paddingBottom,
-		paddingLeft,
-		paddingRight,
-		paddingTop,
-	} = item.config;
+const Container = React.forwardRef(
+	({children, className, data, item, withinTopper = false}, ref) => {
+		const {
+			align,
+			backgroundColorCssClass,
+			backgroundImage,
+			borderColor,
+			borderRadius,
+			borderWidth,
+			contentDisplay,
+			justify,
+			marginBottom,
+			marginLeft,
+			marginRight,
+			marginTop,
+			opacity,
+			paddingBottom,
+			paddingLeft,
+			paddingRight,
+			paddingTop,
+			shadow,
+			widthType,
+		} = item.config;
 
-	const backgroundColorCssClass = backgroundColor && backgroundColor.cssClass;
-	const [backgroundImageValue, setBackgroundImageValue] = useState('');
-	const borderColorCssClass = borderColor && borderColor.cssClass;
+		const languageId = useSelector(selectLanguageId);
+		const [backgroundImageValue, setBackgroundImageValue] = useState('');
+		const [link, setLink] = useState(null);
 
-	useEffect(() => {
-		loadBackgroundImage(backgroundImage).then(setBackgroundImageValue);
-	}, [backgroundImage]);
+		useEffect(() => {
+			loadBackgroundImage(backgroundImage).then(setBackgroundImageValue);
+		}, [backgroundImage]);
 
-	const style = {
-		boxSizing: 'border-box',
-	};
+		useEffect(() => {
+			if (!item.config.link) {
+				return;
+			}
 
-	if (backgroundImageValue) {
-		style.backgroundImage = `url(${backgroundImageValue})`;
-		style.backgroundPosition = '50% 50%';
-		style.backgroundRepeat = 'no-repeat';
-		style.backgroundSize = 'cover';
+			if (item.config.link.href) {
+				setLink(item.config.link);
+			}
+			else if (item.config.link.fieldId) {
+				InfoItemService.getAssetFieldValue({
+					...item.config.link,
+					languageId,
+					onNetworkStatus: () => {},
+				}).then(({fieldValue}) => {
+					setLink({
+						href: fieldValue,
+						target: item.config.link.target,
+					});
+				});
+			}
+		}, [item.config.link, languageId]);
+
+		const style = {
+			boxSizing: 'border-box',
+		};
+
+		if (backgroundImageValue) {
+			style.backgroundImage = `url(${backgroundImageValue})`;
+			style.backgroundPosition = '50% 50%';
+			style.backgroundRepeat = 'no-repeat';
+			style.backgroundSize = 'cover';
+		}
+
+		if (borderWidth) {
+			style.borderStyle = 'solid';
+			style.borderWidth = `${borderWidth}px`;
+		}
+
+		if (opacity) {
+			style.opacity = Number(opacity / 100) || 1;
+		}
+
+		const content = (
+			<div
+				{...(link ? {} : data)}
+				className={classNames(
+					className,
+					`mb-${marginBottom || 0}`,
+					`mt-${marginTop || 0}`,
+					`pb-${paddingBottom || 0}`,
+					`pl-${paddingLeft || 0}`,
+					`pr-${paddingRight || 0}`,
+					`pt-${paddingTop || 0}`,
+					{
+						[align]: !!align,
+						[`bg-${backgroundColorCssClass}`]: !!backgroundColorCssClass,
+						[`border-${borderColor}`]: !!borderColor,
+						[borderRadius]: !!borderRadius,
+						container: widthType === 'fixed',
+						'd-block': contentDisplay === 'block',
+						'd-flex': contentDisplay === 'flex',
+						empty: item.children.length === 0,
+						[justify]: !!justify,
+						[`ml-${marginLeft || 0}`]:
+							widthType !== 'fixed' && !withinTopper,
+						[`mr-${marginRight || 0}`]:
+							widthType !== 'fixed' && !withinTopper,
+						[shadow]: !!shadow,
+					}
+				)}
+				ref={ref}
+				style={style}
+			>
+				{children}
+			</div>
+		);
+
+		return link ? (
+			<a
+				{...data}
+				href={link.href}
+				style={{color: 'inherit', textDecoration: 'none'}}
+				target={link.target}
+			>
+				{content}
+			</a>
+		) : (
+			content
+		);
 	}
-
-	if (borderWidth) {
-		style.borderStyle = 'solid';
-		style.borderWidth = `${borderWidth}px`;
-	}
-
-	if (opacity) {
-		style.opacity = Number(opacity / 100) || 1;
-	}
-
-	return (
-		<div
-			{...data}
-			className={classNames(
-				className,
-				`mb-${marginBottom || 0}`,
-				`ml-${marginLeft || 0}`,
-				`mr-${marginRight || 0}`,
-				`mt-${marginTop || 0}`,
-				`pb-${paddingBottom || 0}`,
-				`pl-${paddingLeft || 0}`,
-				`pr-${paddingRight || 0}`,
-				`pt-${paddingTop || 0}`,
-				{
-					[align]: !!align,
-					[borderRadius]: !!borderRadius,
-					container: containerWidth === 'fixed',
-					'd-block': contentDisplay === 'block',
-					'd-flex': contentDisplay === 'flex',
-					[dropShadow]: !!dropShadow,
-					empty: item.children.length === 0,
-					[justify]: !!justify,
-					[`bg-${backgroundColorCssClass}`]: !!backgroundColorCssClass,
-					[`border-${borderColorCssClass}`]: !!borderColorCssClass,
-				}
-			)}
-			ref={ref}
-			style={style}
-		>
-			{children}
-		</div>
-	);
-});
+);
 
 Container.displayName = 'Container';
 

@@ -12,8 +12,8 @@
 	<tag>
 		<description></description>
 		<name>alert</name>
-		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.soy.AlertTag</tag-class>
-		<body-content>empty</body-content>
+		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.AlertTag</tag-class>
+		<body-content>JSP</body-content>
 		<attribute>
 			<description></description>
 			<name>autoClose</name>
@@ -21,43 +21,55 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>dismissible</code>]]>.</description>
 			<name>closeable</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>componentId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>contributorKey</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>data</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>defaultEventHandler</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>destroyOnHide</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<description></description>
+			<name>dismissible</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description></description>
+			<name>displayType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>cssClass</code>]]>.</description>
 			<name>elementClasses</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -71,17 +83,17 @@
 		<attribute>
 			<description></description>
 			<name>message</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>spritemap</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>displayType</code>]]>.</description>
 			<name>style</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -89,15 +101,16 @@
 		<attribute>
 			<description></description>
 			<name>title</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<dynamic-attributes>true</dynamic-attributes>
 	</tag>
 	<tag>
 		<description></description>
@@ -203,6 +216,12 @@
 		<attribute>
 			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>contributorKey</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description></description>
+			<name>cssClass</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -605,54 +624,175 @@
 		<dynamic-attributes>true</dynamic-attributes>
 	</tag>
 	<tag>
+		<name>dataset-display</name>
+		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.DatasetDisplayTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>actionParameterName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>bulkActionDropdownItems</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.List</type>
+		</attribute>
+		<attribute>
+			<name>contextParams</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Map</type>
+		</attribute>
+		<attribute>
+			<name>creationMenu</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu</type>
+		</attribute>
+		<attribute>
+			<name>dataProviderKey</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>deltaParam</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>formId</name>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>itemsPerPage</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>int</type>
+		</attribute>
+		<attribute>
+			<name>namespace</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>nestedItemsKey</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>nestedItemsReferenceKey</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>pageNumber</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>int</type>
+		</attribute>
+		<attribute>
+			<name>portletURL</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>javax.portlet.PortletURL</type>
+		</attribute>
+		<attribute>
+			<name>selectedItems</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>selectedItemsKey</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>selectionType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>showManagementBar</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>showPagination</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>showSearch</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>style</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	<tag>
 		<description></description>
 		<name>dropdown-actions</name>
-		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.soy.DropdownActionsTag</tag-class>
+		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.DropdownActionsTag</tag-class>
 		<body-content>empty</body-content>
 		<attribute>
 			<description></description>
+			<name>additionalProps</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>label</code>]]>.</description>
 			<name>buttonLabel</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>displayType</code>]]>.</description>
 			<name>buttonStyle</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>buttonType</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
-			<name>caption</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>componentId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>contributorKey</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<description></description>
+			<name>cssClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>data</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>defaultEventHandler</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -664,20 +804,14 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>cssClass</code>]]>.</description>
 			<name>elementClasses</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>expanded</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<description></description>
-			<name>helpText</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -688,68 +822,135 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>itemsIconAlignment</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<description></description>
+			<name>propsTransformer</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
+			<name>searchable</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
+			<name>showToggleIcon</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>spritemap</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>displayType</code>]]>.</description>
+			<name>style</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>cssClass</code>]]>.</description>
 			<name>triggerCssClasses</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
+			<name>triggerTitle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<dynamic-attributes>true</dynamic-attributes>
 	</tag>
 	<tag>
 		<description></description>
 		<name>dropdown-menu</name>
-		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.soy.DropdownMenuTag</tag-class>
+		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.DropdownMenuTag</tag-class>
 		<body-content>empty</body-content>
 		<attribute>
 			<description></description>
+			<name>additionalProps</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description></description>
+			<name>block</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description></description>
+			<name>borderless</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>label</code>]]>.</description>
 			<name>buttonLabel</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>displayType</code>]]>.</description>
 			<name>buttonStyle</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>buttonType</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>componentId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>contributorKey</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<description></description>
+			<name>cssClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>data</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>defaultEventHandler</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description></description>
+			<name>displayType</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -760,13 +961,13 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>cssClass</code>]]>.</description>
 			<name>elementClasses</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>expanded</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -784,7 +985,7 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>itemsIconAlignment</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -797,46 +998,65 @@
 		</attribute>
 		<attribute>
 			<description></description>
-			<name>searchable</name>
+			<name>monospaced</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<description></description>
+			<name>propsTransformer</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
+			<name>searchable</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>showToggleIcon</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<description></description>
+			<name>small</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>spritemap</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>displayType</code>]]>.</description>
 			<name>style</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>cssClass</code>]]>.</description>
 			<name>triggerCssClasses</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>triggerTitle</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<dynamic-attributes>true</dynamic-attributes>
 	</tag>
 	<tag>
 		<description></description>
@@ -2078,34 +2298,46 @@
 	<tag>
 		<description></description>
 		<name>progressbar</name>
-		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.soy.ProgressBarTag</tag-class>
+		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.ProgressBarTag</tag-class>
 		<body-content>empty</body-content>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>componentId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<description></description>
+			<name>containerElement</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>contributorKey</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<description></description>
+			<name>cssClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>data</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>defaultEventHandler</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>cssClass</code>]]>.</description>
 			<name>elementClasses</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2129,7 +2361,7 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>spritemap</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2146,11 +2378,12 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<dynamic-attributes>true</dynamic-attributes>
 	</tag>
 	<tag>
 		<description></description>
 		<name>radio</name>
-		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.soy.RadioTag</tag-class>
+		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.RadioTag</tag-class>
 		<body-content>empty</body-content>
 		<attribute>
 			<description></description>
@@ -2159,25 +2392,32 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>componentId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>contributorKey</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<description></description>
+			<name>cssClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>data</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>defaultEventHandler</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2189,7 +2429,7 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>cssClass</code>]]>.</description>
 			<name>elementClasses</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2230,6 +2470,7 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<dynamic-attributes>true</dynamic-attributes>
 	</tag>
 	<tag>
 		<description></description>
@@ -2342,6 +2583,12 @@
 		<attribute>
 			<description></description>
 			<name>cssClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description></description>
+			<name>size</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -2516,8 +2763,8 @@
 	<tag>
 		<description></description>
 		<name>stripe</name>
-		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.soy.StripeTag</tag-class>
-		<body-content>empty</body-content>
+		<tag-class>com.liferay.frontend.taglib.clay.servlet.taglib.StripeTag</tag-class>
+		<body-content>JSP</body-content>
 		<attribute>
 			<description></description>
 			<name>autoClose</name>
@@ -2525,37 +2772,55 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>dismissible</code>]]>.</description>
+			<name>closeable</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>componentId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>contributorKey</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>data</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>defaultEventHandler</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>destroyOnHide</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<description></description>
+			<name>dismissible</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description></description>
+			<name>displayType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>cssClass</code>]]>.</description>
 			<name>elementClasses</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2569,17 +2834,17 @@
 		<attribute>
 			<description></description>
 			<name>message</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
 			<name>spritemap</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description></description>
+			<description>Deprecated as of 7.3.0, replaced by the attribute <![CDATA[<code>displayType</code>]]>.</description>
 			<name>style</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2587,9 +2852,16 @@
 		<attribute>
 			<description></description>
 			<name>title</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<attribute>
+			<description>Deprecated as of 7.3.0, with no direct replacement.</description>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<dynamic-attributes>true</dynamic-attributes>
 	</tag>
 	<tag>
 		<description>Deprecated as of Athanasius (7.3.x), with no direct replacement.</description>

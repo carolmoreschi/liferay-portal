@@ -110,7 +110,13 @@ definition {
 
 			AssertConfirm(value1 = "Are you sure you want to activate remote staging for ${siteName}?");
 
-			Pause(locator1 = "5000");
+			while (IsElementNotPresent(locator1 = "Message#SUCCESS")) {
+				Pause(locator1 = "1000");
+			}
+
+			if (IsElementPresent(locator1 = "Button#CLOSE_MESSAGE")) {
+				Click(locator1 = "Button#CLOSE_MESSAGE");
+			}
 		}
 
 		else {
@@ -128,7 +134,7 @@ definition {
 			AssertConfirm(value1 = "Are you sure you want to activate local staging for ${siteName}?");
 
 			while (IsElementNotPresent(locator1 = "Staging#PROCESS_SUCCESSFUL")) {
-				Pause(locator1 = "3000");
+				Pause(locator1 = "1000");
 			}
 
 			AssertTextEquals(
@@ -229,6 +235,8 @@ definition {
 			Click(locator1 = "StagingPublishToLive#DATE_SCHEDULE_END_DATE_END_BY_RADIO");
 		}
 		else {
+			Staging.setStartDateTomorrow();
+
 			Check(locator1 = "StagingPublishToLive#DATE_SCHEDULE_END_DATE_NO_END_DATE_RADIO");
 		}
 
@@ -390,9 +398,9 @@ definition {
 
 		SelectFrameTop();
 
-		WaitForElementPresent(locator1 = "IFrame#MODAL_BODY");
-
-		SelectFrame(locator1 = "IFrame#MODAL_BODY");
+		if (IsElementPresent(locator1 = "IFrame#MODAL_BODY")) {
+			SelectFrame(locator1 = "IFrame#MODAL_BODY");
+		}
 
 		if ("${deleteMissingPages}" == "true") {
 			ContentConfiguration.deleteMissingPages();
@@ -765,7 +773,9 @@ definition {
 			ClickNoError(locator1 = "Staging#STAGING_PUBLISH_TO_LIVE_CUSTOM_PUBLICATION");
 		}
 
-		Pause(locator1 = "30000");
+		while (IsElementNotPresent(locator1 = "Staging#PROCESS_RESULT")) {
+			Pause(locator1 = "1000");
+		}
 
 		if (isSet(failureExpected)) {
 			AssertTextEquals(
@@ -827,6 +837,8 @@ definition {
 		if ("${replicateIndividualDeletions}" == "true") {
 			AssertVisible(locator1 = "Staging#STAGING_CONTENT_DELETIONS");
 
+			Click(locator1 = "Staging#STAGING_CONTENT_DELETIONS");
+
 			Click(locator1 = "Staging#REPLICATE_INDIVIDUAL_DELETIONS");
 		}
 
@@ -884,7 +896,9 @@ definition {
 			locator1 = "Staging#STAGING_PUBLISH_TO_LIVE_BUTTON",
 			value1 = "Publish to Live");
 
-		Pause(locator1 = "10000");
+		while ((IsElementNotPresent(locator1 = "Staging#PROCESS_SUCCESSFUL")) && (IsElementNotPresent(locator1 = "Staging#LATEST_PROCESS_RESULT"))) {
+			Pause(locator1 = "1000");
+		}
 
 		if (IsElementPresent(locator1 = "Staging#PROCESS_SUCCESSFUL")) {
 			AssertTextEquals(
@@ -905,7 +919,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Publishing",
-			panel = "Site Administration",
 			portlet = "Staging");
 
 		if (IsElementPresent(locator1 = "Staging#LATEST_PROCESS_RESULT")) {
@@ -984,7 +997,7 @@ definition {
 
 		var siteID = "${siteID}";
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Sites",
 			panel = "Control Panel",
 			portlet = "Sites");
@@ -993,7 +1006,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Settings");
 
 		var siteID = "siteID";
@@ -1013,7 +1025,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Publishing",
-			panel = "Site Administration",
 			portlet = "Staging");
 
 		Staging.activateStagingCP(
@@ -1173,6 +1184,25 @@ definition {
 			value1 = "${dateRangeEndDate}");
 
 		Click(locator1 = "Link#REFRESH_COUNTS");
+	}
+
+	macro setStartDateTomorrow {
+		Click(locator1 = "StagingPublishToLive#DATE_SCHEDULE_START_DATE");
+
+		var daySelected = selenium.getText("CalendarEditEvent#MINI_CALENDAR_DAY_SELECTED");
+		var tomorrow = ${daySelected} + 1;
+		var key_daySpecific = "${tomorrow}";
+
+		if (IsElementPresent(locator1 = "CalendarEditEvent#MINI_CALENDAR_DAY_SPECIFIC")) {
+			Click(locator1 = "CalendarEditEvent#MINI_CALENDAR_DAY_SPECIFIC");
+		}
+		else {
+			Click(locator1 = "CalendarEditEvent#MINI_CALENDAR_NEXT_MONTH_BUTTON");
+
+			var key_daySpecific = "1";
+
+			Click(locator1 = "CalendarEditEvent#MINI_CALENDAR_DAY_SPECIFIC");
+		}
 	}
 
 	macro submitForPublicationPageRevision {

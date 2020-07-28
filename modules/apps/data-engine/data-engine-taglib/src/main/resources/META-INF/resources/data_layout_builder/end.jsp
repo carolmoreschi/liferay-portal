@@ -19,7 +19,7 @@
 <portlet:renderURL var="basePortletURL" />
 
 <%
-Map<String, Object> data = HashMapBuilder.<String, Object>put(
+Map<String, Object> props = HashMapBuilder.<String, Object>put(
 	"availableLanguageIds", availableLanguageIds
 ).put(
 	"config", configJSONObject
@@ -30,7 +30,7 @@ Map<String, Object> data = HashMapBuilder.<String, Object>put(
 ).put(
 	"dataDefinitionId", dataDefinitionId
 ).put(
-	"dataLayoutBuilderElementId", renderResponse.getNamespace() + "-data-layout-builder"
+	"dataLayoutBuilderElementId", liferayPortletResponse.getNamespace() + "-data-layout-builder"
 ).put(
 	"dataLayoutBuilderId", componentId
 ).put(
@@ -100,7 +100,7 @@ Map<String, Object> data = HashMapBuilder.<String, Object>put(
 
 <div id="<%= componentId + "container" %>">
 	<react:component
-		data="<%= data %>"
 		module="data_layout_builder/js/App.es"
+		props="<%= props %>"
 	/>
 </div>

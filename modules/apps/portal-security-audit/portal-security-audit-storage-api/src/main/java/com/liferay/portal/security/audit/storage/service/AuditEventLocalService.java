@@ -67,6 +67,10 @@ public interface AuditEventLocalService
 	/**
 	 * Adds the audit event to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AuditEventLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param auditEvent the audit event
 	 * @return the audit event that was added
 	 */
@@ -93,6 +97,10 @@ public interface AuditEventLocalService
 	/**
 	 * Deletes the audit event from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AuditEventLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param auditEvent the audit event
 	 * @return the audit event that was removed
 	 */
@@ -101,6 +109,10 @@ public interface AuditEventLocalService
 
 	/**
 	 * Deletes the audit event with the primary key from the database. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AuditEventLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param auditEventId the primary key of the audit event
 	 * @return the audit event that was removed
@@ -277,6 +289,10 @@ public interface AuditEventLocalService
 
 	/**
 	 * Updates the audit event in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AuditEventLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param auditEvent the audit event
 	 * @return the audit event that was updated

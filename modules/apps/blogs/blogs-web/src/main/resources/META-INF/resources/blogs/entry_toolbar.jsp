@@ -41,7 +41,7 @@ BlogsPortletInstanceConfiguration blogsPortletInstanceConfiguration = BlogsPortl
 
 			<portlet:renderURL var="viewEntryCommentsURL">
 				<portlet:param name="mvcRenderCommandName" value="/blogs/view_entry" />
-				<portlet:param name="scroll" value='<%= renderResponse.getNamespace() + "discussionContainer" %>' />
+				<portlet:param name="scroll" value='<%= liferayPortletResponse.getNamespace() + "discussionContainer" %>' />
 
 				<c:choose>
 					<c:when test="<%= Validator.isNotNull(entry.getUrlTitle()) %>">
@@ -76,15 +76,13 @@ BlogsPortletInstanceConfiguration blogsPortletInstanceConfiguration = BlogsPortl
 
 	<c:if test="<%= blogsPortletInstanceConfiguration.enableRatings() %>">
 		<clay:content-col>
-			<div class="ratings">
-				<liferay-ratings:ratings
-					className="<%= BlogsEntry.class.getName() %>"
-					classPK="<%= entry.getEntryId() %>"
-					inTrash="<%= entry.isInTrash() %>"
-					ratingsEntry="<%= ratingsEntry %>"
-					ratingsStats="<%= ratingsStats %>"
-				/>
-			</div>
+			<liferay-ratings:ratings
+				className="<%= BlogsEntry.class.getName() %>"
+				classPK="<%= entry.getEntryId() %>"
+				inTrash="<%= entry.isInTrash() %>"
+				ratingsEntry="<%= ratingsEntry %>"
+				ratingsStats="<%= ratingsStats %>"
+			/>
 		</clay:content-col>
 	</c:if>
 

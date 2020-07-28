@@ -99,6 +99,11 @@ public class ResourceActionsImpl implements ResourceActions {
 		}
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 * 				#check(String)}
+	 */
+	@Deprecated
 	@Override
 	public void check(Portlet portlet) {
 		String portletName = portlet.getPortletId();
@@ -123,11 +128,7 @@ public class ResourceActionsImpl implements ResourceActions {
 
 		if (!resourceActions.contains(actionId)) {
 			throw new NoSuchResourceActionException(
-				name.concat(
-					StringPool.POUND
-				).concat(
-					actionId
-				));
+				StringBundler.concat(name, StringPool.POUND, actionId));
 		}
 	}
 
@@ -370,6 +371,10 @@ public class ResourceActionsImpl implements ResourceActions {
 		return portletNames;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public List<String> getPortletResourceActions(Portlet portlet) {
 		Set<String> actions = new LinkedHashSet<>(
@@ -961,11 +966,9 @@ public class ResourceActionsImpl implements ResourceActions {
 		String servletContextName, String portletName) {
 
 		if (servletContextName != null) {
-			portletName = portletName.concat(
-				PortletConstants.WAR_SEPARATOR
-			).concat(
-				servletContextName
-			);
+			portletName = StringBundler.concat(
+				portletName, PortletConstants.WAR_SEPARATOR,
+				servletContextName);
 		}
 
 		return JS.getSafeName(portletName);

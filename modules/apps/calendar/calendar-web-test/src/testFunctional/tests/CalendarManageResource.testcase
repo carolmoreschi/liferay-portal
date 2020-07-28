@@ -15,7 +15,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(
@@ -134,7 +133,7 @@ definition {
 	@description = "This is a use case for LPS-55171."
 	@priority = "2"
 	test ViewInactive {
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Sites",
 			panel = "Control Panel",
 			portlet = "Sites");
@@ -143,7 +142,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(
@@ -193,7 +191,7 @@ definition {
 	test ViewInvitedResourceAvailability {
 		property portal.upstream = "quarantine";
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -204,7 +202,7 @@ definition {
 			userLastName = "userln",
 			userScreenName = "usersn");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -215,7 +213,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "People",
-			panel = "Site Administration",
 			portlet = "Memberships");
 
 		Site.assignUserAsMemberCP(

@@ -92,7 +92,7 @@ public class Base64 {
 			pad++;
 		}
 
-		int length = (base64.length() * 6) / 8 - pad;
+		int length = ((base64.length() * 6) / 8) - pad;
 
 		byte[] raw = new byte[length];
 
@@ -121,7 +121,7 @@ public class Base64 {
 		int lastIndex = Math.min(raw.length, offset + length);
 
 		StringBuilder sb = new StringBuilder(
-			((lastIndex - offset) / 3 + 1) * 4);
+			(((lastIndex - offset) / 3) + 1) * 4);
 
 		for (int i = offset; i < lastIndex; i += 3) {
 			sb.append(_encodeBlock(raw, i, lastIndex, url));
@@ -265,17 +265,18 @@ public class Base64 {
 			new UnsyncByteArrayInputStream(bytes);
 
 		try {
-			ObjectInputStream is = null;
+			ObjectInputStream objectInputStream = null;
 
 			if (classLoader == null) {
-				is = new ProtectedObjectInputStream(unsyncByteArrayInputStream);
+				objectInputStream = new ProtectedObjectInputStream(
+					unsyncByteArrayInputStream);
 			}
 			else {
-				is = new ProtectedClassLoaderObjectInputStream(
+				objectInputStream = new ProtectedClassLoaderObjectInputStream(
 					unsyncByteArrayInputStream, classLoader);
 			}
 
-			return is.readObject();
+			return objectInputStream.readObject();
 		}
 		catch (Exception exception) {
 			if (!silent) {

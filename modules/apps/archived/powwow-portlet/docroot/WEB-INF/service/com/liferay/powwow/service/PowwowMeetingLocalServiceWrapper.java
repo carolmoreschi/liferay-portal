@@ -53,6 +53,10 @@ public class PowwowMeetingLocalServiceWrapper
 	/**
 	 * Adds the powwow meeting to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect PowwowMeetingLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param powwowMeeting the powwow meeting
 	 * @return the powwow meeting that was added
 	 */
@@ -108,6 +112,10 @@ public class PowwowMeetingLocalServiceWrapper
 	/**
 	 * Deletes the powwow meeting with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect PowwowMeetingLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param powwowMeetingId the primary key of the powwow meeting
 	 * @return the powwow meeting that was removed
 	 * @throws PortalException if a powwow meeting with the primary key could not be found
@@ -122,6 +130,10 @@ public class PowwowMeetingLocalServiceWrapper
 
 	/**
 	 * Deletes the powwow meeting from the database. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect PowwowMeetingLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param powwowMeeting the powwow meeting
 	 * @return the powwow meeting that was removed
@@ -330,10 +342,10 @@ public class PowwowMeetingLocalServiceWrapper
 		getPowwowMeetings(
 			long groupId, int start, int end,
 			com.liferay.portal.kernel.util.OrderByComparator
-				<com.liferay.powwow.model.PowwowMeeting> obc) {
+				<com.liferay.powwow.model.PowwowMeeting> orderByComparator) {
 
 		return _powwowMeetingLocalService.getPowwowMeetings(
-			groupId, start, end, obc);
+			groupId, start, end, orderByComparator);
 	}
 
 	@Override
@@ -403,6 +415,10 @@ public class PowwowMeetingLocalServiceWrapper
 
 	/**
 	 * Updates the powwow meeting in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect PowwowMeetingLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param powwowMeeting the powwow meeting
 	 * @return the powwow meeting that was updated

@@ -19,8 +19,9 @@ import com.liferay.asset.list.service.AssetListEntryServiceUtil;
 import com.liferay.asset.list.util.AssetListPortletUtil;
 import com.liferay.document.library.kernel.model.DLFileEntryConstants;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItem;
+import com.liferay.info.item.InfoItemServiceTracker;
 import com.liferay.info.item.provider.InfoItemFormProvider;
-import com.liferay.info.item.provider.InfoItemServiceTracker;
+import com.liferay.info.list.provider.DefaultInfoListProviderContext;
 import com.liferay.info.list.provider.InfoListProvider;
 import com.liferay.info.list.provider.InfoListProviderTracker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
@@ -35,6 +36,7 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portlet.layoutsadmin.display.context.GroupDisplayContextHelper;
 
@@ -77,12 +79,11 @@ public class SelectLayoutCollectionDisplayContext {
 
 		SearchContainer<InfoListProvider<?>> searchContainer =
 			new SearchContainer<>(
-				_liferayPortletRequest, _getPortletURL(), null,
+				_liferayPortletRequest, getPortletURL(), null,
 				LanguageUtil.get(
 					_httpServletRequest, "there-are-no-collection-providers"));
 
-		List<InfoListProvider<?>> infoListProviders =
-			_infoListProviderTracker.getInfoListProviders();
+		List<InfoListProvider<?>> infoListProviders = _getInfoListProviders();
 
 		searchContainer.setResults(
 			ListUtil.subList(
@@ -95,7 +96,7 @@ public class SelectLayoutCollectionDisplayContext {
 
 	public SearchContainer<AssetListEntry> getCollectionsSearchContainer() {
 		SearchContainer<AssetListEntry> searchContainer = new SearchContainer<>(
-			_liferayPortletRequest, _getPortletURL(), null,
+			_liferayPortletRequest, getPortletURL(), null,
 			LanguageUtil.get(_httpServletRequest, "there-are-no-collections"));
 
 		String orderByCol = ParamUtil.getString(
@@ -106,7 +107,7 @@ public class SelectLayoutCollectionDisplayContext {
 
 		OrderByComparator<AssetListEntry> orderByComparator =
 			AssetListPortletUtil.getAssetListEntryOrderByComparator(
-				orderByCol, orderByType);
+				_getOrderByCol(), _getOrderByType());
 
 		searchContainer.setOrderByCol(orderByCol);
 		searchContainer.setOrderByComparator(orderByComparator);
@@ -116,17 +117,32 @@ public class SelectLayoutCollectionDisplayContext {
 
 		List<String> types = _getInfoItemFormProviderClassNames();
 
-		List<AssetListEntry> assetListEntries =
-			AssetListEntryServiceUtil.getAssetListEntries(
+		List<AssetListEntry> assetListEntries = null;
+
+		int assetListEntriesCount = 0;
+
+		if (_isSearch()) {
+			assetListEntries = AssetListEntryServiceUtil.getAssetListEntries(
+				_themeDisplay.getScopeGroupId(), _getKeywords(),
+				searchContainer.getStart(), searchContainer.getEnd(),
+				orderByComparator);
+
+			assetListEntriesCount =
+				AssetListEntryServiceUtil.getAssetListEntriesCount(
+					_themeDisplay.getScopeGroupId(), _getKeywords());
+		}
+		else {
+			assetListEntries = AssetListEntryServiceUtil.getAssetListEntries(
 				groupIds, types.toArray(new String[0]),
 				searchContainer.getStart(), searchContainer.getEnd(),
 				searchContainer.getOrderByComparator());
 
-		searchContainer.setResults(assetListEntries);
+			assetListEntriesCount =
+				AssetListEntryServiceUtil.getAssetListEntriesCount(
+					groupIds, types.toArray(new String[0]));
+		}
 
-		int assetListEntriesCount =
-			AssetListEntryServiceUtil.getAssetListEntriesCount(
-				groupIds, types.toArray(new String[0]));
+		searchContainer.setResults(assetListEntries);
 
 		searchContainer.setTotal(assetListEntriesCount);
 
@@ -141,6 +157,22 @@ public class SelectLayoutCollectionDisplayContext {
 			_getNavigationItem("collection-providers", "collection-providers"));
 
 		return navigationItems;
+	}
+
+	public PortletURL getPortletURL() {
+		PortletURL currentURLObj = PortletURLUtil.getCurrent(
+			_liferayPortletRequest, _liferayPortletResponse);
+
+		try {
+			return PortletURLUtil.clone(currentURLObj, _liferayPortletResponse);
+		}
+		catch (PortletException portletException) {
+			PortletURL portletURL = _liferayPortletResponse.createRenderURL();
+
+			portletURL.setParameters(currentURLObj.getParameterMap());
+
+			return portletURL;
+		}
 	}
 
 	public String getRedirect() {
@@ -203,6 +235,32 @@ public class SelectLayoutCollectionDisplayContext {
 		return infoItemClassNames;
 	}
 
+	private List<InfoListProvider<?>> _getInfoListProviders() {
+		List<InfoListProvider<?>> infoListProviders =
+			_infoListProviderTracker.getInfoListProviders();
+
+		DefaultInfoListProviderContext defaultInfoListProviderContext =
+			new DefaultInfoListProviderContext(
+				_themeDisplay.getScopeGroup(), _themeDisplay.getUser());
+
+		defaultInfoListProviderContext.setLayout(_themeDisplay.getLayout());
+
+		return ListUtil.filter(
+			infoListProviders,
+			infoListProvider -> infoListProvider.isAvailable(
+				defaultInfoListProviderContext));
+	}
+
+	private String _getKeywords() {
+		if (_keywords != null) {
+			return _keywords;
+		}
+
+		_keywords = ParamUtil.getString(_httpServletRequest, "keywords");
+
+		return _keywords;
+	}
+
 	private NavigationItem _getNavigationItem(String label, String tabName) {
 		NavigationItem navigationItem = new NavigationItem();
 
@@ -213,7 +271,7 @@ public class SelectLayoutCollectionDisplayContext {
 			navigationItem.setActive(true);
 		}
 
-		PortletURL collectionsPortletURL = _getPortletURL();
+		PortletURL collectionsPortletURL = getPortletURL();
 
 		collectionsPortletURL.setParameter("selectedTab", tabName);
 
@@ -224,28 +282,45 @@ public class SelectLayoutCollectionDisplayContext {
 		return navigationItem;
 	}
 
-	private PortletURL _getPortletURL() {
-		PortletURL currentURLObj = PortletURLUtil.getCurrent(
-			_liferayPortletRequest, _liferayPortletResponse);
-
-		try {
-			return PortletURLUtil.clone(currentURLObj, _liferayPortletResponse);
+	private String _getOrderByCol() {
+		if (Validator.isNotNull(_orderByCol)) {
+			return _orderByCol;
 		}
-		catch (PortletException portletException) {
-			PortletURL portletURL = _liferayPortletResponse.createRenderURL();
 
-			portletURL.setParameters(currentURLObj.getParameterMap());
+		_orderByCol = ParamUtil.getString(
+			_httpServletRequest, "orderByCol", "create-date");
 
-			return portletURL;
+		return _orderByCol;
+	}
+
+	private String _getOrderByType() {
+		if (Validator.isNotNull(_orderByType)) {
+			return _orderByType;
 		}
+
+		_orderByType = ParamUtil.getString(
+			_httpServletRequest, "orderByType", "asc");
+
+		return _orderByType;
+	}
+
+	private boolean _isSearch() {
+		if (Validator.isNotNull(_getKeywords())) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private final GroupDisplayContextHelper _groupDisplayContextHelper;
 	private final HttpServletRequest _httpServletRequest;
 	private final InfoItemServiceTracker _infoItemServiceTracker;
 	private final InfoListProviderTracker _infoListProviderTracker;
+	private String _keywords;
 	private final LiferayPortletRequest _liferayPortletRequest;
 	private final LiferayPortletResponse _liferayPortletResponse;
+	private String _orderByCol;
+	private String _orderByType;
 	private String _redirect;
 	private String _selectedTab;
 	private final ThemeDisplay _themeDisplay;

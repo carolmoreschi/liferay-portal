@@ -2,7 +2,7 @@
 definition {
 
 	property portal.release = "true";
-	property portal.suite.search.engine = "elasticsearch6,elasticsearch7";
+	property portal.suite.search.engine = "elasticsearch7";
 	property portal.upstream = "true";
 	property testray.main.component.name = "Web Search";
 
@@ -50,7 +50,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs");
 
 		Blogs.addEntry(
@@ -314,9 +313,7 @@ definition {
 
 		Portlet.addPG(portletName = "Suggestions");
 
-		Portlet.gotoPortletOptions(
-			portletName = "Suggestions",
-			portletOption = "Configuration");
+		SearchPortlets.gotoConfigureSuggestionsOptions();
 
 		SelectFrame(locator1 = "IFrame#CONFIGURATION");
 
@@ -326,7 +323,7 @@ definition {
 
 		IFrame.closeFrame();
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
 			portlet = "Search");
@@ -339,7 +336,9 @@ definition {
 
 		ContentPages.clickPencil();
 
-		PageEditor.addWidget(portletName = "Language Selector");
+		PageEditor.addWidget(
+			portletName = "Language Selector",
+			targetFragmentName = "Container");
 
 		PageEditor.clickPublish();
 
@@ -370,7 +369,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(pageName = "Search Page");
@@ -410,6 +408,8 @@ definition {
 		while (IsElementNotPresent(locator1 = "SearchResults#ASSET_ENTRY_TABLE_TITLE", key_searchAssetTitle = "WC Title 1")) {
 			Pause(locator1 = "5000");
 		}
+
+		WaitForLiferayEvent.initializeLiferayEventLog();
 
 		Portlet.gotoPortletOptions(
 			portletName = "Search Results",
@@ -457,7 +457,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs");
 
 		Blogs.addEntry(
@@ -466,7 +465,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(pageName = "Search Page");
@@ -540,7 +538,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs");
 
 		Blogs.addEntry(
@@ -608,13 +605,10 @@ definition {
 
 	@priority = "4"
 	test SearchBlogsEntryCategory {
-		property test.name.skip.portal.instance = "Search#SearchBlogsEntryCategory";
-
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
 			category = "Categorization",
-			panel = "Site Administration",
 			portlet = "Categories");
 
 		Vocabulary.addCP(vocabularyName = "Vocabulary Name");
@@ -627,7 +621,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs");
 
 		Blogs.addEntryWithCategory(
@@ -684,7 +677,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Categorization",
-			panel = "Site Administration",
 			portlet = "Categories");
 
 		Vocabulary.addCP(vocabularyName = "Vocabulary Name");
@@ -697,7 +689,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs");
 
 		Blogs.addEntryWithCategory(
@@ -748,7 +739,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs");
 
 		Blogs.addEntry(
@@ -851,13 +841,10 @@ definition {
 
 	@priority = "4"
 	test SearchBlogsEntryTag {
-		property test.name.skip.portal.instance = "Search#SearchBlogsEntryTag";
-
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs");
 
 		Blogs.addEntryWithTag(
@@ -913,7 +900,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs");
 
 		Blogs.addEntryWithTag(
@@ -1030,7 +1016,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Web Content");
 
 		WebContent.moveToRecycleBinCP(
@@ -1049,7 +1034,7 @@ definition {
 	@description = "This test will set up a search page and search on a newly added site. It will also use different scopes to assert search results for assets from multiple sites"
 	@priority = "4"
 	test SearchDifferentScopesViaNewSite {
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Sites",
 			panel = "Control Panel",
 			portlet = "Sites");
@@ -1061,7 +1046,7 @@ definition {
 			groupName = "Guest",
 			title = "Apple");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Sites",
 			panel = "Control Panel",
 			portlet = "Sites");
@@ -1070,7 +1055,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Documents and Media");
 
 		DMDocument.addCP(
@@ -1078,7 +1062,7 @@ definition {
 			dmDocumentFile = "Document_1.doc",
 			dmDocumentTitle = "Apple");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Sites",
 			panel = "Control Panel",
 			portlet = "Sites");
@@ -1087,7 +1071,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs");
 
 		Blogs.addEntry(
@@ -1096,7 +1079,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(pageName = "Site 3 Home Page");
@@ -1166,14 +1148,13 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Documents and Media");
 
 		DMDocument.addCP(
 			dmDocumentFile = "Document_1.doc",
 			dmDocumentTitle = "Potato Document");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Sites",
 			panel = "Control Panel",
 			portlet = "Sites");
@@ -1184,7 +1165,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs");
 
 		Blogs.addEntry(
@@ -1239,7 +1219,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Documents and Media");
 
 		DMDocument.addCP(
@@ -1323,7 +1302,7 @@ definition {
 	test SearchGlobalTemplateSmoke {
 		property portal.acceptance = "true";
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Sites",
 			panel = "Control Panel",
 			portlet = "Sites");
@@ -1332,7 +1311,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs");
 
 		Blogs.addEntry(
@@ -1341,7 +1319,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(pageName = "Home");
@@ -1385,11 +1362,9 @@ definition {
 
 	@priority = "4"
 	test SearchUser {
-		property test.name.skip.portal.instance = "Search#SearchUser";
-
 		var siteName = TestCase.getSiteName(siteName = "${siteName}");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -1400,7 +1375,7 @@ definition {
 			userLastName = "userln",
 			userScreenName = "usersn");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -1466,7 +1441,7 @@ definition {
 	test SearchUserWildcard {
 		var siteName = TestCase.getSiteName(siteName = "${siteName}");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -1477,7 +1452,7 @@ definition {
 			userLastName = "userln",
 			userScreenName = "usersn");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -1512,7 +1487,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Web Content");
 
 		WebContent.viewVersion(
@@ -1551,7 +1525,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Web Content");
 
 		WebContentNavigator.gotoEditCP(webContentTitle = "WebContent Title 1");
@@ -1591,8 +1564,6 @@ definition {
 
 	@priority = "4"
 	test SearchWebContent {
-		property test.name.skip.portal.instance = "Search#SearchWebContent";
-
 		JSONWebcontent.addWebContent(
 			content = "WC WebContent Content",
 			groupName = "Guest",
@@ -1600,7 +1571,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Web Content");
 
 		WebContent.viewTitle(webContentTitle = "WC WebContent Title");
@@ -1670,7 +1640,6 @@ definition {
 	test SearchWikiPage {
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(pageName = "Wiki Test Page");
@@ -1879,11 +1848,7 @@ definition {
 			key_day = "1",
 			locator1 = "YUICalendarWidget#DATEPICKER_SPECIFIC_DAY");
 
-		// Workaround for LPS-114556
-
-		//AssertElementPresent(locator1 = "Message#ERROR_SELECT_VALID_DATE_RANGE");
-
-		AssertElementPresent(locator1 = "//div[@role='alert' and contains(.,'search-custom-range-invalid-date-range')]");
+		AssertElementPresent(locator1 = "Message#ERROR_SELECT_VALID_DATE_RANGE");
 
 		AssertVisible(locator1 = "Button#SEARCH_DISABLED");
 
@@ -1958,7 +1923,6 @@ definition {
 	test SearchXSSAsset {
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(pageName = "Message Boards Page");
@@ -2166,7 +2130,7 @@ definition {
 
 		// Workaround for LPS-89026
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
 			portlet = "Search");
@@ -2177,7 +2141,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(pageName = "Search Page");
@@ -2262,7 +2225,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs");
 
 		Blogs.addEntryWithTag(
@@ -2282,7 +2244,7 @@ definition {
 			roleTitle = "Administrator",
 			userEmailAddress = "userea@liferay.com");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -2299,7 +2261,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Documents and Media");
 
 		DMDocument.addCP(
@@ -2317,14 +2278,21 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(pageName = "${searchPage}");
 
 		Navigator.gotoPage(pageName = "${searchPage}");
 
-		SearchPortlets.addWidgets(searchPortletList = "Search Options,Category Facet,Folder Facet,Site Facet,Tag Facet,Type Facet,User Facet,Search Results,Search Bar");
+		SearchPortlets.addWidgets(searchPortletList = "Category Facet,Folder Facet,Site Facet,Tag Facet,Type Facet,User Facet,Search Results,Search Bar");
+
+		JSONLayout.addWidgetToPublicLayout(
+			column = "2",
+			groupName = "Guest",
+			layoutName = "Search Page",
+			widgetName = "Search Options");
+
+		Refresh();
 
 		SearchPortlets.configureWidgetScope(searchScope = "Everything");
 
@@ -2605,7 +2573,7 @@ definition {
 		property portal.acceptance = "true";
 		property test.name.skip.portal.instance = "Search#ViewSearchResultDetails";
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
 			portlet = "Search");
@@ -2668,7 +2636,7 @@ definition {
 
 	@priority = "4"
 	test ViewStagedAndLiveContentInSearchResults {
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Sites",
 			panel = "Control Panel",
 			portlet = "Sites");
@@ -2677,7 +2645,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(
@@ -2687,14 +2654,12 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Publishing",
-			panel = "Site Administration",
 			portlet = "Staging");
 
 		Staging.activateStagingCP(siteName = "Site Name");
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Web Content");
 
 		WebContent.addArticleCP(
@@ -2746,7 +2711,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Web Content");
 
 		WebContent.deleteStagedCP(

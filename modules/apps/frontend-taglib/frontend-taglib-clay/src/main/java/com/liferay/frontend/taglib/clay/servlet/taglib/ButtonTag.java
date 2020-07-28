@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.taglib.util.TagResourceBundleUtil;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.jsp.JspException;
@@ -255,6 +256,29 @@ public class ButtonTag extends BaseContainerTag {
 	}
 
 	@Override
+	protected Map<String, Object> prepareProps(Map<String, Object> props) {
+		props.put("block", _block);
+		props.put("borderless", _borderless);
+		props.put("displayType", _displayType);
+		props.put("icon", _icon);
+
+		if (Validator.isNotNull(_label)) {
+			props.put(
+				"label",
+				LanguageUtil.get(
+					TagResourceBundleUtil.getResourceBundle(pageContext),
+					_label));
+		}
+
+		props.put("monospaced", _monospaced);
+		props.put("outline", _outline);
+		props.put("small", _small);
+		props.put("type", _type);
+
+		return super.prepareProps(props);
+	}
+
+	@Override
 	protected String processCssClasses(Set<String> cssClasses) {
 		cssClasses.add("btn");
 
@@ -266,7 +290,9 @@ public class ButtonTag extends BaseContainerTag {
 			cssClasses.add("btn-block");
 		}
 
-		if (Validator.isNotNull(_icon) || _monospaced) {
+		if ((Validator.isNotNull(_icon) && Validator.isNull(_label)) ||
+			_monospaced) {
+
 			cssClasses.add("btn-monospaced");
 		}
 
@@ -298,7 +324,13 @@ public class ButtonTag extends BaseContainerTag {
 			JspWriter jspWriter = pageContext.getOut();
 
 			if (Validator.isNotNull(_icon)) {
-				jspWriter.write("<svg class=\"lexicon-icon lexicon-icon-");
+				jspWriter.write("<span class=\"inline-item");
+
+				if (Validator.isNotNull(_label)) {
+					jspWriter.write(" inline-item-before");
+				}
+
+				jspWriter.write("\"><svg class=\"lexicon-icon lexicon-icon-");
 				jspWriter.write(_icon);
 				jspWriter.write("\" role=\"presentation\" viewBox=\"0 0 512 ");
 				jspWriter.write("512\"><use xlink:href=\"");
@@ -314,7 +346,7 @@ public class ButtonTag extends BaseContainerTag {
 
 				jspWriter.write("#");
 				jspWriter.write(_icon);
-				jspWriter.write("\" /></svg>");
+				jspWriter.write("\" /></svg></span>");
 			}
 
 			if (Validator.isNotNull(_label)) {

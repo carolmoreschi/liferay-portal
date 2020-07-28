@@ -72,7 +72,8 @@ definition {
 			roleTitle = "Roles Siterole Name",
 			roleType = "site");
 
-		JSONRole.assignRoleToUser(
+		JSONRole.assignSiteRoleToUser(
+			groupName = "Test Site Name",
 			roleTitle = "Roles Siterole Name",
 			userEmailAddress = "userea@liferay.com");
 
@@ -121,6 +122,8 @@ definition {
 	@description = "This is a test for LPS-96795. Content author having permissions to create and update web content could see edit icon in the content page displaying the web contents and could edit web content in edit mode."
 	@priority = "5"
 	test EditContentWithCreateAndUpdateWebContentPermissions {
+		property portal.acceptance = "true";
+
 		JSONUser.addUser(
 			userEmailAddress = "userea@liferay.com",
 			userFirstName = "Userfn",
@@ -183,7 +186,8 @@ definition {
 			roleTitle = "Roles Siterole Name",
 			roleType = "site");
 
-		JSONRole.assignRoleToUser(
+		JSONRole.assignSiteRoleToUser(
+			groupName = "Test Site Name",
 			roleTitle = "Roles Siterole Name",
 			userEmailAddress = "userea@liferay.com");
 
@@ -285,6 +289,8 @@ definition {
 	@description = "This is a test for LPS-96795. Content author having permissions to update web content and Update Page Content could see edit icon in the content page displaying the web contents and could edit web content in editmode."
 	@priority = "5"
 	test EditContentWithUpdateWebContentAndUpdatePageContentPermissions {
+		property portal.acceptance = "true";
+
 		JSONUser.addUser(
 			userEmailAddress = "userea@liferay.com",
 			userFirstName = "Userfn",
@@ -331,7 +337,8 @@ definition {
 			roleTitle = "Roles Siterole Name",
 			roleType = "site");
 
-		JSONRole.assignRoleToUser(
+		JSONRole.assignSiteRoleToUser(
+			groupName = "Test Site Name",
 			roleTitle = "Roles Siterole Name",
 			userEmailAddress = "userea@liferay.com");
 
@@ -420,6 +427,8 @@ definition {
 	@description = "This is a test for LPS-103454. Content author having permission to update web content could see edit icon in the content page displaying the web contents and could edit web content in editmode, but could not edit editable field "
 	@priority = "5"
 	test EditContentWithWebContentArticleUpdatePermission {
+		property portal.acceptance = "true";
+
 		JSONUser.addUser(
 			userEmailAddress = "userea@liferay.com",
 			userFirstName = "Userfn",
@@ -446,7 +455,8 @@ definition {
 			roleTitle = "Roles Siterole Name",
 			roleType = "site");
 
-		JSONRole.assignRoleToUser(
+		JSONRole.assignSiteRoleToUser(
+			groupName = "Test Site Name",
 			roleTitle = "Roles Siterole Name",
 			userEmailAddress = "userea@liferay.com");
 
@@ -578,7 +588,8 @@ definition {
 				roleType = "site");
 		}
 
-		JSONRole.assignRoleToUser(
+		JSONRole.assignSiteRoleToUser(
+			groupName = "Test Site Name",
 			roleTitle = "Roles Siterole Name",
 			userEmailAddress = "userea@liferay.com");
 
@@ -611,7 +622,6 @@ definition {
 		AssertVisible(
 			key_content = "New editable fragment text",
 			key_fragmentClass = "rich-text",
-			key_position = "1",
 			locator1 = "Fragment#FRAGMENT");
 	}
 
@@ -686,7 +696,8 @@ definition {
 				roleType = "site");
 		}
 
-		JSONRole.assignRoleToUser(
+		JSONRole.assignSiteRoleToUser(
+			groupName = "Test Site Name",
 			roleTitle = "Roles Siterole Name",
 			userEmailAddress = "userea@liferay.com");
 
@@ -721,7 +732,6 @@ definition {
 		AssertVisible(
 			key_content = "Webcontent Title",
 			key_fragmentClass = "rich-text",
-			key_position = "1",
 			locator1 = "Fragment#FRAGMENT");
 	}
 
@@ -754,7 +764,8 @@ definition {
 			roleTitle = "Roles Siterole Name",
 			roleType = "site");
 
-		JSONRole.assignRoleToUser(
+		JSONRole.assignSiteRoleToUser(
+			groupName = "Test Site Name",
 			roleTitle = "Roles Siterole Name",
 			userEmailAddress = "userea@liferay.com");
 

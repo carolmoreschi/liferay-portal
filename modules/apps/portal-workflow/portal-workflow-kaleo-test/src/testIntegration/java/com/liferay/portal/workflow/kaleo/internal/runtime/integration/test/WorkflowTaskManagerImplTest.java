@@ -28,10 +28,10 @@ import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
 import com.liferay.document.library.kernel.service.DLTrashService;
+import com.liferay.dynamic.data.lists.constants.DDLRecordConstants;
+import com.liferay.dynamic.data.lists.constants.DDLRecordSetConstants;
 import com.liferay.dynamic.data.lists.model.DDLRecord;
-import com.liferay.dynamic.data.lists.model.DDLRecordConstants;
 import com.liferay.dynamic.data.lists.model.DDLRecordSet;
-import com.liferay.dynamic.data.lists.model.DDLRecordSetConstants;
 import com.liferay.dynamic.data.lists.model.DDLRecordVersion;
 import com.liferay.dynamic.data.lists.service.DDLRecordLocalService;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalService;
@@ -47,10 +47,10 @@ import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestHelper;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMTemplateTestUtil;
 import com.liferay.dynamic.data.mapping.util.DDMBeanTranslatorUtil;
+import com.liferay.journal.constants.JournalArticleConstants;
+import com.liferay.journal.constants.JournalFolderConstants;
 import com.liferay.journal.model.JournalArticle;
-import com.liferay.journal.model.JournalArticleConstants;
 import com.liferay.journal.model.JournalFolder;
-import com.liferay.journal.model.JournalFolderConstants;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.journal.service.JournalFolderLocalService;
 import com.liferay.petra.string.StringPool;
@@ -83,6 +83,7 @@ import com.liferay.portal.kernel.service.UserNotificationEventLocalService;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
 import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
 import com.liferay.portal.kernel.settings.LocalizedValuesMap;
+import com.liferay.portal.kernel.test.constants.TestDataConstants;
 import com.liferay.portal.kernel.test.randomizerbumpers.NumericStringRandomizerBumper;
 import com.liferay.portal.kernel.test.randomizerbumpers.UniqueStringRandomizerBumper;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -91,7 +92,6 @@ import com.liferay.portal.kernel.test.util.CompanyTestUtil;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
-import com.liferay.portal.kernel.test.util.TestDataConstants;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ContentTypes;
@@ -348,14 +348,12 @@ public class WorkflowTaskManagerImplTest {
 
 		Folder folder = _addFolder();
 
-		Map<String, String> dlFileEntryTypeMap = HashMapBuilder.put(
-			String.valueOf(DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL),
-			"Single Approver@1"
-		).build();
-
 		folder = _updateFolder(
 			folder, DLFolderConstants.RESTRICTION_TYPE_WORKFLOW,
-			dlFileEntryTypeMap);
+			HashMapBuilder.put(
+				String.valueOf(DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL),
+				"Single Approver@1"
+			).build());
 
 		FileVersion fileVersion1 = _addFileVersion(
 			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID);
@@ -847,14 +845,12 @@ public class WorkflowTaskManagerImplTest {
 
 		Folder folder = _addFolder();
 
-		Map<String, String> dlFileEntryTypeMap = HashMapBuilder.put(
-			String.valueOf(DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL),
-			"Single Approver@1"
-		).build();
-
 		folder = _updateFolder(
 			folder, DLFolderConstants.RESTRICTION_TYPE_WORKFLOW,
-			dlFileEntryTypeMap);
+			HashMapBuilder.put(
+				String.valueOf(DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL),
+				"Single Approver@1"
+			).build());
 
 		FileVersion fileVersion = _addFileVersion(folder.getFolderId());
 
@@ -1262,14 +1258,13 @@ public class WorkflowTaskManagerImplTest {
 		DDMStructure ddmStructure = ddmStructureTestHelper.addStructure(
 			ddmForm, StorageType.JSON.toString());
 
-		Map<Locale, String> nameMap = HashMapBuilder.put(
-			LocaleUtil.US, RandomTestUtil.randomString()
-		).build();
-
 		return _ddlRecordSetLocalService.addRecordSet(
 			_adminUser.getUserId(), _group.getGroupId(),
-			ddmStructure.getStructureId(), null, nameMap, null,
-			DDLRecordSetConstants.MIN_DISPLAY_ROWS_DEFAULT,
+			ddmStructure.getStructureId(), null,
+			HashMapBuilder.put(
+				LocaleUtil.US, RandomTestUtil.randomString()
+			).build(),
+			null, DDLRecordSetConstants.MIN_DISPLAY_ROWS_DEFAULT,
 			DDLRecordSetConstants.SCOPE_DYNAMIC_DATA_LISTS, _serviceContext);
 	}
 

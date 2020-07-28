@@ -19,16 +19,18 @@ import React from 'react';
 import MappingInput from '../../../../src/main/resources/META-INF/resources/js/seo/display_page_templates/components/MappingInput';
 
 const baseProps = {
-	fields: [
-		{key: 'field-1', label: 'Field 1'},
-		{key: 'field-2', label: 'Field 2'},
+	fieldType: 'text',
+	helpMessage: 'Map a text field, it will be used as Title.',
+	initialFields: [
+		{key: 'field-1', label: 'Field 1', type: 'text'},
+		{key: 'field-2', label: 'Field 2', type: 'text'},
+		{key: 'field-3', label: 'Field 3', type: 'image'},
+		{key: 'field-4', label: 'Field 4', type: 'text'},
+		{key: 'field-5', label: 'Field 5', type: 'text'},
 	],
 	label: 'Label test mapping field',
 	name: 'testMappingInput',
-	selectedField: {
-		key: 'field-2',
-		label: 'Field 2',
-	},
+	selectedFieldKey: 'field-2',
 	selectedSource: {
 		classTypeLabel: 'Label source type',
 	},
@@ -50,7 +52,7 @@ describe('MappingInput', () => {
 		beforeEach(() => {
 			result = renderComponent();
 			inputFeedback = result.getAllByRole('textbox')[0];
-			inputValue = result.getByDisplayValue(baseProps.selectedField.key);
+			inputValue = result.getByDisplayValue(baseProps.selectedFieldKey);
 			mappingButton = result.getByTitle('map');
 			mappingPanel = result.baseElement.querySelector(
 				'.dpt-mapping-panel'
@@ -76,6 +78,10 @@ describe('MappingInput', () => {
 			expect(mappingPanel).not.toBeInTheDocument();
 		});
 
+		it('has a help message', () => {
+			expect(result.getByText(baseProps.helpMessage)).toBeInTheDocument();
+		});
+
 		describe('when the user clicks the mapping button', () => {
 			let fieldSelect;
 
@@ -93,18 +99,20 @@ describe('MappingInput', () => {
 			});
 
 			it('shows the selected field', () => {
-				expect(fieldSelect.value).toBe(baseProps.selectedField.key);
+				expect(fieldSelect.value).toBe(baseProps.selectedFieldKey);
 			});
 
 			describe('and the user selects another field', () => {
 				beforeEach(() => {
 					fireEvent.change(fieldSelect, {
-						target: {value: baseProps.fields[0].key},
+						target: {value: baseProps.initialFields[0].key},
 					});
 				});
 
 				it('sets the new field key in the hidden input', () => {
-					expect(inputValue.value).toBe(baseProps.fields[0].key);
+					expect(inputValue.value).toBe(
+						baseProps.initialFields[0].key
+					);
 				});
 
 				it('sets the new field name in the user feedback input', () => {
@@ -133,6 +141,86 @@ describe('MappingInput', () => {
 					expect(mappingPanel).not.toBeInTheDocument();
 				});
 			});
+
+			describe('and the user unmap the field', () => {
+				beforeEach(() => {
+					fireEvent.change(fieldSelect, {
+						target: {value: ''},
+					});
+				});
+
+				it('sets the new field key in the hidden input', () => {
+					expect(inputValue.value).toBe('unmapped');
+				});
+
+				it('sets the new field name in the user feedback input', () => {
+					expect(inputFeedback.value).toBe('-- unmapped --');
+				});
+			});
+		});
+	});
+
+	describe('when rendered without selected key', () => {
+		let inputValue;
+		let result;
+		let inputFeedback;
+
+		beforeEach(() => {
+			result = renderComponent({
+				...baseProps,
+				selectedFieldKey: undefined,
+			});
+			inputFeedback = result.getAllByRole('textbox')[0];
+			inputValue = result.getAllByRole('textbox')[1];
+		});
+
+		it('has a hidden input with unmapped key', () => {
+			expect(inputValue.type).toBe('hidden');
+			expect(inputValue.name).toBe('testMappingInput');
+			expect(inputValue.value).toBe('unmapped');
+		});
+
+		it('has a read only input for user feedback with the selected field name', () => {
+			expect(inputFeedback).toBeInTheDocument();
+			expect(inputFeedback.readOnly).toBeTruthy();
+			expect(inputFeedback.value).toBe('-- unmapped --');
+		});
+	});
+
+	describe('when rendered filtred with fieldType image', () => {
+		let result;
+		let fieldSelect;
+		let options;
+
+		beforeEach(() => {
+			result = renderComponent({
+				...baseProps,
+				fieldType: 'image',
+				selectedFieldKey: undefined,
+			});
+
+			fireEvent.click(result.getByTitle('map'));
+
+			fieldSelect = result.getByLabelText('field');
+			options = fieldSelect.querySelectorAll('option');
+		});
+
+		it('only has two filtered options', () => {
+			expect(options.length).toBe(2);
+		});
+
+		it('has the first option unmapped', () => {
+			expect(options[0].value).toBe('unmapped');
+			expect(fieldSelect.value).toBe('unmapped');
+		});
+
+		it('has the selected field unmapped', () => {
+			expect(options[0].value).toBe('unmapped');
+			expect(fieldSelect.value).toBe('unmapped');
+		});
+
+		it('has the image field in the second position', () => {
+			expect(options[1].value).toBe(baseProps.initialFields[2].key);
 		});
 	});
 });

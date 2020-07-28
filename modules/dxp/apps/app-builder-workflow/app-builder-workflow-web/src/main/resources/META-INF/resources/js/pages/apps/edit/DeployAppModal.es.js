@@ -10,105 +10,58 @@
  */
 
 import ClayButton from '@clayui/button';
-import ClayIcon from '@clayui/icon';
-import ClayLink from '@clayui/link';
 import ClayModal, {useModal} from '@clayui/modal';
-import {AppContext} from 'app-builder-web/js/AppContext.es';
 import {DeploySettings} from 'app-builder-web/js/pages/apps/edit/DeployApp.es';
 import EditAppContext from 'app-builder-web/js/pages/apps/edit/EditAppContext.es';
-import {addItem, updateItem} from 'app-builder-web/js/utils/client.es';
-import {errorToast, successToast} from 'app-builder-web/js/utils/toast.es';
 import React, {useContext, useState} from 'react';
 
-export default ({onCancel}) => {
+export default function DeployAppModal({onSave}) {
 	const {
-		appId,
-		config: {dataObject},
-		isModalVisible,
-		setModalVisible,
+		isDeployModalVisible,
+		setDeployModalVisible,
 		state: {app},
 	} = useContext(EditAppContext);
-	const {getStandaloneURL} = useContext(AppContext);
+
 	const [isDeploying, setDeploying] = useState(false);
 
 	const {observer, onClose} = useModal({
-		onClose: () => setModalVisible(false),
+		onClose: () => {
+			setDeploying(false);
+			setDeployModalVisible(false);
+		},
 	});
 
-	if (!isModalVisible) {
+	if (!isDeployModalVisible) {
 		return <></>;
 	}
 
-	const getStandaloneLink = ({appDeployments, id}) => {
-		const isStandalone = appDeployments.some(
-			({type}) => type === 'standalone'
-		);
-
-		if (!isStandalone) {
-			return <></>;
-		}
-
-		return (
-			<ClayLink href={getStandaloneURL(id)} target="_blank">
-				{`${Liferay.Language.get('open-standalone-app')}. `}
-				<ClayIcon symbol="shortcut" />
-			</ClayLink>
-		);
-	};
-
-	const onSuccess = (app) => {
-		successToast(
-			<>
-				{Liferay.Language.get('the-app-was-deployed-successfully')}{' '}
-				{getStandaloneLink(app)}
-			</>
-		);
-
-		setDeploying(false);
-		setModalVisible(false);
-	};
-
-	const onError = ({message}) => {
-		errorToast(message);
-		setDeploying(false);
-		setModalVisible(false);
-	};
-
-	const onClickDeploy = () => {
+	const onDone = () => {
 		setDeploying(true);
 
-		if (appId) {
-			updateItem(`/o/app-builder/v1.0/apps/${appId}`, app)
-				.then(onSuccess)
-				.then(onCancel)
-				.catch(onError);
+		if (!app.active) {
+			onSave(onClose, true);
 		}
 		else {
-			addItem(
-				`/o/app-builder/v1.0/data-definitions/${dataObject.id}/apps`,
-				app
-			)
-				.then(onSuccess)
-				.then(onCancel)
-				.catch(onError);
+			onClose();
 		}
 	};
 
 	return (
-		<ClayModal observer={observer} size="md">
+		<ClayModal center observer={observer} size="md">
 			<ClayModal.Header>
 				{Liferay.Language.get('deploy')}
 			</ClayModal.Header>
 
-			<div className="modal-body px-0">
+			<ClayModal.Body>
 				<DeploySettings />
-			</div>
+			</ClayModal.Body>
 
 			<ClayModal.Footer
 				last={
 					<>
 						<ClayButton
 							className="mr-3"
+							disabled={isDeploying}
 							displayType="secondary"
 							onClick={onClose}
 							small
@@ -120,7 +73,7 @@ export default ({onCancel}) => {
 							disabled={
 								isDeploying || app.appDeployments.length === 0
 							}
-							onClick={onClickDeploy}
+							onClick={onDone}
 							small
 						>
 							{Liferay.Language.get('done')}
@@ -130,4 +83,4 @@ export default ({onCancel}) => {
 			/>
 		</ClayModal>
 	);
-};
+}

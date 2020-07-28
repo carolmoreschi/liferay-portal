@@ -12,6 +12,7 @@
  * details.
  */
 
+import ClayLayout from '@clayui/layout';
 import classnames from 'classnames';
 import React, {useContext} from 'react';
 
@@ -41,6 +42,7 @@ export const Container = ({
 
 export const Column = ({
 	activePage,
+	allowNestedFields,
 	children,
 	column,
 	editable,
@@ -48,11 +50,13 @@ export const Column = ({
 	pageIndex,
 	rowIndex,
 }) => {
+	const parentField = useContext(ParentFieldContext);
 	const {drop, overTarget} = useDrop({
 		columnIndex: index,
 		fieldName: column.fields[0]?.fieldName,
 		origin: DND_ORIGIN_TYPE.FIELD,
 		pageIndex,
+		parentField,
 		rowIndex,
 	});
 
@@ -77,39 +81,53 @@ export const Column = ({
 		'data-ddm-field-row': rowIndex,
 	};
 
+	const firstField = column.fields[0];
+
 	return (
-		<div {...addr} className={`col-md-${column.size} col-ddm`} key={index}>
+		<ClayLayout.Col
+			{...addr}
+			className={`col-ddm`}
+			key={index}
+			md={column.size}
+		>
 			{editable && column.fields.length > 0 ? (
 				<div
 					className={classnames(
 						'ddm-field-container ddm-target h-100',
 						{
 							'active-drop-child':
-								column.fields[0].type === 'fieldset' &&
-								overTarget,
-							selected: column.fields[0].selected,
+								firstField.type === 'fieldset' && overTarget,
+							'ddm-fieldset':
+								firstField.type === 'fieldset' &&
+								firstField.ddmStructureId,
+							selected: firstField.selected,
 							'target-over targetOver': overTarget,
 						}
 					)}
-					data-field-name={column.fields[0].fieldName}
+					data-field-name={firstField.fieldName}
 				>
 					<div
 						className={classnames(
 							'ddm-resize-handle ddm-resize-handle-left',
 							{
-								hide: !column.fields[0].selected,
+								hide: !firstField.selected,
 							}
 						)}
 						{...addr}
 					/>
-					<div className="ddm-drag" ref={drop}>
+
+					<div
+						className="ddm-drag"
+						ref={allowNestedFields ? drop : undefined}
+					>
 						{fields}
 					</div>
+
 					<div
 						className={classnames(
 							'ddm-resize-handle ddm-resize-handle-right',
 							{
-								hide: !column.fields[0].selected,
+								hide: !firstField.selected,
 							}
 						)}
 						{...addr}
@@ -118,7 +136,7 @@ export const Column = ({
 			) : (
 				fields
 			)}
-		</div>
+		</ClayLayout.Col>
 	);
 };
 
@@ -145,9 +163,9 @@ export const Page = ({
 			{activePage === pageIndex && Header}
 
 			{empty && editable && activePage === pageIndex ? (
-				<div className="row">
-					<div
-						className="col col-ddm col-empty col-md-12 last-col lfr-initial-col mb-4 mt-5"
+				<ClayLayout.Row>
+					<ClayLayout.Col
+						className="col-ddm col-empty last-col lfr-initial-col mb-4 mt-5"
 						data-ddm-field-column="0"
 						data-ddm-field-page={pageIndex}
 						data-ddm-field-row="0"
@@ -165,8 +183,8 @@ export const Page = ({
 								)}
 							</p>
 						</div>
-					</div>
-				</div>
+					</ClayLayout.Col>
+				</ClayLayout.Row>
 			) : (
 				children
 			)}
@@ -174,13 +192,14 @@ export const Page = ({
 	);
 };
 
+/* eslint-disable react/jsx-fragments */
 export const PageHeader = ({description, title}) => (
-	<>
+	<React.Fragment>
 		{title && <h2 className="lfr-ddm-form-page-title">{title}</h2>}
 		{description && (
 			<h3 className="lfr-ddm-form-page-description">{description}</h3>
 		)}
-	</>
+	</React.Fragment>
 );
 
 export const Placeholder = ({
@@ -200,11 +219,12 @@ export const Placeholder = ({
 	});
 
 	const Content = (
-		<div
-			className={`col col-ddm col-empty col-md-${size}`}
+		<ClayLayout.Col
+			className={`col col-ddm col-empty`}
 			data-ddm-field-column={columnIndex}
 			data-ddm-field-page={pageIndex}
 			data-ddm-field-row={rowIndex}
+			md={size}
 		>
 			<div
 				className={classnames('ddm-target', {
@@ -212,7 +232,7 @@ export const Placeholder = ({
 				})}
 				ref={drop}
 			/>
-		</div>
+		</ClayLayout.Col>
 	);
 
 	if (isRow) {

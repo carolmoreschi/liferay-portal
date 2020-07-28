@@ -392,11 +392,18 @@ public class LayoutStructure {
 			List<String> childrenItemIds =
 				parentLayoutStructureItem.getChildrenItemIds();
 
-			childrenItemIds.remove(itemId);
-		}
+			int position = childrenItemIds.indexOf(itemId);
 
-		_deletedLayoutStructureItems.put(
-			itemId, new DeletedLayoutStructureItem(itemId, portletIds));
+			childrenItemIds.remove(itemId);
+
+			_deletedLayoutStructureItems.put(
+				itemId,
+				new DeletedLayoutStructureItem(itemId, portletIds, position));
+		}
+		else {
+			_deletedLayoutStructureItems.put(
+				itemId, new DeletedLayoutStructureItem(itemId, portletIds));
+		}
 	}
 
 	public LayoutStructureItem moveLayoutStructureItem(
@@ -473,6 +480,27 @@ public class LayoutStructure {
 		JSONObject jsonObject = toJSONObject();
 
 		return jsonObject.toJSONString();
+	}
+
+	public void unmarkLayoutStructureItemForDeletion(String itemId) {
+		DeletedLayoutStructureItem deletedLayoutStructureItem =
+			_deletedLayoutStructureItems.get(itemId);
+
+		if (deletedLayoutStructureItem == null) {
+			return;
+		}
+
+		LayoutStructureItem layoutStructureItem = _layoutStructureItems.get(
+			itemId);
+
+		LayoutStructureItem parentLayoutStructureItemId =
+			_layoutStructureItems.get(layoutStructureItem.getParentItemId());
+
+		parentLayoutStructureItemId.addChildrenItem(
+			deletedLayoutStructureItem.getPosition(),
+			deletedLayoutStructureItem.getItemId());
+
+		_deletedLayoutStructureItems.remove(itemId);
 	}
 
 	public LayoutStructureItem updateItemConfig(
@@ -695,7 +723,7 @@ public class LayoutStructure {
 			}
 
 			Map<String, JSONObject> columnViewportConfigurations =
-				columnLayoutStructureItem.getViewportSizeConfigurations();
+				columnLayoutStructureItem.getViewportConfigurations();
 
 			if (!columnViewportConfigurations.containsKey(viewportSizeId)) {
 				continue;
@@ -741,18 +769,17 @@ public class LayoutStructure {
 		RowLayoutStructureItem rowLayoutStructureItem, String viewportSizeId,
 		int numberOfColumns) {
 
-		Map<String, JSONObject> viewportSizeConfigurations =
-			rowLayoutStructureItem.getViewportSizeConfigurations();
+		Map<String, JSONObject> rowViewportConfigurations =
+			rowLayoutStructureItem.getViewportConfigurations();
 
-		JSONObject viewportSizeConfigurationJSONObject =
-			viewportSizeConfigurations.getOrDefault(
+		JSONObject viewportConfigurationJSONObject =
+			rowViewportConfigurations.getOrDefault(
 				viewportSizeId, JSONFactoryUtil.createJSONObject());
 
-		viewportSizeConfigurationJSONObject.put(
-			"numberOfColumns", numberOfColumns);
+		viewportConfigurationJSONObject.put("numberOfColumns", numberOfColumns);
 
-		if (viewportSizeConfigurationJSONObject.has("modulesPerRow")) {
-			viewportSizeConfigurationJSONObject.put(
+		if (viewportConfigurationJSONObject.has("modulesPerRow")) {
+			viewportConfigurationJSONObject.put(
 				"modulesPerRow", numberOfColumns);
 		}
 

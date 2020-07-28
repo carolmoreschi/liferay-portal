@@ -139,6 +139,8 @@ public interface BaseProjectTemplatesTestCase {
 
 	public static final String GRADLE_WRAPPER_VERSION = "5.6.4";
 
+	public static final String MAVEN_GOAL_BUILD_REST = "rest-builder:build";
+
 	public static final String MAVEN_GOAL_BUILD_SERVICE =
 		"service-builder:build";
 
@@ -543,6 +545,17 @@ public interface BaseProjectTemplatesTestCase {
 
 		completeArgs.add("archetype:generate");
 		completeArgs.add("--batch-mode");
+		completeArgs.add("--settings");
+
+		String content = FileTestUtil.read(
+			BaseProjectTemplatesTestCase.class.getClassLoader(),
+			"com/liferay/project/templates/dependencies/settings.xml");
+
+		Path tempPath = Files.createTempFile("settings", "xml");
+
+		Files.write(tempPath, content.getBytes());
+
+		completeArgs.add(tempPath.toString());
 
 		String archetypeArtifactId =
 			"com.liferay.project.templates." + template.replace('-', '.');
@@ -790,9 +803,8 @@ public interface BaseProjectTemplatesTestCase {
 		String projectPath = projectDir.getPath();
 
 		if (projectPath.contains("workspace")) {
-			File workspaceDir = getWorkspaceDir(projectDir);
-
-			File workspaceBuildFile = new File(workspaceDir, "build.gradle");
+			File workspaceBuildFile = new File(
+				getWorkspaceDir(projectDir), "build.gradle");
 
 			Path buildFilePath = workspaceBuildFile.toPath();
 
@@ -1301,17 +1313,19 @@ public interface BaseProjectTemplatesTestCase {
 	public default void testBundlesDiff(File bundleFile1, File bundleFile2)
 		throws Exception {
 
-		PrintStream originalErrorStream = System.err;
-		PrintStream originalOutputStream = System.out;
+		PrintStream originalErrorPrintStream = System.err;
+		PrintStream originalOutputPrintStream = System.out;
 
-		originalErrorStream.flush();
-		originalOutputStream.flush();
+		originalErrorPrintStream.flush();
+		originalOutputPrintStream.flush();
 
-		ByteArrayOutputStream newErrorStream = new ByteArrayOutputStream();
-		ByteArrayOutputStream newOutputStream = new ByteArrayOutputStream();
+		ByteArrayOutputStream newErrorByteArrayOutputStream =
+			new ByteArrayOutputStream();
+		ByteArrayOutputStream newOutByteArrayOutputStream =
+			new ByteArrayOutputStream();
 
-		System.setErr(new PrintStream(newErrorStream, true));
-		System.setOut(new PrintStream(newOutputStream, true));
+		System.setErr(new PrintStream(newErrorByteArrayOutputStream, true));
+		System.setOut(new PrintStream(newOutByteArrayOutputStream, true));
 
 		try (bnd bnd = new bnd()) {
 			String[] args = {
@@ -1322,14 +1336,14 @@ public interface BaseProjectTemplatesTestCase {
 			bnd.start(args);
 		}
 		finally {
-			System.setErr(originalErrorStream);
-			System.setOut(originalOutputStream);
+			System.setErr(originalErrorPrintStream);
+			System.setOut(originalOutputPrintStream);
 		}
 
-		String output = newErrorStream.toString();
+		String output = newErrorByteArrayOutputStream.toString();
 
 		if (Validator.isNull(output)) {
-			output = newOutputStream.toString();
+			output = newOutByteArrayOutputStream.toString();
 		}
 
 		Assert.assertEquals(

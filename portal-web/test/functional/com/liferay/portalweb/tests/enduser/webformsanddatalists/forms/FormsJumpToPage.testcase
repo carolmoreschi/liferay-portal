@@ -15,7 +15,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Forms");
 
 		FormsAdminNavigator.gotoAddForm();
@@ -128,7 +127,6 @@ definition {
 
 			ProductMenu.gotoPortlet(
 				category = "Content &amp; Data",
-				panel = "Site Administration",
 				portlet = "Forms");
 
 			FormsAdmin.teardownForms();
@@ -147,7 +145,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Forms");
 
 		FormsAdminNavigator.gotoEditFormByName();
@@ -181,14 +178,15 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Forms");
 
 		FormsAdminNavigator.gotoEditFormByName();
 
 		Form.publishForm();
 
-		FormsAdminNavigator.openPublishURL(publishFormURL = "${publishedFormPublicURL}");
+		FormsAdminNavigator.gotoPublishedForm();
+
+		FormPortlet.waitFormRenderer(text = "Next");
 
 		for (var option : list "1,2,3") {
 			FormFields.selectRadioOption(
@@ -240,7 +238,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Forms");
 
 		FormsAdminNavigator.gotoEditFormByName();
@@ -255,7 +252,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Forms");
 
 		FormsAdminNavigator.gotoEditFormByName();
@@ -281,7 +277,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Forms");
 
 		FormsAdminNavigator.gotoEditFormByName();
@@ -299,7 +294,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Forms");
 
 		FormsAdminNavigator.gotoEditFormByName();
@@ -325,7 +319,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Forms");
 
 		FormsAdminNavigator.gotoEditFormByName();
@@ -338,7 +331,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Forms");
 
 		FormsAdminNavigator.gotoEditFormByName();

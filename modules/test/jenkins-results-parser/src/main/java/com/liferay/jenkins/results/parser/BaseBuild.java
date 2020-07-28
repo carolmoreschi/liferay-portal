@@ -1464,10 +1464,16 @@ public abstract class BaseBuild implements Build {
 			return;
 		}
 
+		String pinnedMessage = "";
+
+		if (!slaveOfflineRule.shutdown) {
+			pinnedMessage = "PINNED\n";
+		}
+
 		JenkinsSlave jenkinsSlave = getJenkinsSlave();
 
 		String message = JenkinsResultsParserUtil.combine(
-			"PINNED\n", slaveOfflineRule.getName(), " failure detected at ",
+			pinnedMessage, slaveOfflineRule.getName(), " failure detected at ",
 			getBuildURL(), ". ", jenkinsSlave.getName(),
 			" will be taken offline.\n\n", slaveOfflineRule.toString(),
 			"\n\n\nOffline Slave URL: https://", _jenkinsMaster.getName(),
@@ -1632,52 +1638,38 @@ public abstract class BaseBuild implements Build {
 	public static class DefaultBranchInformation implements BranchInformation {
 
 		@Override
-		public RemoteGitRef getCachedRemoteGitRef() {
-			String cachedBranchName = JenkinsResultsParserUtil.combine(
+		public String getCachedRemoteGitRefName() {
+			return JenkinsResultsParserUtil.combine(
 				"cache-", getReceiverUsername(), "-", getUpstreamBranchSHA(),
-				"-", getSenderUsername(), "-", getSenderBranchSHA());
-
-			String remoteURL = JenkinsResultsParserUtil.combine(
-				"git@github-dev.liferay.com:liferay/", getRepositoryName(),
-				".git");
-
-			return GitUtil.getRemoteGitRef(
-				cachedBranchName, new File("."), remoteURL);
+				"-", getOriginName(), "-", getSenderBranchSHA());
 		}
 
 		@Override
-		public LocalGitBranch getLocalGitBranch(
-			GitWorkingDirectory gitWorkingDirectory) {
+		public String getOriginName() {
+			String branchInformationString = _getBranchInformationString();
 
-			gitWorkingDirectory.checkoutUpstreamLocalGitBranch();
+			String regex = "[\\S\\s]*github.origin.name=(.+)\\n[\\S\\s]*";
 
-			LocalGitBranch localGitBranch =
-				gitWorkingDirectory.createLocalGitBranch(
-					JenkinsResultsParserUtil.combine(
-						getUpstreamBranchName(), "-temp-",
-						String.valueOf(System.currentTimeMillis())),
-					true);
-
-			try {
-				localGitBranch = gitWorkingDirectory.fetch(
-					localGitBranch, true, getCachedRemoteGitRef());
-			}
-			catch (Exception exception) {
-				localGitBranch = gitWorkingDirectory.fetch(
-					localGitBranch, true, getSenderRemoteGitRef());
-
-				LocalGitBranch upstreamLocalGitBranch =
-					gitWorkingDirectory.createLocalGitBranch(
-						JenkinsResultsParserUtil.combine(
-							getUpstreamBranchName(), "-temp-upstream-",
-							String.valueOf(System.currentTimeMillis())),
-						true, getUpstreamBranchSHA());
-
-				localGitBranch = gitWorkingDirectory.rebase(
-					true, upstreamLocalGitBranch, localGitBranch);
+			if (branchInformationString.matches(regex)) {
+				return branchInformationString.replaceAll(regex, "$1");
 			}
 
-			return localGitBranch;
+			return null;
+		}
+
+		@Override
+		public Integer getPullRequestNumber() {
+			String branchInformationString = _getBranchInformationString();
+
+			String regex =
+				"[\\S\\s]*github.pull.request.number=(\\d+)\\n[\\S\\s]*";
+
+			if (branchInformationString.matches(regex)) {
+				return Integer.valueOf(
+					branchInformationString.replaceAll(regex, "$1"));
+			}
+
+			return 0;
 		}
 
 		@Override
@@ -1695,15 +1687,26 @@ public abstract class BaseBuild implements Build {
 
 		@Override
 		public String getRepositoryName() {
-			String branchInformationString = _getBranchInformationString();
+			Properties buildProperties;
 
-			String regex = "[\\S\\s]*prepare.repositories.([^\\(]+)[\\S\\s]*";
-
-			if (branchInformationString.matches(regex)) {
-				return branchInformationString.replaceAll(regex, "$1");
+			try {
+				buildProperties = JenkinsResultsParserUtil.getBuildProperties();
+			}
+			catch (IOException ioException) {
+				throw new RuntimeException(ioException);
 			}
 
-			return null;
+			String repositoryType = _repositoryType;
+
+			if (repositoryType.equals("portal.base") ||
+				repositoryType.equals("portal.ee")) {
+
+				repositoryType = "portal";
+			}
+
+			return JenkinsResultsParserUtil.getProperty(
+				buildProperties, repositoryType + ".repository",
+				getUpstreamBranchName());
 		}
 
 		@Override
@@ -1814,6 +1817,10 @@ public abstract class BaseBuild implements Build {
 			}
 
 			int y = consoleText.indexOf("prepare.repositories.", x);
+
+			if (y == -1) {
+				y = consoleText.indexOf("Deleting:", x);
+			}
 
 			y = consoleText.indexOf("\n", y);
 

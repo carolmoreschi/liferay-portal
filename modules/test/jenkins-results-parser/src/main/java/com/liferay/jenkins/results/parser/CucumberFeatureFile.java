@@ -16,6 +16,7 @@ package com.liferay.jenkins.results.parser;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,10 +26,12 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @author Michael Hashimoto
  */
-public class CucumberFeatureFile {
+public class CucumberFeatureFile implements Serializable {
 
 	public CucumberFeatureFile(
 		File faroDir, CucumberFeatureResult cucumberFeatureResult,
@@ -37,6 +40,30 @@ public class CucumberFeatureFile {
 		_faroDir = faroDir;
 		_cucumberFeatureResult = cucumberFeatureResult;
 		_cucumberScenarioResult = cucumberScenarioResult;
+	}
+
+	public String getCategoryName() {
+		StringBuilder sb = new StringBuilder();
+
+		String relativePath = getRelativePath();
+
+		String relativePathRegex = ".*/features/(.*)/[^/]+";
+
+		if (relativePath.matches(relativePathRegex)) {
+			String folderNames = relativePath.replaceAll(
+				relativePathRegex, "$1");
+
+			for (String folderName : folderNames.split("/")) {
+				sb.append(StringUtils.capitalize(folderName));
+				sb.append("/");
+			}
+		}
+
+		if (sb.length() >= 1) {
+			sb.setLength(sb.length() - 1);
+		}
+
+		return sb.toString();
 	}
 
 	public File getFile() {

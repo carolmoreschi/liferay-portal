@@ -120,7 +120,9 @@ public abstract class BaseDataDefinitionResourceTestCase {
 		DataDefinitionResource.Builder builder =
 			DataDefinitionResource.builder();
 
-		dataDefinitionResource = builder.locale(
+		dataDefinitionResource = builder.authentication(
+			"test@liferay.com", "test"
+		).locale(
 			LocaleUtil.getDefault()
 		).build();
 	}
@@ -664,6 +666,11 @@ public abstract class BaseDataDefinitionResourceTestCase {
 
 		throw new UnsupportedOperationException(
 			"This method needs to be implemented");
+	}
+
+	@Test
+	public void testGetDataDefinitionPermissionsPage() throws Exception {
+		Assert.assertTrue(false);
 	}
 
 	@Test

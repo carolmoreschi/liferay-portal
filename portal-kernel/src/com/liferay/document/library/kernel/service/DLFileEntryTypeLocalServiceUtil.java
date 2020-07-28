@@ -44,6 +44,10 @@ public class DLFileEntryTypeLocalServiceUtil {
 	/**
 	 * Adds the document library file entry type to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect DLFileEntryTypeLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param dlFileEntryType the document library file entry type
 	 * @return the document library file entry type that was added
 	 */
@@ -177,6 +181,10 @@ public class DLFileEntryTypeLocalServiceUtil {
 	/**
 	 * Deletes the document library file entry type from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect DLFileEntryTypeLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param dlFileEntryType the document library file entry type
 	 * @return the document library file entry type that was removed
 	 */
@@ -190,6 +198,10 @@ public class DLFileEntryTypeLocalServiceUtil {
 
 	/**
 	 * Deletes the document library file entry type with the primary key from the database. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect DLFileEntryTypeLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param fileEntryTypeId the primary key of the document library file entry type
 	 * @return the document library file entry type that was removed
@@ -661,6 +673,10 @@ public class DLFileEntryTypeLocalServiceUtil {
 
 	/**
 	 * Updates the document library file entry type in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect DLFileEntryTypeLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param dlFileEntryType the document library file entry type
 	 * @return the document library file entry type that was updated

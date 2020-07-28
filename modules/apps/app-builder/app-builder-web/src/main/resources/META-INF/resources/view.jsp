@@ -22,7 +22,8 @@
 
 <div id="<portlet:namespace />-app-builder-root">
 	<react:component
-		data='<%=
+		module="js/index.es"
+		props='<%=
 			HashMapBuilder.<String, Object>put(
 				"basePortletURL", String.valueOf(renderResponse.createRenderURL())
 			).put(
@@ -31,7 +32,9 @@
 				"deltaValues", PropsValues.SEARCH_CONTAINER_PAGE_DELTA_VALUES
 			).put(
 				"pathFriendlyURLPublic", PortalUtil.getPathFriendlyURLPublic()
-			).build() %>'
-		module="js/index.es"
+			).put(
+				"showNativeObjectsTab", request.getAttribute(AppBuilderWebKeys.SHOW_NATIVE_OBJECTS_TAB)
+			).build()
+		%>'
 	/>
 </div>

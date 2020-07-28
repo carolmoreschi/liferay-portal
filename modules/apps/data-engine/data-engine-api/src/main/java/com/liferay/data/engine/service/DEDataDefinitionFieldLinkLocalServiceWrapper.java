@@ -38,6 +38,10 @@ public class DEDataDefinitionFieldLinkLocalServiceWrapper
 	/**
 	 * Adds the de data definition field link to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect DEDataDefinitionFieldLinkLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param deDataDefinitionFieldLink the de data definition field link
 	 * @return the de data definition field link that was added
 	 */
@@ -106,6 +110,10 @@ public class DEDataDefinitionFieldLinkLocalServiceWrapper
 	/**
 	 * Deletes the de data definition field link from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect DEDataDefinitionFieldLinkLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param deDataDefinitionFieldLink the de data definition field link
 	 * @return the de data definition field link that was removed
 	 */
@@ -121,6 +129,10 @@ public class DEDataDefinitionFieldLinkLocalServiceWrapper
 
 	/**
 	 * Deletes the de data definition field link with the primary key from the database. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect DEDataDefinitionFieldLinkLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param deDataDefinitionFieldLinkId the primary key of the de data definition field link
 	 * @return the de data definition field link that was removed
@@ -302,6 +314,17 @@ public class DEDataDefinitionFieldLinkLocalServiceWrapper
 
 		return _deDataDefinitionFieldLinkLocalService.
 			fetchDEDataDefinitionFieldLinkByUuidAndGroupId(uuid, groupId);
+	}
+
+	@Override
+	public com.liferay.data.engine.model.DEDataDefinitionFieldLink
+		fetchDEDataDefinitionFieldLinks(
+			long classNameId, long classPK, long ddmStructureId,
+			String fieldName) {
+
+		return _deDataDefinitionFieldLinkLocalService.
+			fetchDEDataDefinitionFieldLinks(
+				classNameId, classPK, ddmStructureId, fieldName);
 	}
 
 	@Override
@@ -517,6 +540,10 @@ public class DEDataDefinitionFieldLinkLocalServiceWrapper
 
 	/**
 	 * Updates the de data definition field link in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect DEDataDefinitionFieldLinkLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param deDataDefinitionFieldLink the de data definition field link
 	 * @return the de data definition field link that was updated

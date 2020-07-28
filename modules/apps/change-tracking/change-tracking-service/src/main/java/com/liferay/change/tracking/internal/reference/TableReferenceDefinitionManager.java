@@ -14,8 +14,7 @@
 
 package com.liferay.change.tracking.internal.reference;
 
-import com.liferay.change.tracking.internal.reference.builder.TableReferenceInfoBuilderImpl;
-import com.liferay.change.tracking.reference.TableReferenceDefinition;
+import com.liferay.change.tracking.spi.reference.TableReferenceDefinition;
 import com.liferay.petra.sql.dsl.Column;
 import com.liferay.petra.sql.dsl.Table;
 import com.liferay.portal.kernel.log.Log;
@@ -273,24 +272,15 @@ public class TableReferenceDefinitionManager {
 				return null;
 			}
 
-			TableReferenceInfoBuilderImpl<T> tableReferenceInfoBuilderImpl =
-				new TableReferenceInfoBuilderImpl<>(
+			TableReferenceInfo<T> tableReferenceInfo =
+				TableReferenceInfoFactory.create(
 					tableReferenceDefinition, primaryKeyColumn);
 
-			tableReferenceDefinition.defineTableReferences(
-				tableReferenceInfoBuilderImpl);
+			synchronized (TableReferenceDefinitionManager.this) {
+				_tableReferenceInfos.put(
+					tableReferenceDefinition.getTable(), tableReferenceInfo);
 
-			TableReferenceInfo<T> tableReferenceInfo =
-				tableReferenceInfoBuilderImpl.build();
-
-			if (tableReferenceInfo != null) {
-				synchronized (TableReferenceDefinitionManager.this) {
-					_tableReferenceInfos.put(
-						tableReferenceDefinition.getTable(),
-						tableReferenceInfo);
-
-					_combinedTableReferenceInfos = null;
-				}
+				_combinedTableReferenceInfos = null;
 			}
 
 			return tableReferenceInfo;

@@ -125,13 +125,11 @@ definition {
 			AssertVisible(
 				key_content = "Webcontent Title",
 				key_fragmentClass = "header",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "Webcontent Content",
 				key_fragmentClass = "rich-text",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 		}
 
@@ -189,13 +187,11 @@ definition {
 			AssertVisible(
 				key_content = "Webcontent Title",
 				key_fragmentClass = "header",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "Webcontent Content",
 				key_fragmentClass = "rich-text",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 		}
 
@@ -204,14 +200,19 @@ definition {
 		}
 	}
 
-	// Ignored because of the ticket LRQA-57518
-
 	@description = "This is a test for LPS-86191. A user can configure the page settings for each individual display page. This test changes the theme."
-	@ignore = "true"
 	@priority = "4"
 	test ConfigureDisplayPageTheme {
-		property osgi.app.includes = "frontend-theme-fjord";
-		property portal.upstream = "quarantine";
+		property test.name.skip.portal.instance = "DisplayPagesWithWebContent#ConfigureDisplayPageTheme";
+
+		ApplicationsMenu.gotoPortlet(
+			category = "System",
+			panel = "Control Panel",
+			portlet = "App Manager");
+
+		AppManager.uploadAppCP(
+			appName = "test-theme",
+			warFileName = "test-theme.war");
 
 		task ("Add a web content that uses the display page") {
 			WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
@@ -250,7 +251,7 @@ definition {
 
 			SelectFrame(locator1 = "IFrame#MODAL_BODY");
 
-			LexiconCard.clickCard(card = "Fjord");
+			LexiconCard.clickCard(card = "test-theme-7-3");
 
 			SelectFrameTop(value1 = "relative=top");
 
@@ -266,7 +267,7 @@ definition {
 		task ("Assert the display page is using the Fjord Theme") {
 			DisplayPageTemplatesAdmin.gotoDisplayPage(displayPageName = "Display Page Name");
 
-			AssertElementPresent(locator1 = "//link[contains(@href,'fjord-theme')]");
+			AssertElementPresent(locator1 = "//link[contains(@href,'test-theme')]");
 
 			AssertElementNotPresent(locator1 = "//link[contains(@href,'classic-theme')]");
 		}
@@ -275,6 +276,8 @@ definition {
 	@description = "This is a test for LPS-90999. A user has access to edit a display page while viewing the article through its display page."
 	@priority = "5"
 	test EditDisplayPageWhenViewingInDisplayPage {
+		property portal.acceptance = "true";
+
 		task ("Mark the display page as default") {
 			DisplayPageTemplatesAdmin.openDisplayPagesAdmin(siteURLKey = "test-site-name");
 
@@ -318,19 +321,16 @@ definition {
 			AssertVisible(
 				key_content = "Webcontent Title",
 				key_fragmentClass = "header",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "Webcontent Content",
 				key_fragmentClass = "rich-text",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "This is static text.",
 				key_fragmentClass = "static-text",
-				key_position = "3",
 				locator1 = "Fragment#FRAGMENT");
 		}
 	}
@@ -338,6 +338,8 @@ definition {
 	@description = "This is a test for LPS-90999. A user has access to edit the web content article while viewing the article through its display page."
 	@priority = "5"
 	test EditWebContentWhenViewingInDisplayPage {
+		property portal.acceptance = "true";
+
 		task ("Mark the display page as default") {
 			DisplayPageTemplatesAdmin.openDisplayPagesAdmin(siteURLKey = "test-site-name");
 
@@ -378,13 +380,11 @@ definition {
 			AssertVisible(
 				key_content = "Webcontent Title Edit",
 				key_fragmentClass = "header",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "Webcontent Content Edit",
 				key_fragmentClass = "rich-text",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 		}
 	}
@@ -392,6 +392,8 @@ definition {
 	@description = "This is a test for LPS-86221. A user can preview a draft status web content article within its display page."
 	@priority = "5"
 	test PreviewDraftWebContent {
+		property portal.acceptance = "true";
+
 		task ("Mark the display page as default") {
 			DisplayPageTemplatesAdmin.openDisplayPagesAdmin(siteURLKey = "test-site-name");
 
@@ -428,13 +430,11 @@ definition {
 			AssertVisible(
 				key_content = "Webcontent Title",
 				key_fragmentClass = "header",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "Webcontent Content",
 				key_fragmentClass = "rich-text",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 
 			IFrame.selectTopFrame();
@@ -444,6 +444,8 @@ definition {
 	@description = "This is a test for LPS-86221. A user can preview a pending status web content article within its display page."
 	@priority = "5"
 	test PreviewPendingWebContent {
+		property portal.acceptance = "true";
+
 		task ("Mark the display page as default") {
 			DisplayPageTemplatesAdmin.openDisplayPagesAdmin(siteURLKey = "test-site-name");
 
@@ -453,7 +455,6 @@ definition {
 		task ("Configure Web Content Article workflow to Single Approver") {
 			ProductMenu.gotoPortlet(
 				category = "Configuration",
-				panel = "Site Administration",
 				portlet = "Workflow");
 
 			Workflow.configureWorkflow(
@@ -489,13 +490,11 @@ definition {
 			AssertVisible(
 				key_content = "Webcontent Title",
 				key_fragmentClass = "header",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "Webcontent Content",
 				key_fragmentClass = "rich-text",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 
 			IFrame.selectTopFrame();
@@ -505,6 +504,8 @@ definition {
 	@description = "This is a test for LPS-86221. A user can preview a published web content article within its display page."
 	@priority = "5"
 	test PreviewPublishedWebContent {
+		property portal.acceptance = "true";
+
 		task ("Mark the display page as default") {
 			DisplayPageTemplatesAdmin.openDisplayPagesAdmin(siteURLKey = "test-site-name");
 
@@ -541,13 +542,11 @@ definition {
 			AssertVisible(
 				key_content = "Webcontent Title",
 				key_fragmentClass = "header",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "Webcontent Content",
 				key_fragmentClass = "rich-text",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 
 			IFrame.selectTopFrame();
@@ -557,6 +556,8 @@ definition {
 	@description = "This is a test for LPS-96438. Guests should be able to view web content articles through display page templates."
 	@priority = "5"
 	test ViewDisplayPageAsGuest {
+		property portal.acceptance = "true";
+
 		task ("Add a couple pages to the site so the navigation menu will appear in the display page template header") {
 			JSONLayout.addPublicLayout(
 				groupName = "Test Site Name",
@@ -644,13 +645,11 @@ definition {
 			AssertVisible(
 				key_content = "Webcontent Title",
 				key_fragmentClass = "header",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "Webcontent Content",
 				key_fragmentClass = "rich-text",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 		}
 
@@ -662,6 +661,8 @@ definition {
 	@description = "When a display page is marked as default, associated assets will be displayed through the display page by default without need for additional configuration."
 	@priority = "5"
 	test ViewDisplayPageMarkedAsDefault {
+		property portal.acceptance = "true";
+
 		task ("Mark the display page as default") {
 			DisplayPageTemplatesAdmin.openDisplayPagesAdmin(siteURLKey = "test-site-name");
 
@@ -703,13 +704,11 @@ definition {
 			AssertVisible(
 				key_content = "Webcontent Title",
 				key_fragmentClass = "header",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "Webcontent Content",
 				key_fragmentClass = "rich-text",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 		}
 	}
@@ -821,13 +820,11 @@ definition {
 			AssertVisible(
 				key_content = "Webcontent Title",
 				key_fragmentClass = "header",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "Webcontent Content",
 				key_fragmentClass = "rich-text",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 		}
 	}
@@ -835,6 +832,8 @@ definition {
 	@description = "Display pages can be viewed through friendly URL."
 	@priority = "5"
 	test ViewDisplayPageViaFriendlyURL {
+		property portal.acceptance = "true";
+
 		task ("Add a web content article") {
 			JSONWebcontent.addWebContent(
 				content = "Webcontent Content",
@@ -860,13 +859,11 @@ definition {
 			AssertVisible(
 				key_content = "Webcontent Title",
 				key_fragmentClass = "header",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "Webcontent Content",
 				key_fragmentClass = "rich-text",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 		}
 	}
@@ -874,6 +871,8 @@ definition {
 	@description = "A selected display page should override the default display page."
 	@priority = "5"
 	test ViewNonDefaultDisplayPage {
+		property portal.acceptance = "true";
+
 		task ("Mark the display page as default") {
 			DisplayPageTemplatesAdmin.openDisplayPagesAdmin(siteURLKey = "test-site-name");
 
@@ -942,13 +941,11 @@ definition {
 			AssertVisible(
 				key_content = "Webcontent Content",
 				key_fragmentClass = "rich-text",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertVisible(
 				key_content = "Webcontent Title",
 				key_fragmentClass = "header",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 		}
 	}
@@ -1028,13 +1025,11 @@ definition {
 			AssertElementNotPresent(
 				key_content = "Webcontent Title",
 				key_fragmentClass = "header",
-				key_position = "1",
 				locator1 = "Fragment#FRAGMENT");
 
 			AssertElementNotPresent(
 				key_content = "Webcontent Content",
 				key_fragmentClass = "rich-text",
-				key_position = "2",
 				locator1 = "Fragment#FRAGMENT");
 		}
 	}

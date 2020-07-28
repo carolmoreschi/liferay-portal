@@ -125,6 +125,13 @@ components:
                             format: uri
                             readOnly: true
                             type: string
+                        contentValue:
+                            # @review
+                            description:
+                                "optional field with the content of the image in Base64,
+                                can be embedded with nestedFields"
+                            readOnly: true
+                            type: string
                         imageId:
                             description:
                                 The image's ID. This can be used to retrieve more information in the `Document` API.
@@ -187,6 +194,12 @@ components:
                         The image's relative URL.
                     readOnly: true
                     type: string
+                contentValue:
+                    # @review
+                    description:
+                        optional field with the content of the image in Base64, can be embedded with nestedFields
+                    readOnly: true
+                    type: string
                 encodingFormat:
                     description:
                         The image's content type (e.g., `application/png`, etc.).
@@ -236,6 +249,23 @@ components:
             required:
                 - className
                 - classPK
+            type: object
+        ColumnViewport:
+            additionalProperties: false
+            properties:
+                columnViewportDefinition:
+                    additionalProperties: false
+                    properties:
+                        size:
+                            maximum: 12
+                            minimum: 1
+                            type: integer
+                    type: object
+                id:
+                    type: string
+            required:
+                - columnViewportDefinition
+                - id
             type: object
         Comment:
             description:
@@ -304,6 +334,12 @@ components:
                     description:
                         The document's relative URL.
                     format: uri
+                    readOnly: true
+                    type: string
+                contentValue:
+                    # @review
+                    description:
+                        optional field with the content of the document in Base64, can be embedded with nestedFields
                     readOnly: true
                     type: string
                 description:
@@ -886,6 +922,13 @@ components:
                                     The image's relative URL.
                                 format: uri
                                 type: string
+                            contentValue:
+                                # @review
+                                description:
+                                    "optional field with the content of the image in Base64,
+                                    can be embedded with nestedFields"
+                                readOnly: true
+                                type: string
                             height:
                                 description:
                                     The image's height in pixels.
@@ -918,6 +961,12 @@ components:
                     format: binary
                     readOnly: true
                     type: string
+                contentValue:
+                    # @review
+                    description:
+                        optional field with the content of the document in Base64, can be embedded with nestedFields
+                    readOnly: true
+                    type: string
                 creator:
                     allOf:
                         - $ref: "#/components/schemas/Creator"
@@ -948,7 +997,6 @@ components:
                     description:
                         The ID of the `DocumentFolder` where this document is stored.
                     format: int64
-                    readOnly: true
                     type: integer
                 documentType:
                     properties:
@@ -1140,8 +1188,24 @@ components:
             type: object
         FragmentFieldBackgroundImage:
             properties:
-                backgroundImage:
+                backgroundFragmentImage:
                     $ref: "#/components/schemas/FragmentImage"
+                backgroundImage:
+                    deprecated: true
+                    description:
+                        "Deprecated as of Athanasius (7.3.x), replaced by backgroundFragmentImage"
+                    properties:
+                        description:
+                            oneOf:
+                                - $ref: "#/components/schemas/FragmentInlineValue"
+                        title:
+                            oneOf:
+                                - $ref: "#/components/schemas/FragmentInlineValue"
+                        url:
+                            oneOf:
+                                - $ref: "#/components/schemas/FragmentInlineValue"
+                                - $ref: "#/components/schemas/FragmentMappedValue"
+                    type: object
             type: object
         FragmentFieldHTML:
             properties:
@@ -1201,8 +1265,20 @@ components:
             description:
                 ""
             properties:
-                defaultValue:
+                defaultFragmentInlineValue:
                     $ref: "#/components/schemas/FragmentInlineValue"
+                defaultValue:
+                    deprecated: true
+                    description:
+                        "Deprecated as of Athanasius (7.3.x), replaced by defaultFragmentInlineValue"
+                    properties:
+                        value:
+                            type: string
+                        value_i18n:
+                            additionalProperties:
+                                type: string
+                            type: object
+                    type: object
                 mapping:
                     properties:
                         fieldKey:
@@ -1378,6 +1454,12 @@ components:
                         The file's relative URL.
                     readOnly: true
                     type: string
+                contentValue:
+                    # @review
+                    description:
+                        optional field with the content of the document in Base64, can be embedded with nestedFields
+                    readOnly: true
+                    type: string
                 encodingFormat:
                     description:
                         The file's media type (e.g., application/pdf, etc.).
@@ -1514,6 +1596,12 @@ components:
                 contentUrl:
                     description:
                         The file's relative URL.
+                    readOnly: true
+                    type: string
+                contentValue:
+                    # @review
+                    description:
+                        optional field with the content of the document in Base64, can be embedded with nestedFields
                     readOnly: true
                     type: string
                 encodingFormat:
@@ -1832,6 +1920,8 @@ components:
                         $ref: "#/components/schemas/RelatedContent"
                     readOnly: true
                     type: array
+                seen:
+                    type: boolean
                 showAsQuestion:
                     description:
                         A flag that indicates whether this thread was posted as a question that can receive approved
@@ -1844,7 +1934,6 @@ components:
                     readOnly: true
                     type: integer
                 subscribed:
-                    readOnly: true
                     type: boolean
                 taxonomyCategoryBriefs:
                     items:
@@ -1909,6 +1998,9 @@ components:
                     items:
                         $ref: "#/components/schemas/NavigationMenuItem"
                     type: array
+                navigationType:
+                    enum: [Primary, Secondary, Social]
+                    type: string
                 siteId:
                     format: int64
                     readOnly: true
@@ -1917,6 +2009,13 @@ components:
             description:
                 ""
             properties:
+                availableLanguages:
+                    description:
+                        The list of languages the structure has a translation for.
+                    items:
+                        type: string
+                    readOnly: true
+                    type: array
                 creator:
                     allOf:
                         - $ref: "#/components/schemas/Creator"
@@ -1957,6 +2056,8 @@ components:
                     type: string
                 url:
                     type: string
+                useCustomName:
+                    type: boolean
         PageCollectionDefinition:
             description:
                 ""
@@ -1994,6 +2095,37 @@ components:
             type: object
         PageColumnDefinition:
             properties:
+                columnViewportConfig:
+                    deprecated: true
+                    description:
+                        "Deprecated as of Athanasius (7.3.x), replaced by columnViewports"
+                    properties:
+                        landscapeMobile:
+                            properties:
+                                size:
+                                    maximum: 12
+                                    minimum: 1
+                                    type: integer
+                            type: object
+                        portraitMobile:
+                            properties:
+                                size:
+                                    maximum: 12
+                                    minimum: 1
+                                    type: integer
+                            type: object
+                        tablet:
+                            properties:
+                                size:
+                                    maximum: 12
+                                    minimum: 1
+                                    type: integer
+                            type: object
+                    type: object
+                columnViewports:
+                    items:
+                        $ref: "#/components/schemas/ColumnViewport"
+                    type: array
                 size:
                     maximum: 12
                     minimum: 1
@@ -2078,6 +2210,43 @@ components:
                     type: integer
                 reverseOrder:
                     type: boolean
+                rowViewportConfig:
+                    deprecated: true
+                    description:
+                        "Deprecated as of Athanasius (7.3.x), replaced by rowViewports"
+                    properties:
+                        landscapeMobile:
+                            properties:
+                                modulesPerRow:
+                                    type: integer
+                                reverseOrder:
+                                    type: boolean
+                                verticalAlignment:
+                                    type: string
+                            type: object
+                        portraitMobile:
+                            properties:
+                                modulesPerRow:
+                                    type: integer
+                                reverseOrder:
+                                    type: boolean
+                                verticalAlignment:
+                                    type: string
+                            type: object
+                        tablet:
+                            properties:
+                                modulesPerRow:
+                                    type: integer
+                                reverseOrder:
+                                    type: boolean
+                                verticalAlignment:
+                                    type: string
+                            type: object
+                    type: object
+                rowViewports:
+                    items:
+                        $ref: "#/components/schemas/RowViewport"
+                    type: array
                 verticalAlignment:
                     type: string
             type: object
@@ -2085,19 +2254,73 @@ components:
             properties:
                 backgroundColor:
                     type: string
-                backgroundImage:
+                backgroundFragmentImage:
                     $ref: "#/components/schemas/FragmentImage"
+                backgroundImage:
+                    deprecated: true
+                    description:
+                        "Deprecated as of Athanasius (7.3.x), replaced by backgroundFragmentImage"
+                    properties:
+                        description:
+                            oneOf:
+                                - $ref: "#/components/schemas/FragmentInlineValue"
+                        title:
+                            oneOf:
+                                - $ref: "#/components/schemas/FragmentInlineValue"
+                        url:
+                            oneOf:
+                                - $ref: "#/components/schemas/FragmentInlineValue"
+                                - $ref: "#/components/schemas/FragmentMappedValue"
+                    type: object
+                fragmentLink:
+                    $ref: "#/components/schemas/FragmentLink"
                 layout:
                     properties:
+                        align:
+                            enum: [Center, End, None, Start, Stretch]
+                            type: string
+                        borderColor:
+                            type: string
+                        borderRadius:
+                            enum: [Circle, Large, None, Pill, Regular]
+                            type: string
+                        borderWidth:
+                            type: integer
                         containerType:
                             enum: [Fixed, Fluid]
                             type: string
+                        contentDisplay:
+                            enum: [Block, Flex]
+                            type: string
+                        justify:
+                            enum: [Center, End, None, SpaceAround, SpaceBetween, Start]
+                            type: string
+                        marginBottom:
+                            type: integer
+                        marginLeft:
+                            type: integer
+                        marginRight:
+                            type: integer
+                        marginTop:
+                            type: integer
+                        opacity:
+                            type: integer
                         paddingBottom:
                             type: integer
                         paddingHorizontal:
                             type: integer
+                        paddingLeft:
+                            type: integer
+                        paddingRight:
+                            type: integer
                         paddingTop:
                             type: integer
+                        shadow:
+                            enum: [Default, Large, None, Regular, Small]
+                            type: string
+                        widthType:
+                            enum: [Fixed, Fluid]
+                            type: string
                     type: object
             type: object
         PageTemplate:
@@ -2261,6 +2484,25 @@ components:
                         The title of the content.
                     readOnly: true
                     type: string
+        RowViewport:
+            additionalProperties: false
+            properties:
+                id:
+                    type: string
+                rowViewportDefinition:
+                    additionalProperties: false
+                    properties:
+                        modulesPerRow:
+                            type: integer
+                        reverseOrder:
+                            type: boolean
+                        verticalAlignment:
+                            type: string
+                    type: object
+            required:
+                - id
+                - rowViewportDefinition
+            type: object
         StructuredContent:
             description:
                 Represents content that has fields and is rendered by a template backed by a `ContentStructure`. This is
@@ -2297,10 +2539,6 @@ components:
                         The ID of the `ContentStructure`.
                     format: int64
                     type: integer
-                contentTemplates:
-                    items:
-                        $ref: "#/components/schemas/ContentTemplate"
-                    type: array
                 creator:
                     allOf:
                         - $ref: "#/components/schemas/Creator"
@@ -2393,6 +2631,11 @@ components:
                                 description:
                                     An absolute URL to the rendered content.
                                 format: uri
+                                type: string
+                            renderedContentValue:
+                                # @review
+                                description:
+                                    optional field with the rendered content, can be embedded with nestedFields
                                 type: string
                         type: object
                     readOnly: true
@@ -2756,6 +2999,12 @@ components:
                 contentUrl:
                     description:
                         The file's relative URL.
+                    readOnly: true
+                    type: string
+                contentValue:
+                    # @review
+                    description:
+                        optional field with the content of the document in Base64, can be embedded with nestedFields
                     readOnly: true
                     type: string
                 encodingFormat:

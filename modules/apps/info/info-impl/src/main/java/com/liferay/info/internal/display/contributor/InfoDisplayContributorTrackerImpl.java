@@ -16,12 +16,14 @@ package com.liferay.info.internal.display.contributor;
 
 import com.liferay.info.display.contributor.InfoDisplayContributor;
 import com.liferay.info.display.contributor.InfoDisplayContributorTracker;
+import com.liferay.info.item.provider.InfoItemClassDetailsProvider;
+import com.liferay.info.item.provider.InfoItemFieldValuesProvider;
 import com.liferay.info.item.provider.InfoItemFormProvider;
+import com.liferay.info.item.provider.InfoItemFormVariationsProvider;
 import com.liferay.info.item.provider.InfoItemObjectProvider;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.osgi.util.ServiceTrackerFactory;
-import com.liferay.petra.reflect.GenericUtil;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -121,17 +123,23 @@ public class InfoDisplayContributorTrackerImpl
 							bundleContext.getService(serviceReference);
 
 					try {
-						InfoItemFormProvider<?> infoItemFormProvider =
-							new InfoDisplayContributorWrapper(
-								infoDisplayContributor);
+						InfoDisplayContributorWrapper
+							infoDisplayContributorWrapper =
+								new InfoDisplayContributorWrapper(
+									infoDisplayContributor);
 
 						return (ServiceRegistration<InfoDisplayContributor<?>>)
 							bundleContext.registerService(
 								new String[] {
+									InfoItemClassDetailsProvider.class.
+										getName(),
+									InfoItemFieldValuesProvider.class.getName(),
 									InfoItemFormProvider.class.getName(),
+									InfoItemFormVariationsProvider.class.
+										getName(),
 									InfoItemObjectProvider.class.getName()
 								},
-								infoItemFormProvider,
+								infoDisplayContributorWrapper,
 								_getServiceReferenceProperties(
 									bundleContext, serviceReference));
 					}
@@ -189,8 +197,7 @@ public class InfoDisplayContributorTrackerImpl
 
 		try {
 			dictionary.put(
-				"item.class.name",
-				GenericUtil.getGenericClassName(infoDisplayContributor));
+				"item.class.name", infoDisplayContributor.getClassName());
 		}
 		finally {
 			bundleContext.ungetService(serviceReference);

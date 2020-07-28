@@ -92,7 +92,7 @@ public class DDMTemplateResource implements TemplateResource {
 
 	@Override
 	public int hashCode() {
-		return _ddmTemplateKey.hashCode() * 11 + _ddmTemplate.hashCode();
+		return (_ddmTemplateKey.hashCode() * 11) + _ddmTemplate.hashCode();
 	}
 
 	@Override

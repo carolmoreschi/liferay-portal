@@ -24,9 +24,9 @@ import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.fragment.renderer.FragmentRendererTracker;
 import com.liferay.fragment.service.FragmentEntryLinkLocalService;
 import com.liferay.fragment.service.FragmentEntryLocalService;
+import com.liferay.journal.constants.JournalArticleConstants;
+import com.liferay.journal.constants.JournalFolderConstants;
 import com.liferay.journal.model.JournalArticle;
-import com.liferay.journal.model.JournalArticleConstants;
-import com.liferay.journal.model.JournalFolderConstants;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.model.LayoutPageTemplateCollection;
@@ -362,19 +362,17 @@ public class BuildingsSiteInitializer implements SiteInitializer {
 			long parentLayoutId, String name, String type, String dataPath)
 		throws Exception {
 
-		Map<Locale, String> nameMap = HashMapBuilder.put(
-			LocaleUtil.getSiteDefault(), name
-		).build();
-
 		Layout layout = _layoutLocalService.addLayout(
 			_serviceContext.getUserId(), _serviceContext.getScopeGroupId(),
-			false, parentLayoutId, nameMap, new HashMap<>(), new HashMap<>(),
-			new HashMap<>(), new HashMap<>(), type, null, false, false,
-			new HashMap<>(), _serviceContext);
+			false, parentLayoutId,
+			HashMapBuilder.put(
+				LocaleUtil.getSiteDefault(), name
+			).build(),
+			new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>(),
+			type, null, false, false, new HashMap<>(), _serviceContext);
 
 		if (Validator.isNotNull(dataPath)) {
-			Layout draftLayout = _layoutLocalService.fetchLayout(
-				_portal.getClassNameId(Layout.class), layout.getPlid());
+			Layout draftLayout = layout.fetchDraftLayout();
 
 			_layoutPageTemplateStructureLocalService.
 				addLayoutPageTemplateStructure(
@@ -507,8 +505,7 @@ public class BuildingsSiteInitializer implements SiteInitializer {
 	}
 
 	private void _copyLayout(Layout layout) throws Exception {
-		Layout draftLayout = _layoutLocalService.fetchLayout(
-			_portal.getClassNameId(Layout.class), layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (draftLayout != null) {
 			_layoutCopyHelper.copyLayout(draftLayout, layout);

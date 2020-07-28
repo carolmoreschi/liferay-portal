@@ -27,6 +27,14 @@ definition {
 	}
 
 	macro addKeywordsFilter {
+		Panel.expandPanel(panel = "Source");
+
+		if (!(IsSelectedLabel(locator1 = "APConfiguration#SOURCE_SCOPE_ASSET_TYPE_SELECT", value1 = "All Types"))) {
+			Select(
+				locator1 = "APConfiguration#SOURCE_SCOPE_ASSET_TYPE_SELECT",
+				value1 = "All Types");
+		}
+
 		Panel.expandPanel(panel = "Filter");
 
 		Select(
@@ -119,6 +127,14 @@ definition {
 			key_title = "${assetListTitle}",
 			locator1 = "AssetLists#ASSET_LIST_ENTRY_TITLE");
 
+		if (isSet(selectedAsset)) {
+			Panel.expandPanel(panel = "Source");
+
+			Select(
+				locator1 = "APConfiguration#SOURCE_SCOPE_ASSET_TYPE_SELECT",
+				value1 = "${selectedAsset}");
+		}
+
 		Panel.expandPanel(panel = "Scope");
 
 		if (isSet(otherSite)) {
@@ -173,6 +189,12 @@ definition {
 		AssetListsAdmin.gotoEntryMenuItem(
 			assetListTitle = "${assetListTitle}",
 			item = "Edit");
+	}
+
+	macro gotoEntry {
+		Click(
+			key_title = "${assetListName}",
+			locator1 = "AssetLists#ASSET_LIST_ENTRY_TITLE");
 	}
 
 	macro gotoEntryMenuItem {
@@ -336,7 +358,7 @@ definition {
 		Click(locator1 = "AssetLists#ASSET_LIST_ELLIPSIS");
 
 		Click(
-			key_menuItem = "View Content",
+			key_menuItem = "View Items",
 			locator1 = "AssetLists#PERSONALIZATION_DROPDOWN_ITEM");
 
 		SelectFrame(locator1 = "IFrame#MODAL_BODY");
@@ -364,7 +386,7 @@ definition {
 		Click(locator1 = "AssetLists#ASSET_LIST_ELLIPSIS");
 
 		Click(
-			key_menuItem = "View Content",
+			key_menuItem = "View Items",
 			locator1 = "AssetLists#PERSONALIZATION_DROPDOWN_ITEM");
 
 		SelectFrame(locator1 = "IFrame#MODAL_BODY");

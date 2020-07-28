@@ -698,7 +698,7 @@ public class ListUtil {
 			return StringPool.BLANK;
 		}
 
-		StringBundler sb = new StringBundler(2 * list.size() - 1);
+		StringBundler sb = new StringBundler((2 * list.size()) - 1);
 
 		for (int i = 0; i < list.size(); i++) {
 			T bean = list.get(i);
@@ -734,7 +734,7 @@ public class ListUtil {
 			return StringPool.BLANK;
 		}
 
-		StringBundler sb = new StringBundler(2 * list.size() - 1);
+		StringBundler sb = new StringBundler((2 * list.size()) - 1);
 
 		for (int i = 0; i < list.size(); i++) {
 			Object bean = list.get(i);

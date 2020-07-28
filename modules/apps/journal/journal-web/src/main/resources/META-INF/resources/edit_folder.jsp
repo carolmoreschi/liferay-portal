@@ -85,11 +85,11 @@ renderResponse.setTitle(title);
 
 		<liferay-ui:error exception="<%= FolderNameException.class %>">
 			<p>
-				<liferay-ui:message arguments="<%= new String[] {JournalFolderConstants.NAME_RESERVED_WORDS} %>" key="the-folder-name-cannot-be-blank-or-a-reserved-word-such-as-x" />
+				<liferay-ui:message arguments="<%= JournalFolderConstants.NAME_RESERVED_WORDS %>" key="the-folder-name-cannot-be-blank-or-a-reserved-word-such-as-x" />
 			</p>
 
 			<p>
-				<liferay-ui:message arguments="<%= new String[] {JournalFolderConstants.getNameInvalidCharacters(journalDisplayContext.getCharactersBlacklist())} %>" key="the-folder-name-cannot-contain-the-following-invalid-characters-x" />
+				<liferay-ui:message arguments="<%= JournalFolderConstants.getNameInvalidCharacters(journalDisplayContext.getCharactersBlacklist()) %>" key="the-folder-name-cannot-contain-the-following-invalid-characters-x" />
 			</p>
 		</liferay-ui:error>
 
@@ -193,7 +193,7 @@ renderResponse.setTitle(title);
 						</aui:script>
 
 						<%
-						String taglibRemoveFolder = "Liferay.Util.removeEntitySelection('parentFolderId', 'parentFolderName', this, '" + renderResponse.getNamespace() + "');";
+						String taglibRemoveFolder = "Liferay.Util.removeEntitySelection('parentFolderId', 'parentFolderName', this, '" + liferayPortletResponse.getNamespace() + "');";
 						%>
 
 						<aui:button disabled="<%= parentFolderId <= 0 %>" name="removeFolderButton" onClick="<%= taglibRemoveFolder %>" value="remove" />

@@ -12,20 +12,20 @@ definition {
 		property portlet.plugins.includes = "akismet-portlet";
 		var appName = "Akismet";
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Apps",
 			panel = "Control Panel",
 			portlet = "Akismet");
 
-		GlobalMenu.gotoPortlet(
-			category = "Apps",
+		ApplicationsMenu.gotoPortlet(
+			category = "System",
 			panel = "Control Panel",
 			portlet = "App Manager");
 
 		AppManager.uninstallAppCP(appName = "${appName}");
 
-		GlobalMenu.gotoPortlet(
-			category = "Apps",
+		ApplicationsMenu.gotoPortlet(
+			category = "System",
 			panel = "Control Panel",
 			portlet = "App Manager");
 

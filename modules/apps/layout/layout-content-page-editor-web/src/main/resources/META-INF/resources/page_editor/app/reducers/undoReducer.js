@@ -21,7 +21,7 @@ import {
 } from '../actions/types';
 import {getDerivedStateForUndo} from '../components/undo/undoActions';
 
-const MAX_UNDO_ACTIONS = 20;
+const MAX_UNDO_ACTIONS = 100;
 
 let actionId = 0;
 
@@ -96,6 +96,11 @@ export default function undoReducer(state, action) {
 			return {
 				...state,
 				redoHistory: action.redoHistory,
+			};
+		}
+		case 'UPDATE_STORE': {
+			return {
+				...action.store,
 			};
 		}
 		case UPDATE_UNDO_ACTIONS: {

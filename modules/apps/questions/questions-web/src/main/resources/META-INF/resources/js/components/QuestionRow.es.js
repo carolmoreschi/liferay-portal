@@ -12,6 +12,9 @@
  * details.
  */
 
+import {ClayButtonWithIcon} from '@clayui/button';
+import {ClayDropDownWithItems} from '@clayui/drop-down';
+import classNames from 'classnames';
 import React from 'react';
 
 import {
@@ -26,7 +29,7 @@ import SectionLabel from './SectionLabel.es';
 import TagList from './TagList.es';
 import UserIcon from './UserIcon.es';
 
-export default ({currentSection, question, showSectionLabel}) => (
+export default ({currentSection, items, question, showSectionLabel}) => (
 	<div className="c-mt-4 c-p-3 position-relative question-row text-secondary">
 		<div className="align-items-center d-flex flex-wrap justify-content-between">
 			<span>
@@ -43,12 +46,17 @@ export default ({currentSection, question, showSectionLabel}) => (
 								? 'caret-bottom'
 								: 'caret-top'
 						}
+						tooltip={Liferay.Language.get('votes')}
 						value={normalizeRating(question.aggregateRating)}
 					/>
 				</li>
 
 				<li>
-					<QuestionBadge symbol="view" value={question.viewCount} />
+					<QuestionBadge
+						symbol="view"
+						tooltip={Liferay.Language.get('view-count')}
+						value={question.viewCount}
+					/>
 				</li>
 
 				<li>
@@ -63,17 +71,46 @@ export default ({currentSection, question, showSectionLabel}) => (
 								? 'check-circle-full'
 								: 'message'
 						}
+						tooltip={Liferay.Language.get('number-of-replies')}
 						value={question.numberOfMessageBoardMessages}
 					/>
 				</li>
+
+				{items && items.length && (
+					<li>
+						<ClayDropDownWithItems
+							className="c-py-1"
+							items={items}
+							trigger={
+								<ClayButtonWithIcon
+									displayType="unstyled"
+									small
+									symbol="ellipsis-v"
+								/>
+							}
+						/>
+					</li>
+				)}
 			</ul>
 		</div>
 
 		<Link
 			className="questions-title stretched-link"
-			to={`/questions/${question.messageBoardSection.title}/${question.friendlyUrlPath}`}
+			to={`/questions/${
+				question.messageBoardSection &&
+				question.messageBoardSection.title
+			}/${question.friendlyUrlPath}`}
 		>
-			<h2 className="c-mb-0 stretched-link-layer text-dark">
+			<h2
+				className={classNames(
+					'c-mb-0',
+					'stretched-link-layer',
+					'text-dark',
+					{
+						'question-seen': question.seen,
+					}
+				)}
+			>
 				{question.headline}
 			</h2>
 		</Link>
@@ -90,7 +127,9 @@ export default ({currentSection, question, showSectionLabel}) => (
 			<div className="c-mt-3 c-mt-sm-0 stretched-link-layer">
 				<Link
 					to={`/questions/${
-						currentSection || question.messageBoardSection.title
+						currentSection ||
+						(question.messageBoardSection &&
+							question.messageBoardSection.title)
 					}/creator/${question.creator.id}`}
 				>
 					<UserIcon
@@ -111,7 +150,10 @@ export default ({currentSection, question, showSectionLabel}) => (
 			</div>
 
 			<TagList
-				sectionTitle={question.messageBoardSection.title}
+				sectionTitle={
+					question.messageBoardSection &&
+					question.messageBoardSection.title
+				}
 				tags={question.keywords}
 			/>
 		</div>

@@ -25,9 +25,10 @@ import com.liferay.document.library.kernel.exception.NoSuchMetadataSetException;
 import com.liferay.document.library.kernel.exception.RequiredFileEntryTypeException;
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.service.DLAppService;
+import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeService;
+import com.liferay.dynamic.data.mapping.exception.RequiredStructureException;
 import com.liferay.dynamic.data.mapping.kernel.NoSuchStructureException;
-import com.liferay.dynamic.data.mapping.kernel.RequiredStructureException;
 import com.liferay.dynamic.data.mapping.kernel.StructureDefinitionException;
 import com.liferay.dynamic.data.mapping.kernel.StructureDuplicateElementException;
 import com.liferay.dynamic.data.mapping.kernel.StructureNameException;
@@ -41,17 +42,22 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.SetUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -166,31 +172,60 @@ public class EditFileEntryTypeDataDefinitionMVCActionCommand
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			DLFileEntryType.class.getName(), actionRequest);
 
-		_dlFileEntryTypeService.addFileEntryType(
-			themeDisplay.getScopeGroupId(), dataDefinition.getId(), null,
-			nameMap, descriptionMap, serviceContext);
+		DLFileEntryType fileEntryType =
+			_dlFileEntryTypeService.addFileEntryType(
+				themeDisplay.getScopeGroupId(), dataDefinition.getId(), null,
+				nameMap, descriptionMap, serviceContext);
+
+		long[] ddmStructureIds = _getLongArray(
+			actionRequest, "ddmStructuresSearchContainerPrimaryKeys");
+
+		_dlFileEntryTypeLocalService.addDDMStructureLinks(
+			fileEntryType.getFileEntryTypeId(),
+			SetUtil.fromArray(ddmStructureIds));
 	}
 
 	private void _deleteFileEntryType(ActionRequest actionRequest)
 		throws Exception {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
+		try {
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
-		long fileEntryTypeId = ParamUtil.getLong(
-			actionRequest, "fileEntryTypeId");
+			long fileEntryTypeId = ParamUtil.getLong(
+				actionRequest, "fileEntryTypeId");
 
-		DLFileEntryType fileEntryType =
-			_dlFileEntryTypeService.getFileEntryType(fileEntryTypeId);
+			DLFileEntryType fileEntryType =
+				_dlFileEntryTypeService.getFileEntryType(fileEntryTypeId);
 
-		DataDefinitionResource dataDefinitionResource =
-			DataDefinitionResource.builder(
-			).user(
-				themeDisplay.getUser()
-			).build();
+			DataDefinitionResource dataDefinitionResource =
+				DataDefinitionResource.builder(
+				).user(
+					themeDisplay.getUser()
+				).build();
 
-		dataDefinitionResource.deleteDataDefinition(
-			fileEntryType.getDataDefinitionId());
+			dataDefinitionResource.deleteDataDefinition(
+				fileEntryType.getDataDefinitionId());
+
+			_dlFileEntryTypeService.deleteFileEntryType(fileEntryTypeId);
+
+			_dlFileEntryTypeLocalService.updateDDMStructureLinks(
+				fileEntryTypeId, Collections.emptySet());
+		}
+		catch (RequiredStructureException requiredStructureException) {
+			throw new RequiredFileEntryTypeException(
+				requiredStructureException);
+		}
+	}
+
+	private long[] _getLongArray(PortletRequest portletRequest, String name) {
+		String value = portletRequest.getParameter(name);
+
+		if (value == null) {
+			return null;
+		}
+
+		return StringUtil.split(GetterUtil.getString(value), 0L);
 	}
 
 	private void _subscribeFileEntryType(ActionRequest actionRequest)
@@ -252,10 +287,19 @@ public class EditFileEntryTypeDataDefinitionMVCActionCommand
 
 		_dlFileEntryTypeService.updateFileEntryType(
 			fileEntryTypeId, nameMap, descriptionMap);
+
+		long[] ddmStructureIds = _getLongArray(
+			actionRequest, "ddmStructuresSearchContainerPrimaryKeys");
+
+		_dlFileEntryTypeLocalService.updateDDMStructureLinks(
+			fileEntryTypeId, SetUtil.fromArray(ddmStructureIds));
 	}
 
 	@Reference
 	private DLAppService _dlAppService;
+
+	@Reference
+	private DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
 
 	@Reference
 	private DLFileEntryTypeService _dlFileEntryTypeService;

@@ -1,5 +1,5 @@
 .app-builder-standalone {
-	background-color: #e5e5e5;
+	background-color: #f1f2f5;
 	min-height: 100vh;
 	padding-bottom: 9.5rem;
 
@@ -8,14 +8,10 @@
 		padding-bottom: 2rem;
 
 		&.edit-entry {
-			max-width: 856px;
+			max-width: 808px;
 		}
 
 		.app-builder-root {
-			.app-builder-form-buttons {
-				padding: 0 0.75rem;
-			}
-
 			.edit-entry {
 				padding-top: 3rem;
 			}
@@ -55,9 +51,7 @@
 			padding: 0;
 
 			&.edit-entry {
-				margin-left: auto;
-				margin-right: auto;
-				max-width: 856px;
+				display: none;
 			}
 		}
 

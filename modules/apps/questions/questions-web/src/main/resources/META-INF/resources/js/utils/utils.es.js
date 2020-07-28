@@ -30,6 +30,10 @@ export function dateToInternationalHuman(
 		month: 'short',
 	};
 
+	if (date.getFullYear() !== new Date().getFullYear()) {
+		options.year = 'numeric';
+	}
+
 	const intl = new Intl.DateTimeFormat(localeKey, options);
 
 	return intl.format(date);
@@ -100,7 +104,10 @@ export function useDebounceCallback(callback, milliseconds) {
 export function normalizeRating(aggregateRating) {
 	return (
 		aggregateRating &&
-		aggregateRating.ratingCount * normalize(aggregateRating.ratingAverage)
+		Math.trunc(
+			aggregateRating.ratingCount *
+				normalize(aggregateRating.ratingAverage)
+		)
 	);
 }
 
@@ -125,7 +132,37 @@ export function historyPushWithSlug(push) {
 }
 
 export function stripHTML(text) {
-	const htmlTags = /<([^>]+>)/g;
+	if (!text) {
+		return '';
+	}
 
-	return text.replace(htmlTags, '');
+	const htmlTags = /<([^>]+>)/g;
+	const nonBreakableSpace = '&nbsp;';
+	const newLines = /\r?\n|\r/g;
+
+	return (
+		text
+			.replace(htmlTags, '')
+			.replace(nonBreakableSpace, ' ')
+			.replace(newLines, '') || ''
+	);
+}
+
+export function getFullPath() {
+	return window.location.href.substring(0, window.location.href.indexOf('#'));
+}
+
+export function getBasePath() {
+	return window.location.href.substring(
+		window.location.origin.length,
+		window.location.href.indexOf('#')
+	);
+}
+
+export function getContextLink(url) {
+	return {
+		headers: {
+			Link: `${getFullPath()}?redirectTo=/%23/questions/${url}/`,
+		},
+	};
 }

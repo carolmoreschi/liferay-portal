@@ -150,9 +150,8 @@ public class DDMFormViewFormInstanceRecordsDisplayContext {
 
 				@Override
 				public String apply(DDMFormFieldValue ddmFormFieldValue) {
-					return HtmlUtil.escape(
-						ddmFormFieldValueRenderer.render(
-							ddmFormFieldValue, _renderRequest.getLocale()));
+					return ddmFormFieldValueRenderer.render(
+						ddmFormFieldValue, _renderRequest.getLocale());
 				}
 
 			});
@@ -221,7 +220,6 @@ public class DDMFormViewFormInstanceRecordsDisplayContext {
 		return NavigationItemListBuilder.add(
 			navigationItem -> {
 				navigationItem.setActive(true);
-				navigationItem.setHref(StringPool.BLANK);
 
 				DDMFormInstance ddmFormInstance = getDDMFormInstance();
 
@@ -391,15 +389,6 @@ public class DDMFormViewFormInstanceRecordsDisplayContext {
 			"orderByType", orderByType.equals("asc") ? "desc" : "asc");
 
 		return sortingURL.toString();
-	}
-
-	public int getStatus(DDMFormInstanceRecord ddmFormInstanceRecord)
-		throws PortalException {
-
-		DDMFormInstanceRecordVersion ddmFormInstanceRecordVersion =
-			ddmFormInstanceRecord.getFormInstanceRecordVersion();
-
-		return ddmFormInstanceRecordVersion.getStatus();
 	}
 
 	public int getTotalItems() {

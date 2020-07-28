@@ -12,6 +12,7 @@
  * details.
  */
 
+import ClayLayout from '@clayui/layout';
 import React, {useEffect, useState} from 'react';
 
 import CollectionService from '../../services/CollectionService';
@@ -49,12 +50,6 @@ export function fromControlsId(controlsItemId) {
 	return itemId || controlsItemId;
 }
 
-const NoItemsMessage = () => (
-	<div className="page-editor__collection__no-items-message">
-		{Liferay.Language.get('you-do-not-have-any-items-in-this-collection')}
-	</div>
-);
-
 const NotCollectionSelectedMessage = () => (
 	<div className="page-editor__collection__not-collection-selected-message">
 		{Liferay.Language.get('no-collection-selected-yet')}
@@ -84,10 +79,7 @@ const Grid = ({
 				const itemCount = i * numberOfColumns + j;
 
 				columns.push(
-					<div
-						className={`col col-${12 / numberOfColumns}`}
-						key={index}
-					>
+					<ClayLayout.Col key={index} size={12 / numberOfColumns}>
 						{itemCount < maxNumberOfItems && (
 							<CollectionItemContextProvider
 								key={index}
@@ -111,21 +103,22 @@ const Grid = ({
 								{React.cloneElement(child)}
 							</CollectionItemContextProvider>
 						)}
-					</div>
+					</ClayLayout.Col>
 				);
 			}
 
-			rows.push(
-				<div className="row" key={i}>
-					{columns}
-				</div>
-			);
+			rows.push(<ClayLayout.Row key={i}>{columns}</ClayLayout.Row>);
 		}
 
 		return rows;
 	};
 
 	return createRows();
+};
+
+const DEFAULT_COLLECTION = {
+	items: [{defaultTitle: Liferay.Language.get('title')}],
+	length: 1,
 };
 
 const Collection = React.forwardRef(({children, item}, ref) => {
@@ -138,10 +131,7 @@ const Collection = React.forwardRef(({children, item}, ref) => {
 		(state) => state.segmentsExperienceId
 	);
 
-	const [collection, setCollection] = useState({
-		items: [],
-		length: 0,
-	});
+	const [collection, setCollection] = useState(DEFAULT_COLLECTION);
 
 	useEffect(() => {
 		if (collectionConfig.collection) {
@@ -155,7 +145,9 @@ const Collection = React.forwardRef(({children, item}, ref) => {
 				templateKey: collectionConfig.templateKey || null,
 			})
 				.then((response) => {
-					setCollection(response);
+					setCollection(
+						response.length > 0 ? response : DEFAULT_COLLECTION
+					);
 				})
 				.catch((error) => {
 					if (process.env.NODE_ENV === 'development') {
@@ -197,22 +189,18 @@ const Collection = React.forwardRef(({children, item}, ref) => {
 		<div className="page-editor__collection" ref={ref}>
 			{!collectionIsMapped(collectionConfig) ? (
 				<NotCollectionSelectedMessage />
-			) : collection.items.length > 0 ? (
-				collection.content ? (
-					<UnsafeHTML markup={collection.content} />
-				) : (
-					<Grid
-						child={child}
-						collection={collection.items}
-						collectionFields={collectionFields}
-						collectionId={item.itemId}
-						collectionLength={collection.items.length}
-						numberOfColumns={collectionConfig.numberOfColumns}
-						numberOfItems={collectionConfig.numberOfItems}
-					/>
-				)
+			) : collection.content ? (
+				<UnsafeHTML markup={collection.content} />
 			) : (
-				<NoItemsMessage />
+				<Grid
+					child={child}
+					collection={collection.items}
+					collectionFields={collectionFields}
+					collectionId={item.itemId}
+					collectionLength={collection.items.length}
+					numberOfColumns={collectionConfig.numberOfColumns}
+					numberOfItems={collectionConfig.numberOfItems}
+				/>
 			)}
 		</div>
 	);

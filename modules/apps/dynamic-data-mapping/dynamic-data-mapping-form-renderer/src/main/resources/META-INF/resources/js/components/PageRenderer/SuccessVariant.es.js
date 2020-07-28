@@ -14,20 +14,22 @@
 
 import {ClayButtonWithIcon} from '@clayui/button';
 import {ClayDropDownWithItems} from '@clayui/drop-down';
-import React, {useState} from 'react';
+import ClayLayout from '@clayui/layout';
+import {usePrevious} from 'frontend-js-react-web';
+import React, {useEffect, useState} from 'react';
 
-import {EVENT_TYPES, usePage} from '../../hooks/usePage.es';
+import {EVENT_TYPES} from '../../actions/eventTypes.es';
+import {useForm} from '../../hooks/useForm.es';
+import {usePage} from '../../hooks/usePage.es';
 import {setValue} from '../../util/i18n.es';
 
 export const Container = ({children, pages, strings = {}}) => {
-	const {
-		dispatch,
-		store: {editingLanguageId},
-	} = usePage();
+	const {editingLanguageId} = usePage();
+	const dispatch = useForm();
 
 	return (
 		<div className="page">
-			<div className="ddm-page-success-layout sheet simple-page">
+			<ClayLayout.Sheet className="ddm-page-success-layout simple-page">
 				<div className="form-builder-layout">
 					<h5 className="pagination">
 						{strings['success-page'] ??
@@ -36,7 +38,7 @@ export const Container = ({children, pages, strings = {}}) => {
 
 					{children}
 				</div>
-			</div>
+			</ClayLayout.Sheet>
 
 			<div className="ddm-paginated-builder-dropdown">
 				<ClayDropDownWithItems
@@ -74,23 +76,35 @@ export const Container = ({children, pages, strings = {}}) => {
 };
 
 export const Page = ({page}) => {
-	const {dispatch, store} = usePage();
-	const {successPageSettings} = page;
-	const {editingLanguageId} = store;
+	const {editingLanguageId} = usePage();
+	const dispatch = useForm();
+
+	const {defaultLanguageId, successPageSettings} = page;
+
+	const prevEditingLanguageId = usePrevious(editingLanguageId);
 
 	const {initialBody, initialTitle} = {
 		initialBody:
 			(successPageSettings.body &&
-				successPageSettings.body[editingLanguageId]) ||
+				(successPageSettings.body[editingLanguageId] ||
+					successPageSettings.body[defaultLanguageId])) ||
 			'',
 		initialTitle:
 			(successPageSettings.title &&
-				successPageSettings.title[editingLanguageId]) ||
+				(successPageSettings.title[editingLanguageId] ||
+					successPageSettings.title[defaultLanguageId])) ||
 			'',
 	};
 
 	const [body, setBody] = useState(initialBody);
 	const [title, setTitle] = useState(initialTitle);
+
+	useEffect(() => {
+		if (prevEditingLanguageId !== editingLanguageId) {
+			setBody(initialBody);
+			setTitle(initialTitle);
+		}
+	}, [editingLanguageId, initialBody, initialTitle, prevEditingLanguageId]);
 
 	const onChange = (event, setting) => {
 		dispatch({

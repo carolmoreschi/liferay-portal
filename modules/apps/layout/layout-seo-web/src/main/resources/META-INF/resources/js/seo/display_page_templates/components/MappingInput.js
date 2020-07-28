@@ -18,9 +18,30 @@ import React, {useState} from 'react';
 
 import MappingPanel from './MappingPanel';
 
-function MappingInput({fields, label, name, selectedField, selectedSource}) {
+const UNMAPPED_OPTION = {
+	key: 'unmapped',
+	label: `-- ${Liferay.Language.get('unmapped')} --`,
+};
+
+function MappingInput({
+	fieldType,
+	helpMessage,
+	initialFields,
+	label,
+	name,
+	selectedFieldKey,
+	selectedSource,
+}) {
+	const fields = [
+		UNMAPPED_OPTION,
+		...initialFields.filter(({type}) => type === fieldType),
+	];
 	const [source, setSource] = useState(selectedSource);
-	const [field, setField] = useState(selectedField);
+	const [field, setField] = useState(
+		fields.find(({key}) => key === selectedFieldKey) || UNMAPPED_OPTION
+	);
+
+	const isActive = !!field && field.key !== UNMAPPED_OPTION.key;
 
 	const inititalSourceLabel = selectedSource
 		? selectedSource.classTypeLabel || selectedSource.classNameLabel
@@ -33,14 +54,22 @@ function MappingInput({fields, label, name, selectedField, selectedSource}) {
 
 	return (
 		<ClayForm.Group>
-			<label className="control-label">{label}</label>
+			<label className="control-label" htmlFor={name}>
+				{label}
+			</label>
 			<ClayInput.Group>
 				<ClayInput.GroupItem>
 					<ClayInput
 						className="dpt-mapping-input"
+						id={name}
 						readOnly
 						type="text"
-						value={`${inititalSourceLabel}: ${field.label}`}
+						value={`${
+							(isActive &&
+								inititalSourceLabel &&
+								`${inititalSourceLabel}: `) ||
+							''
+						}${field.label}`}
 					/>
 					<ClayInput name={name} type="hidden" value={field.key} />
 				</ClayInput.GroupItem>
@@ -48,6 +77,7 @@ function MappingInput({fields, label, name, selectedField, selectedSource}) {
 					<MappingPanel
 						field={field}
 						fields={fields}
+						isActive={isActive}
 						name={name}
 						onChange={handleOnchange}
 						source={{
@@ -57,16 +87,15 @@ function MappingInput({fields, label, name, selectedField, selectedSource}) {
 					/>
 				</ClayInput.GroupItem>
 			</ClayInput.Group>
+			{helpMessage && <ClayForm.Text>{helpMessage}</ClayForm.Text>}
 		</ClayForm.Group>
 	);
 }
 
 MappingInput.propTypes = {
+	helpMessage: PropTypes.string,
 	name: PropTypes.string.isRequired,
-	selectedField: PropTypes.shape({
-		key: PropTypes.string,
-		label: PropTypes.string,
-	}).isRequired,
+	selectedFieldKey: PropTypes.string,
 	selectedSource: PropTypes.shape({
 		classNameLabel: PropTypes.string,
 		classTypeLabel: PropTypes.string,

@@ -17,6 +17,7 @@ package com.liferay.expando.kernel.service;
 import com.liferay.expando.kernel.model.ExpandoRow;
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.change.tracking.CTAware;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
@@ -51,6 +52,7 @@ import org.osgi.annotation.versioning.ProviderType;
  * @see ExpandoRowLocalServiceUtil
  * @generated
  */
+@CTAware
 @ProviderType
 @Transactional(
 	isolation = Isolation.PORTAL,
@@ -68,6 +70,10 @@ public interface ExpandoRowLocalService
 
 	/**
 	 * Adds the expando row to the database. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect ExpandoRowLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param expandoRow the expando row
 	 * @return the expando row that was added
@@ -95,6 +101,10 @@ public interface ExpandoRowLocalService
 	/**
 	 * Deletes the expando row from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect ExpandoRowLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param expandoRow the expando row
 	 * @return the expando row that was removed
 	 */
@@ -103,6 +113,10 @@ public interface ExpandoRowLocalService
 
 	/**
 	 * Deletes the expando row with the primary key from the database. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect ExpandoRowLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param rowId the primary key of the expando row
 	 * @return the expando row that was removed
@@ -312,6 +326,10 @@ public interface ExpandoRowLocalService
 
 	/**
 	 * Updates the expando row in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect ExpandoRowLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param expandoRow the expando row
 	 * @return the expando row that was updated

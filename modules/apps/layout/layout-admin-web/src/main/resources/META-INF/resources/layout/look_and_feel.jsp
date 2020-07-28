@@ -76,14 +76,14 @@ if ((layoutPageTemplateEntry == null) || !Objects.equals(layoutPageTemplateEntry
 			<clay:button
 				cssClass='<%= (masterLayoutPageTemplateEntry == null) ? "hide" : StringPool.BLANK %>'
 				displayType="secondary"
-				id='<%= renderResponse.getNamespace() + "editMasterLayoutButton" %>'
+				id='<%= liferayPortletResponse.getNamespace() + "editMasterLayoutButton" %>'
 				label="edit-master"
 				small="<%= true %>"
 			/>
 
 			<clay:button
 				displaytype="secondary"
-				id='<%= renderResponse.getNamespace() + "changeMasterLayoutButton" %>'
+				id='<%= liferayPortletResponse.getNamespace() + "changeMasterLayoutButton" %>'
 				label="change-master"
 				small="<%= true %>"
 			/>
@@ -117,7 +117,7 @@ else {
 
 <clay:sheet-section
 	className='<%= (selLayout.getMasterLayoutPlid() <= 0) ? StringPool.BLANK : "hide" %>'
-	id='<%= renderResponse.getNamespace() + "themeContainer" %>'
+	id='<%= liferayPortletResponse.getNamespace() + "themeContainer" %>'
 >
 	<h3 class="sheet-subtitle"><liferay-ui:message key="theme" /></h3>
 
@@ -225,11 +225,9 @@ else {
 		if (selLayout.getMasterLayoutPlid() > 0) {
 			Layout masterLayout = LayoutLocalServiceUtil.getLayout(selLayout.getMasterLayoutPlid());
 
-			Layout masterDraftLayout = LayoutLocalServiceUtil.fetchLayout(PortalUtil.getClassNameId(Layout.class), masterLayout.getPlid());
-
 			String editLayoutURL = HttpUtil.addParameter(HttpUtil.addParameter(PortalUtil.getLayoutFullURL(selLayout, themeDisplay), "p_l_mode", Constants.EDIT), "p_l_back_url", ParamUtil.getString(request, "redirect"));
 
-			editMasterLayoutURL = HttpUtil.addParameter(HttpUtil.addParameter(PortalUtil.getLayoutFullURL(masterDraftLayout, themeDisplay), "p_l_mode", Constants.EDIT), "p_l_back_url", editLayoutURL);
+			editMasterLayoutURL = HttpUtil.addParameter(HttpUtil.addParameter(PortalUtil.getLayoutFullURL(masterLayout.fetchDraftLayout(), themeDisplay), "p_l_mode", Constants.EDIT), "p_l_back_url", editLayoutURL);
 		}
 		%>
 

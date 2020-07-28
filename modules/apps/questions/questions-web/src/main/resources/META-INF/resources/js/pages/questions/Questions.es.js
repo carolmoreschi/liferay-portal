@@ -12,20 +12,55 @@
  * details.
  */
 
-import ClayButton from '@clayui/button';
+import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
+import ClayEmptyState from '@clayui/empty-state';
+import {ClayInput, ClaySelect} from '@clayui/form';
+import ClayIcon from '@clayui/icon';
+import ClayLoadingIndicator from '@clayui/loading-indicator';
 import {ClayResultsBar} from '@clayui/management-toolbar';
 import React, {useContext, useEffect, useState} from 'react';
 import {withRouter} from 'react-router-dom';
 
 import {AppContext} from '../../AppContext.es';
-import Error from '../../components/Error.es';
+import Alert from '../../components/Alert.es';
+import Breadcrumb from '../../components/Breadcrumb.es';
 import PaginatedList from '../../components/PaginatedList.es';
 import QuestionRow from '../../components/QuestionRow.es';
+import SectionSubscription from '../../components/SectionSubscription.es';
 import useQueryParams from '../../hooks/useQueryParams.es';
-import {getQuestionThreads} from '../../utils/client.es';
+import {getQuestionThreads, getSections} from '../../utils/client.es';
 import lang from '../../utils/lang.es';
-import {historyPushWithSlug, slugToText} from '../../utils/utils.es';
-import QuestionsNavigationBar from '../QuestionsNavigationBar.es';
+import {
+	getBasePath,
+	historyPushWithSlug,
+	slugToText,
+	useDebounceCallback,
+} from '../../utils/utils.es';
+
+function getFilterOptions() {
+	return [
+		{
+			label: Liferay.Language.get('latest-created'),
+			value: 'latest-created',
+		},
+		{
+			label: Liferay.Language.get('latest-edited'),
+			value: 'latest-edited',
+		},
+		{
+			label: Liferay.Language.get('voted-in-the-last-week'),
+			value: 'week',
+		},
+		{
+			label: Liferay.Language.get('voted-in-the-last-month'),
+			value: 'month',
+		},
+		{
+			label: Liferay.Language.get('most-voted'),
+			value: 'most-voted',
+		},
+	];
+}
 
 export default withRouter(
 	({
@@ -43,7 +78,6 @@ export default withRouter(
 		const [pageSize, setPageSize] = useState(20);
 		const [questions, setQuestions] = useState([]);
 		const [search, setSearch] = useState('');
-		const [searchCallback, setSearchCallback] = useState();
 		const [section, setSection] = useState({});
 
 		const queryParams = useQueryParams(location);
@@ -64,11 +98,15 @@ export default withRouter(
 		}, [queryParams]);
 
 		useEffect(() => {
+			setPageSize(queryParams.get('pagesize') || 20);
+		}, [queryParams]);
+
+		useEffect(() => {
 			setSearch(queryParams.get('search') || '');
 		}, [queryParams]);
 
 		useEffect(() => {
-			if (section.id == null) {
+			if (section.id == null && !currentTag) {
 				return;
 			}
 
@@ -85,9 +123,6 @@ export default withRouter(
 				.then(({data, loading}) => {
 					setQuestions(data || []);
 					setLoading(loading);
-					if (searchCallback) {
-						searchCallback(false);
-					}
 				})
 				.catch((error) => {
 					if (process.env.NODE_ENV === 'development') {
@@ -97,7 +132,6 @@ export default withRouter(
 					setError({message: 'Loading Questions', title: 'Error'});
 				});
 		}, [
-			searchCallback,
 			creatorId,
 			currentTag,
 			filter,
@@ -108,21 +142,63 @@ export default withRouter(
 			siteKey,
 		]);
 
-		const loadSearch = (search, searchCallback) => {
-			historyPushParser(
-				`/questions/${sectionTitle}${
-					search && search !== '' ? '?search=' + search : ''
-				}`
-			);
-			setSearchCallback(() => searchCallback);
+		function buildURL(search, page, pageSize) {
+			let url = '/questions';
+
+			if (sectionTitle) {
+				url += `/${sectionTitle}`;
+			}
+
+			if (tag) {
+				url += `/tag/${tag}`;
+			}
+			if (creatorId) {
+				url += `/creator/${creatorId}`;
+			}
+			if (search) {
+				url += `?search=${search}&`;
+			}
+			else {
+				url += '?';
+			}
+
+			url += `page=${page}&pagesize=${pageSize}`;
+
+			return url;
+		}
+
+		const changePage = (page, pageSize) => {
+			historyPushParser(buildURL(search, page, pageSize));
 		};
 
-		const changePage = (number) => {
-			historyPushParser(
-				`/questions/${context.section}${tag ? '/tag/' + tag : ''}${
-					search && search !== '' ? '?search=' + search + '&' : '?'
-				}page=${number}`
-			);
+		const [debounceCallback] = useDebounceCallback((search) => {
+			setLoading(true);
+			historyPushParser(buildURL(search, 1, 20));
+		}, 500);
+
+		useEffect(() => {
+			if (sectionTitle) {
+				getSections(slugToText(sectionTitle), context.siteKey).then(
+					setSection
+				);
+			}
+		}, [sectionTitle, context.siteKey]);
+
+		const filterOptions = getFilterOptions();
+
+		const navigateToNewQuestion = () => {
+			if (context.redirectToLogin && !themeDisplay.isSignedIn()) {
+				const baseURL = getBasePath();
+
+				window.location.replace(
+					`/c/portal/login?redirect=${baseURL}#/questions/${sectionTitle}/new`
+				);
+			}
+			else {
+				historyPushParser(`/questions/${sectionTitle}/new`);
+			}
+
+			return false;
 		};
 
 		return (
@@ -130,22 +206,22 @@ export default withRouter(
 				<div className="questions-container">
 					<div className="row">
 						<div className="c-mt-3 col col-xl-12">
-							<QuestionsNavigationBar
-								filterChange={setFilter}
-								searchChange={loadSearch}
-								sectionChange={(section) => setSection(section)}
-							/>
+							<Breadcrumb section={section} />
 						</div>
 
-						{!!search && (
-							<div className="c-mt-5 c-mt-md-1 c-px-0 col-xl-12">
-								<ClayResultsBar>
+						<div className="c-mt-3 col col-xl-12">
+							<QuestionsNavigationBar />
+						</div>
+
+						{!!search && !loading && (
+							<div className="c-mt-5 c-mx-auto c-px-0 col-xl-12">
+								<ClayResultsBar className="c-mt-5">
 									<ClayResultsBar.Item expand>
 										<span className="component-text text-truncate-inline">
 											<span className="text-truncate">
 												{lang.sub(
 													Liferay.Language.get(
-														'found-x-results-for-x'
+														'x-results-for-x'
 													),
 													[
 														questions.totalCount,
@@ -159,9 +235,11 @@ export default withRouter(
 										<ClayButton
 											className="component-link tbar-link"
 											displayType="unstyled"
-											onClick={() =>
-												loadSearch('', searchCallback)
-											}
+											onClick={() => {
+												historyPushParser(
+													`/questions/${sectionTitle}`
+												);
+											}}
 										>
 											{Liferay.Language.get('clear')}
 										</ClayButton>
@@ -170,13 +248,38 @@ export default withRouter(
 							</div>
 						)}
 
-						<div className="c-mt-5 c-mx-auto c-px-0 col-xl-10">
+						<div className="c-mx-auto c-px-0 col-xl-10">
 							<PaginatedList
 								activeDelta={pageSize}
 								activePage={page}
-								changeDelta={setPageSize}
-								changePage={changePage}
+								changeDelta={(pageSize) =>
+									changePage(page, pageSize)
+								}
+								changePage={(page) =>
+									changePage(page, pageSize)
+								}
 								data={questions}
+								emptyState={
+									<ClayEmptyState
+										description="There are no questions inside this topic, be the first to ask something!"
+										imgSrc={
+											context.includeContextPath +
+											'/assets/empty_questions_list.png'
+										}
+										title="This topic is empty."
+									>
+										{sectionTitle && (
+											<ClayButton
+												displayType="primary"
+												onClick={navigateToNewQuestion}
+											>
+												{Liferay.Language.get(
+													'ask-question'
+												)}
+											</ClayButton>
+										)}
+									</ClayEmptyState>
+								}
 								loading={loading}
 							>
 								{(question) => (
@@ -191,11 +294,142 @@ export default withRouter(
 								)}
 							</PaginatedList>
 
-							<Error error={error} />
+							<Alert info={error} />
 						</div>
 					</div>
 				</div>
 			</section>
 		);
+
+		function QuestionsNavigationBar() {
+			return (
+				<div className="d-flex flex-column flex-xl-row justify-content-between">
+					<div className="align-items-center d-flex flex-grow-1">
+						{section &&
+							section.actions &&
+							section.actions.subscribe && (
+								<div className="c-ml-3">
+									<SectionSubscription section={section} />
+								</div>
+							)}
+					</div>
+
+					<div className="c-mt-3 c-mt-xl-0 d-flex flex-column flex-grow-1 flex-md-row">
+						<ClayInput.Group className="justify-content-xl-end">
+							<ClayInput.GroupItem shrink>
+								<label
+									className="align-items-center d-inline-flex m-0 text-secondary"
+									htmlFor="questionsFilter"
+								>
+									{Liferay.Language.get('filter-by')}
+								</label>
+							</ClayInput.GroupItem>
+
+							<ClayInput.GroupItem shrink>
+								<ClaySelect
+									className="bg-transparent border-0"
+									disabled={loading}
+									id="questionsFilter"
+									onChange={(event) => {
+										setLoading(true);
+										setFilter(event.target.value);
+									}}
+									value={filter}
+								>
+									{filterOptions.map((option) => (
+										<ClaySelect.Option
+											key={option.value}
+											label={option.label}
+											value={option.value}
+										/>
+									))}
+								</ClaySelect>
+							</ClayInput.GroupItem>
+						</ClayInput.Group>
+
+						<ClayInput.Group className="c-mt-3 c-mt-md-0">
+							<ClayInput.GroupItem>
+								<ClayInput
+									className="bg-transparent form-control input-group-inset input-group-inset-after"
+									defaultValue={
+										(search && slugToText(search)) || ''
+									}
+									disabled={
+										!search &&
+										questions &&
+										questions.items &&
+										!questions.items.length
+									}
+									onChange={(event) =>
+										debounceCallback(event.target.value)
+									}
+									placeholder={Liferay.Language.get('search')}
+									type="text"
+								/>
+
+								<ClayInput.GroupInsetItem
+									after
+									className="bg-transparent"
+									tag="span"
+								>
+									{loading && (
+										<button
+											className="btn btn-monospaced btn-unstyled"
+											type="submit"
+										>
+											<ClayLoadingIndicator
+												className="mb-0 mt-0"
+												small
+											/>
+										</button>
+									)}
+									{!loading && (
+										<ClayButtonWithIcon
+											displayType="unstyled"
+											symbol="search"
+											type="submit"
+										/>
+									)}
+								</ClayInput.GroupInsetItem>
+							</ClayInput.GroupItem>
+
+							{sectionTitle &&
+								questions &&
+								questions.totalCount > 0 &&
+								(context.redirectToLogin ||
+									(section &&
+										section.actions &&
+										section.actions['add-thread'])) && (
+									<ClayInput.GroupItem shrink>
+										<ClayButton
+											className="c-ml-3 d-none d-sm-block text-nowrap"
+											displayType="primary"
+											onClick={navigateToNewQuestion}
+										>
+											{Liferay.Language.get(
+												'ask-question'
+											)}
+										</ClayButton>
+
+										<ClayButton
+											className="btn-monospaced d-block d-sm-none position-fixed questions-button shadow"
+											displayType="primary"
+											onClick={navigateToNewQuestion}
+										>
+											<ClayIcon symbol="pencil" />
+
+											<span className="sr-only">
+												{Liferay.Language.get(
+													'ask-question'
+												)}
+											</span>
+										</ClayButton>
+									</ClayInput.GroupItem>
+								)}
+						</ClayInput.Group>
+					</div>
+				</div>
+			);
+		}
 	}
 );

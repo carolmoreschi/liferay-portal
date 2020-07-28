@@ -13,6 +13,7 @@
  */
 
 import ClayForm, {ClaySelectWithOption} from '@clayui/form';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, {useEffect, useState} from 'react';
 
@@ -20,7 +21,8 @@ import {addMappedInfoItem} from '../../app/actions/index';
 import {useCollectionFields} from '../../app/components/CollectionItemContext';
 import isMapped from '../../app/components/fragment-content/isMapped';
 import {COMPATIBLE_TYPES} from '../../app/config/constants/compatibleTypes';
-import {PAGE_TYPES} from '../../app/config/constants/pageTypes';
+import {EDITABLE_TYPES} from '../../app/config/constants/editableTypes';
+import {LAYOUT_TYPES} from '../../app/config/constants/layoutTypes';
 import {config} from '../../app/config/index';
 import InfoItemService from '../../app/services/InfoItemService';
 import {useDispatch, useSelector} from '../../app/store/index';
@@ -78,7 +80,7 @@ function loadFields({
 		});
 	}
 
-	return Promise.resolve([]);
+	return Promise.resolve(null);
 }
 
 export default function ({fieldType, mappedItem, onMappingSelect}) {
@@ -106,43 +108,26 @@ function CollectionMappingSelector({
 	mappedItem,
 	onMappingSelect,
 }) {
-	const mappingSelectorFieldSelectId = useId();
 	const fields = collectionFields.filter(
 		(field) => COMPATIBLE_TYPES[fieldType].indexOf(field.type) !== -1
 	);
 
 	return (
-		<ClayForm.Group small>
-			<label htmlFor={mappingSelectorFieldSelectId}>
-				{Liferay.Language.get('field')}
-			</label>
-			<ClaySelectWithOption
-				aria-label={Liferay.Language.get('field')}
-				id={mappingSelectorFieldSelectId}
-				onChange={(event) => {
-					if (event.target.value === UNMAPPED_OPTION.value) {
-						onMappingSelect({collectionFieldId: ''});
-					}
-					else {
-						onMappingSelect({
-							collectionFieldId: event.target.value,
-						});
-					}
-				}}
-				options={
-					fields && fields.length
-						? [
-								UNMAPPED_OPTION,
-								...fields.map(({key, label}) => ({
-									label,
-									value: key,
-								})),
-						  ]
-						: [UNMAPPED_OPTION]
+		<MappingFieldSelect
+			fields={fields}
+			fieldType={fieldType}
+			onValueSelect={(event) => {
+				if (event.target.value === UNMAPPED_OPTION.value) {
+					onMappingSelect({collectionFieldId: ''});
 				}
-				value={mappedItem.collectionFieldId}
-			/>
-		</ClayForm.Group>
+				else {
+					onMappingSelect({
+						collectionFieldId: event.target.value,
+					});
+				}
+			}}
+			value={mappedItem.collectionFieldId}
+		/>
 	);
 }
 
@@ -150,14 +135,13 @@ function MappingSelector({fieldType, mappedItem, onMappingSelect}) {
 	const dispatch = useDispatch();
 	const mappedInfoItems = useSelector((state) => state.mappedInfoItems);
 	const mappingSelectorSourceSelectId = useId();
-	const mappingSelectorFieldSelectId = useId();
 
 	const {selectedMappingTypes} = config;
 
-	const [fields, setFields] = useState([]);
+	const [fields, setFields] = useState(null);
 	const [selectedItem, setSelectedItem] = useState(mappedItem);
 	const [selectedSourceTypeId, setSelectedSourceTypeId] = useState(
-		mappedItem.mappedField || config.pageType === PAGE_TYPES.display
+		mappedItem.mappedField || config.layoutType === LAYOUT_TYPES.display
 			? MAPPING_SOURCE_TYPE_IDS.structure
 			: MAPPING_SOURCE_TYPE_IDS.content
 	);
@@ -265,7 +249,7 @@ function MappingSelector({fieldType, mappedItem, onMappingSelect}) {
 
 	return (
 		<>
-			{config.pageType === PAGE_TYPES.display && (
+			{config.layoutType === LAYOUT_TYPES.display && (
 				<ClayForm.Group small>
 					<label htmlFor="mappingSelectorSourceSelect">
 						{Liferay.Language.get('source')}
@@ -316,29 +300,66 @@ function MappingSelector({fieldType, mappedItem, onMappingSelect}) {
 				</ClayForm.Group>
 			)}
 			<ClayForm.Group small>
-				<label htmlFor="mappingSelectorFieldSelect">
-					{Liferay.Language.get('field')}
-				</label>
-				<ClaySelectWithOption
-					aria-label={Liferay.Language.get('field')}
-					disabled={!(fields && fields.length)}
-					id={mappingSelectorFieldSelectId}
-					onChange={onFieldSelect}
-					options={
-						fields && fields.length
-							? [
-									UNMAPPED_OPTION,
-									...fields.map(({key, label}) => ({
-										label,
-										value: key,
-									})),
-							  ]
-							: [UNMAPPED_OPTION]
-					}
+				<MappingFieldSelect
+					fields={fields}
+					fieldType={fieldType}
+					onValueSelect={onFieldSelect}
 					value={selectedItem.mappedField || selectedItem.fieldId}
 				/>
 			</ClayForm.Group>
 		</>
+	);
+}
+
+function MappingFieldSelect({fieldType, fields, onValueSelect, value}) {
+	const mappingSelectorFieldSelectId = useId();
+
+	const hasWarnings = fields && fields.length === 0;
+
+	return (
+		<ClayForm.Group
+			className={classNames({'has-warning': hasWarnings})}
+			small
+		>
+			<label htmlFor="mappingSelectorFieldSelect">
+				{Liferay.Language.get('field')}
+			</label>
+			<ClaySelectWithOption
+				aria-label={Liferay.Language.get('field')}
+				disabled={!(fields && fields.length)}
+				id={mappingSelectorFieldSelectId}
+				onChange={onValueSelect}
+				options={
+					fields && fields.length
+						? [
+								UNMAPPED_OPTION,
+								...fields.map(({key, label}) => ({
+									label,
+									value: key,
+								})),
+						  ]
+						: [UNMAPPED_OPTION]
+				}
+				value={value}
+			/>
+			{hasWarnings && (
+				<ClayForm.FeedbackGroup>
+					<ClayForm.FeedbackItem>
+						{Liferay.Util.sub(
+							Liferay.Language.get(
+								'no-fields-are-available-for-x-editable'
+							),
+							[
+								EDITABLE_TYPES.backgroundImage,
+								EDITABLE_TYPES.image,
+							].includes(fieldType)
+								? Liferay.Language.get('image')
+								: Liferay.Language.get('text')
+						)}
+					</ClayForm.FeedbackItem>
+				</ClayForm.FeedbackGroup>
+			)}
+		</ClayForm.Group>
 	);
 }
 

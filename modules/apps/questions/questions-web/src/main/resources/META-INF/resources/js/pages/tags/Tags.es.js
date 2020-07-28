@@ -14,20 +14,24 @@
 
 import {useQuery} from '@apollo/client';
 import {ClayButtonWithIcon} from '@clayui/button';
+import ClayEmptyState from '@clayui/empty-state';
 import {ClayInput} from '@clayui/form';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {withRouter} from 'react-router-dom';
 
 import {AppContext} from '../../AppContext.es';
 import Link from '../../components/Link.es';
 import PaginatedList from '../../components/PaginatedList.es';
+import useQueryParams from '../../hooks/useQueryParams.es';
 import {getTagsQuery} from '../../utils/client.es';
 import lang from '../../utils/lang.es';
-import {useDebounceCallback} from '../../utils/utils.es';
+import {historyPushWithSlug, useDebounceCallback} from '../../utils/utils.es';
 
 export default withRouter(
 	({
+		history,
+		location,
 		match: {
 			params: {sectionTitle},
 		},
@@ -42,6 +46,24 @@ export default withRouter(
 			variables: {page, pageSize, search, siteKey: context.siteKey},
 		});
 
+		const queryParams = useQueryParams(location);
+
+		useEffect(() => {
+			setPage(+queryParams.get('page') || 1);
+		}, [queryParams]);
+
+		useEffect(() => {
+			setPageSize(+queryParams.get('pagesize') || 20);
+		}, [queryParams]);
+
+		const historyPushParser = historyPushWithSlug(history.push);
+
+		const changePage = (page, pageSize) => {
+			historyPushParser(
+				`/questions/${sectionTitle}/tags?page=${page}&pagesize=${pageSize}`
+			);
+		};
+
 		const [debounceCallback] = useDebounceCallback((search) => {
 			setSearch(search);
 		}, 500);
@@ -55,6 +77,12 @@ export default withRouter(
 								<ClayInput.GroupItem>
 									<ClayInput
 										className="bg-transparent form-control input-group-inset input-group-inset-after"
+										disabled={
+											!search &&
+											data &&
+											data.keywordsRanked &&
+											!data.keywordsRanked.items.length
+										}
 										onChange={(event) =>
 											debounceCallback(event.target.value)
 										}
@@ -89,9 +117,19 @@ export default withRouter(
 						<PaginatedList
 							activeDelta={pageSize}
 							activePage={page}
-							changeDelta={setPageSize}
-							changePage={setPage}
+							changeDelta={(pageSize) =>
+								changePage(page, pageSize)
+							}
+							changePage={(page) => changePage(page, pageSize)}
 							data={data && data.keywordsRanked}
+							emptyState={
+								<ClayEmptyState
+									className="empty-state-icon"
+									title={Liferay.Language.get(
+										'there-are-no-results'
+									)}
+								/>
+							}
 							loading={loading}
 						>
 							{(tag) => (
@@ -100,18 +138,16 @@ export default withRouter(
 									key={tag.id}
 								>
 									<Link
-										to={`/questions/${sectionTitle}/tag/${tag.name}`}
+										title={tag.name}
+										to={`/questions/tag/${tag.name}`}
 									>
 										<div className="card card-interactive card-interactive-primary card-type-template template-card-horizontal">
 											<div className="card-body">
 												<div className="card-row">
 													<div className="autofit-col autofit-col-expand">
 														<div className="autofit-section">
-															<div
-																className="card-title"
-																title="Content Page"
-															>
-																<span className="text-truncate-inline">
+															<div className="card-title">
+																<span className="text-truncate">
 																	{tag.name}
 																</span>
 															</div>

@@ -22,17 +22,18 @@ import {useSyncValue} from '../hooks/useSyncValue.es';
 const KeyValue = ({disabled, onChange, value, ...otherProps}) => (
 	<div className="active form-text key-value-editor">
 		<label className="control-label key-value-label">
-			{Liferay.Language.get('field-name')}:
+			{Liferay.Language.get('field-id')}:
 		</label>
 
 		<input
 			{...otherProps}
-			className="key-value-input"
+			className={`${disabled ? 'disabled ' : ''}key-value-input`}
 			onChange={(event) => {
 				const value = normalizeFieldName(event.target.value);
 				onChange({target: {value}});
 			}}
 			readOnly={disabled}
+			tabIndex={disabled ? '-1' : '0'}
 			type="text"
 			value={value}
 		/>

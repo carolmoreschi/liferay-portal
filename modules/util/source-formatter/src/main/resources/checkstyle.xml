@@ -407,6 +407,7 @@
 			<property name="category" value="Styling" />
 			<property name="description" value="Checks for missing line breaks around variable declarations" />
 			<message key="empty.line.missing.after.method.call" value="There should be an empty line after line ''{0}''" />
+			<message key="empty.line.missing.after.method.name" value="There should be an empty line after ''{0}''" />
 			<message key="empty.line.missing.after.variable.definition" value="There should be an empty line after variable definition of type ''{0}''" />
 			<message key="empty.line.missing.after.variable.reference" value="There should be an empty line before line ''{0}'', as we finished referencing variable ''{1}''" />
 			<message key="empty.line.missing.before.variable.assign" value="There should be an empty line before assigning value to variable ''{0}''" />
@@ -551,7 +552,7 @@
 		<module name="com.liferay.source.formatter.checkstyle.checks.VariableNameCheck">
 			<property name="allowedVariableNames" value="bitMode,metadata,superClass,userName" />
 			<property name="enabled" value="false" />
-			<property name="enforceTypeNames" value="DetailAST,(Double|Int|Long)Stream,Enumeration,HttpServlet(Request|Response),Iterator,LiferayPortlet(Request|Response),NamedList,Object,Query,QueryPos,RenderRequest,RenderResponse,ServletRequest,ServletResponse,SQLQuery,UnicodeProperties,Unsync.*" />
+			<property name="enforceTypeNames" value=".*(In|Out)putStream,DetailAST,(Double|Int|Long)Stream,Enumeration,HttpServlet(Request|Response),Iterator,LiferayPortlet(Request|Response),NamedList,Object,OrderByComparator,Query,QueryPos,RenderRequest,RenderResponse,ServletRequest,ServletResponse,SQLQuery,UnicodeProperties,Unsync.*" />
 			<message key="variable.incorrect.ending" value="Name of variable with type ''{0}'' should end with ''{1}''" />
 			<message key="variable.rename" value="Rename variable ''{0}'' to ''{1}''" />
 			<message key="variable.typo" value="Typo in variable ''{0}'', expected variable name ''{1}''" />

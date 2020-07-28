@@ -17,7 +17,7 @@ package com.liferay.layout.admin.web.internal.portlet;
 import com.liferay.application.list.GroupProvider;
 import com.liferay.asset.kernel.exception.AssetCategoryException;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValuesValidationException;
-import com.liferay.info.item.provider.InfoItemServiceTracker;
+import com.liferay.info.item.InfoItemServiceTracker;
 import com.liferay.info.list.provider.InfoListProviderTracker;
 import com.liferay.layout.admin.constants.LayoutAdminPortletKeys;
 import com.liferay.layout.admin.web.internal.configuration.LayoutConverterConfiguration;
@@ -94,6 +94,7 @@ import org.osgi.service.component.annotations.Reference;
 		"com.liferay.portlet.header-portlet-css=/css/main.css",
 		"com.liferay.portlet.icon=/icons/group_pages.png",
 		"com.liferay.portlet.preferences-owned-by-group=true",
+		"com.liferay.portlet.preferences-unique-per-layout=false",
 		"com.liferay.portlet.private-request-attributes=false",
 		"com.liferay.portlet.private-session-attributes=false",
 		"com.liferay.portlet.render-weight=50",

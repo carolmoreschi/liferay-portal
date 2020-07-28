@@ -15,12 +15,13 @@
 import React from 'react';
 
 export const PageHeader = ({description, placeholder, title}) => (
-	<div className="pl-3 pr-3">
+	<div>
 		<input
 			className="form-builder-page-header-title form-control p-0"
 			defaultValue={title}
 			maxLength="120"
 			placeholder={placeholder}
+			value={title}
 		/>
 		<input
 			className="form-builder-page-header-description form-control p-0"
@@ -29,6 +30,7 @@ export const PageHeader = ({description, placeholder, title}) => (
 			placeholder={Liferay.Language.get(
 				'add-a-short-description-for-this-page'
 			)}
+			value={description}
 		/>
 	</div>
 );

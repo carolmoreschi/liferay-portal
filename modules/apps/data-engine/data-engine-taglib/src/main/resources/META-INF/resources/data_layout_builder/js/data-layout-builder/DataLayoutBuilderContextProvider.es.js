@@ -25,10 +25,11 @@ import {
 	UPDATE_PAGES,
 } from '../actions.es';
 import {getDropHandler} from '../drag-and-drop/getDropHandler.es';
+import {getAllDataDefinitionFieldsFromAllFieldSets} from '../utils/dataDefinition.es';
 import DataLayoutBuilderContext from './DataLayoutBuilderContext.es';
 
 export default ({children, dataLayoutBuilder}) => {
-	const [{dataDefinition}, dispatch] = useContext(AppContext);
+	const [{dataDefinition, fieldSets}, dispatch] = useContext(AppContext);
 
 	useEffect(() => {
 		const provider = dataLayoutBuilder.getLayoutProvider();
@@ -52,11 +53,9 @@ export default ({children, dataLayoutBuilder}) => {
 		const provider = dataLayoutBuilder.getLayoutProvider();
 
 		const eventHandler = provider.on('focusedFieldChanged', ({newVal}) => {
-			provider.once('rendered', () => {
-				dispatch({
-					payload: {focusedField: newVal},
-					type: UPDATE_FOCUSED_FIELD,
-				});
+			dispatch({
+				payload: {focusedField: newVal},
+				type: UPDATE_FOCUSED_FIELD,
 			});
 		});
 
@@ -67,13 +66,20 @@ export default ({children, dataLayoutBuilder}) => {
 		const provider = dataLayoutBuilder.getLayoutProvider();
 
 		const eventHandler = provider.on('pagesChanged', ({newVal}) => {
-			provider.once('rendered', () => {
-				dispatch({payload: {pages: newVal}, type: UPDATE_PAGES});
-			});
+			dispatch({payload: {pages: newVal}, type: UPDATE_PAGES});
 		});
 
 		return () => eventHandler.removeListener();
 	}, [dataLayoutBuilder, dispatch]);
+
+	useEffect(() => {
+		if (dataLayoutBuilder) {
+			dataLayoutBuilder.fieldNameGenerator([
+				...dataDefinition.dataDefinitionFields,
+				...getAllDataDefinitionFieldsFromAllFieldSets(fieldSets),
+			]);
+		}
+	}, [dataDefinition.dataDefinitionFields, dataLayoutBuilder, fieldSets]);
 
 	useEffect(() => {
 		const provider = dataLayoutBuilder.getLayoutProvider();

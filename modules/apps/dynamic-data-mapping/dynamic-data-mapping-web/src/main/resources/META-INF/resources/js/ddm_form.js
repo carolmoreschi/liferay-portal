@@ -715,7 +715,14 @@ AUI.add(
 					var fields = [];
 
 					if (definition && definition.fields) {
-						fields = definition.fields;
+						definition.fields.forEach((field) => {
+							fields.push(field);
+							if (field.nestedFields) {
+								field.nestedFields.forEach((nestedField) => {
+									fields.push(nestedField);
+								});
+							}
+						});
 					}
 
 					return AArray.find(fields, (item) => {
@@ -1082,15 +1089,15 @@ AUI.add(
 										instance.get('displayLocale')
 									];
 							}
-						}
 
-						if (Lang.isUndefined(value)) {
-							value = instance.getDefaultLocalization(
-								instance.get('displayLocale')
-							);
-						}
+							if (Lang.isUndefined(value)) {
+								value = instance.getDefaultLocalization(
+									instance.get('displayLocale')
+								);
+							}
 
-						instance.setValue(value);
+							instance.setValue(value);
+						}
 					}
 				},
 
@@ -1633,7 +1640,7 @@ AUI.add(
 					clearButtonNode.attr('disabled', readOnly);
 
 					var altNode = container.one(
-						'#' + instance.getInputName() + 'Alt'
+						'input[name=' + instance.getInputName() + 'Alt]'
 					);
 
 					if (altNode) {
@@ -1649,7 +1656,7 @@ AUI.add(
 					);
 
 					var titleNode = A.one(
-						'#' + instance.getInputName() + 'Title'
+						'input[name=' + instance.getInputName() + 'Title]'
 					);
 
 					titleNode.val(parsedValue.title || '');
@@ -1876,17 +1883,10 @@ AUI.add(
 				},
 
 				showNotice(message) {
-					var instance = this;
-
-					if (!instance.notice) {
-						instance.notice = new Liferay.Notice({
-							toggleText: false,
-							type: 'warning',
-						}).hide();
-					}
-
-					instance.notice.html(message);
-					instance.notice.show();
+					Liferay.Util.openToast({
+						message,
+						type: 'warning',
+					});
 				},
 
 				syncReadOnlyUI() {
@@ -1917,7 +1917,7 @@ AUI.add(
 					);
 
 					var titleNode = A.one(
-						'#' + instance.getInputName() + 'Title'
+						'input[name=' + instance.getInputName() + 'Title]'
 					);
 
 					var parsedTitleMap = instance.getParsedValue(
@@ -3138,7 +3138,7 @@ AUI.add(
 					var inputName = instance.getInputName();
 
 					var layoutNameNode = container.one(
-						'#' + inputName + 'LayoutName'
+						'input[name=' + inputName + 'LayoutName]'
 					);
 
 					var parsedValue = instance.getParsedValue(value);
@@ -3423,7 +3423,7 @@ AUI.add(
 
 					if (instance.isNotEmpty(parsedValue)) {
 						var altNode = A.one(
-							'#' + instance.getInputName() + 'Alt'
+							'input[name=' + instance.getInputName() + 'Alt]'
 						);
 
 						parsedValue.alt = altNode.val();
@@ -3466,7 +3466,7 @@ AUI.add(
 						}
 
 						var altNode = A.one(
-							'#' + instance.getInputName() + 'Alt'
+							'input[name=' + instance.getInputName() + 'Alt]'
 						);
 
 						altNode.val(parsedValue.alt);
@@ -3494,12 +3494,14 @@ AUI.add(
 
 					var notEmpty = instance.isNotEmpty(parsedValue);
 
-					var altNode = A.one('#' + instance.getInputName() + 'Alt');
+					var altNode = A.one(
+						'input[name=' + instance.getInputName() + 'Alt]'
+					);
 
 					altNode.attr('disabled', !notEmpty);
 
 					var titleNode = A.one(
-						'#' + instance.getInputName() + 'Title'
+						'input[name=' + instance.getInputName() + 'Title]'
 					);
 
 					if (notEmpty) {
@@ -3563,7 +3565,9 @@ AUI.add(
 						})
 					);
 
-					var locationNode = A.one('#' + inputName + 'Location');
+					var locationNode = A.one(
+						'input[name=' + inputName + 'Location]'
+					);
 
 					locationNode.html(event.newVal.address);
 				},
@@ -4586,7 +4590,6 @@ AUI.add(
 			'liferay-layouts-tree-radio',
 			'liferay-layouts-tree-selectable',
 			'liferay-map-base',
-			'liferay-notice',
 			'liferay-translation-manager',
 		],
 	}

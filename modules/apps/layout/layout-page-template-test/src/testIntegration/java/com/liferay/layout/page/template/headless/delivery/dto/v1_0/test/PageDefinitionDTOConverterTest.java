@@ -269,7 +269,7 @@ public class PageDefinitionDTOConverterTest {
 			(FragmentFieldBackgroundImage)fragmentField.getValue();
 
 		_validateFragmentBackgroundImage(
-			fragmentFieldBackgroundImage.getBackgroundImage());
+			fragmentFieldBackgroundImage.getBackgroundFragmentImage());
 	}
 
 	@Test
@@ -285,7 +285,7 @@ public class PageDefinitionDTOConverterTest {
 			(FragmentFieldBackgroundImage)fragmentField.getValue();
 
 		_validateFragmentBackgroundImageWithTitle(
-			fragmentFieldBackgroundImage.getBackgroundImage(),
+			fragmentFieldBackgroundImage.getBackgroundFragmentImage(),
 			"My Background Image Title");
 	}
 
@@ -537,7 +537,7 @@ public class PageDefinitionDTOConverterTest {
 			"primary", pageSectionDefinition1.getBackgroundColor());
 
 		FragmentImage fragmentImage1 =
-			pageSectionDefinition1.getBackgroundImage();
+			pageSectionDefinition1.getBackgroundFragmentImage();
 
 		FragmentInlineValue titleFragmentInlineValue =
 			(FragmentInlineValue)fragmentImage1.getTitle();
@@ -556,11 +556,12 @@ public class PageDefinitionDTOConverterTest {
 		com.liferay.headless.delivery.dto.v1_0.Layout sectionLayout =
 			pageSectionDefinition1.getLayout();
 
-		Assert.assertEquals("Fluid", sectionLayout.getContainerTypeAsString());
+		Assert.assertEquals("Fluid", sectionLayout.getWidthTypeAsString());
 		Assert.assertEquals(
 			Integer.valueOf(8), sectionLayout.getPaddingBottom());
+		Assert.assertEquals(Integer.valueOf(4), sectionLayout.getPaddingLeft());
 		Assert.assertEquals(
-			Integer.valueOf(4), sectionLayout.getPaddingHorizontal());
+			Integer.valueOf(4), sectionLayout.getPaddingRight());
 		Assert.assertEquals(Integer.valueOf(1), sectionLayout.getPaddingTop());
 
 		PageElement sectionPageElement2 = pageElements[1];
@@ -572,7 +573,7 @@ public class PageDefinitionDTOConverterTest {
 			(PageSectionDefinition)sectionPageElement2.getDefinition();
 
 		FragmentImage fragmentImage2 =
-			pageSectionDefinition2.getBackgroundImage();
+			pageSectionDefinition2.getBackgroundFragmentImage();
 
 		Assert.assertNull(fragmentImage2.getTitle());
 
@@ -610,10 +611,7 @@ public class PageDefinitionDTOConverterTest {
 
 		Fragment fragment = pageFragmentInstanceDefinition.getFragment();
 
-		Assert.assertEquals(
-			_fragmentCollection.getName(), fragment.getCollectionName());
 		Assert.assertEquals(fragmentEntryKey, fragment.getKey());
-		Assert.assertEquals(fragmentName, fragment.getName());
 
 		FragmentField[] fragmentFields =
 			pageFragmentInstanceDefinition.getFragmentFields();

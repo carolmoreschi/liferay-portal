@@ -38,7 +38,6 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
@@ -265,10 +264,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -631,8 +626,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -793,11 +786,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(
-						_finderPathFetchByUUID_G, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -887,8 +875,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -1094,10 +1080,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -1483,8 +1465,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -1668,10 +1648,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -2010,8 +1986,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -2198,10 +2172,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -2561,8 +2531,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -2754,10 +2722,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -3119,8 +3083,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -3326,10 +3288,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -3854,11 +3812,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(
-						_finderPathWithPaginationFindByDDMSI_F, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -3943,8 +3896,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -4038,9 +3989,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 					_finderPathWithPaginationCountByDDMSI_F, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(
-					_finderPathWithPaginationCountByDDMSI_F, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -4266,10 +4214,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -4827,11 +4771,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(
-						_finderPathWithPaginationFindByC_DDMSI_F, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -4928,8 +4867,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -5031,9 +4968,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 					count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(
-					_finderPathWithPaginationCountByC_DDMSI_F, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -5233,11 +5167,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(
-						_finderPathFetchByC_C_DDMSI_F, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -5345,8 +5274,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -5454,9 +5381,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 					count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(
-					_finderPathWithPaginationCountByC_C_DDMSI_F, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -5507,7 +5431,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		DEDataDefinitionFieldLink deDataDefinitionFieldLink) {
 
 		entityCache.putResult(
-			entityCacheEnabled, DEDataDefinitionFieldLinkImpl.class,
+			DEDataDefinitionFieldLinkImpl.class,
 			deDataDefinitionFieldLink.getPrimaryKey(),
 			deDataDefinitionFieldLink);
 
@@ -5545,7 +5469,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				deDataDefinitionFieldLinks) {
 
 			if (entityCache.getResult(
-					entityCacheEnabled, DEDataDefinitionFieldLinkImpl.class,
+					DEDataDefinitionFieldLinkImpl.class,
 					deDataDefinitionFieldLink.getPrimaryKey()) == null) {
 
 				cacheResult(deDataDefinitionFieldLink);
@@ -5584,7 +5508,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		DEDataDefinitionFieldLink deDataDefinitionFieldLink) {
 
 		entityCache.removeResult(
-			entityCacheEnabled, DEDataDefinitionFieldLinkImpl.class,
+			DEDataDefinitionFieldLinkImpl.class,
 			deDataDefinitionFieldLink.getPrimaryKey());
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
@@ -5606,7 +5530,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				deDataDefinitionFieldLinks) {
 
 			entityCache.removeResult(
-				entityCacheEnabled, DEDataDefinitionFieldLinkImpl.class,
+				DEDataDefinitionFieldLinkImpl.class,
 				deDataDefinitionFieldLink.getPrimaryKey());
 
 			clearUniqueFindersCache(
@@ -5623,8 +5547,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		for (Serializable primaryKey : primaryKeys) {
 			entityCache.removeResult(
-				entityCacheEnabled, DEDataDefinitionFieldLinkImpl.class,
-				primaryKey);
+				DEDataDefinitionFieldLinkImpl.class, primaryKey);
 		}
 	}
 
@@ -5907,10 +5830,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (!_columnBitmaskEnabled) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else if (isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
 				deDataDefinitionFieldLinkModelImpl.getUuid()
 			};
@@ -6145,7 +6065,7 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		}
 
 		entityCache.putResult(
-			entityCacheEnabled, DEDataDefinitionFieldLinkImpl.class,
+			DEDataDefinitionFieldLinkImpl.class,
 			deDataDefinitionFieldLink.getPrimaryKey(),
 			deDataDefinitionFieldLink, false);
 
@@ -6338,10 +6258,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -6388,9 +6304,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
 				throw processException(exception);
 			}
 			finally {
@@ -6431,29 +6344,20 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 	 */
 	@Activate
 	public void activate() {
-		DEDataDefinitionFieldLinkModelImpl.setEntityCacheEnabled(
-			entityCacheEnabled);
-		DEDataDefinitionFieldLinkModelImpl.setFinderCacheEnabled(
-			finderCacheEnabled);
-
 		_finderPathWithPaginationFindAll = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
 			new String[0]);
 
 		_finderPathCountAll = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
+			Long.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
 			new String[0]);
 
 		_finderPathWithPaginationFindByUuid = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByUuid",
 			new String[] {
@@ -6462,19 +6366,16 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			});
 
 		_finderPathWithoutPaginationFindByUuid = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByUuid",
 			new String[] {String.class.getName()},
 			DEDataDefinitionFieldLinkModelImpl.UUID_COLUMN_BITMASK);
 
 		_finderPathCountByUuid = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUuid",
-			new String[] {String.class.getName()});
+			Long.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"countByUuid", new String[] {String.class.getName()});
 
 		_finderPathFetchByUUID_G = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class, FINDER_CLASS_NAME_ENTITY,
 			"fetchByUUID_G",
 			new String[] {String.class.getName(), Long.class.getName()},
@@ -6482,12 +6383,11 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			DEDataDefinitionFieldLinkModelImpl.GROUPID_COLUMN_BITMASK);
 
 		_finderPathCountByUUID_G = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUUID_G",
+			Long.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"countByUUID_G",
 			new String[] {String.class.getName(), Long.class.getName()});
 
 		_finderPathWithPaginationFindByUuid_C = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByUuid_C",
 			new String[] {
@@ -6497,7 +6397,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			});
 
 		_finderPathWithoutPaginationFindByUuid_C = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByUuid_C",
 			new String[] {String.class.getName(), Long.class.getName()},
@@ -6505,12 +6404,11 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			DEDataDefinitionFieldLinkModelImpl.COMPANYID_COLUMN_BITMASK);
 
 		_finderPathCountByUuid_C = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUuid_C",
+			Long.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"countByUuid_C",
 			new String[] {String.class.getName(), Long.class.getName()});
 
 		_finderPathWithPaginationFindByDDMStructureId = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByDDMStructureId",
 			new String[] {
@@ -6519,19 +6417,16 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			});
 
 		_finderPathWithoutPaginationFindByDDMStructureId = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByDDMStructureId",
 			new String[] {Long.class.getName()},
 			DEDataDefinitionFieldLinkModelImpl.DDMSTRUCTUREID_COLUMN_BITMASK);
 
 		_finderPathCountByDDMStructureId = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByDDMStructureId",
-			new String[] {Long.class.getName()});
+			Long.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"countByDDMStructureId", new String[] {Long.class.getName()});
 
 		_finderPathWithPaginationFindByC_C = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByC_C",
 			new String[] {
@@ -6541,7 +6436,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			});
 
 		_finderPathWithoutPaginationFindByC_C = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByC_C",
 			new String[] {Long.class.getName(), Long.class.getName()},
@@ -6549,12 +6443,10 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			DEDataDefinitionFieldLinkModelImpl.CLASSPK_COLUMN_BITMASK);
 
 		_finderPathCountByC_C = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByC_C",
+			Long.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByC_C",
 			new String[] {Long.class.getName(), Long.class.getName()});
 
 		_finderPathWithPaginationFindByC_DDMSI = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByC_DDMSI",
 			new String[] {
@@ -6564,7 +6456,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			});
 
 		_finderPathWithoutPaginationFindByC_DDMSI = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByC_DDMSI",
 			new String[] {Long.class.getName(), Long.class.getName()},
@@ -6572,12 +6463,11 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			DEDataDefinitionFieldLinkModelImpl.DDMSTRUCTUREID_COLUMN_BITMASK);
 
 		_finderPathCountByC_DDMSI = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByC_DDMSI",
+			Long.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"countByC_DDMSI",
 			new String[] {Long.class.getName(), Long.class.getName()});
 
 		_finderPathWithPaginationFindByDDMSI_F = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByDDMSI_F",
 			new String[] {
@@ -6587,7 +6477,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			});
 
 		_finderPathWithoutPaginationFindByDDMSI_F = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByDDMSI_F",
 			new String[] {Long.class.getName(), String.class.getName()},
@@ -6595,17 +6484,16 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			DEDataDefinitionFieldLinkModelImpl.FIELDNAME_COLUMN_BITMASK);
 
 		_finderPathCountByDDMSI_F = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByDDMSI_F",
+			Long.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"countByDDMSI_F",
 			new String[] {Long.class.getName(), String.class.getName()});
 
 		_finderPathWithPaginationCountByDDMSI_F = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "countByDDMSI_F",
+			Long.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+			"countByDDMSI_F",
 			new String[] {Long.class.getName(), String.class.getName()});
 
 		_finderPathWithPaginationFindByC_DDMSI_F = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByC_DDMSI_F",
 			new String[] {
@@ -6615,7 +6503,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			});
 
 		_finderPathWithoutPaginationFindByC_DDMSI_F = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByC_DDMSI_F",
 			new String[] {
@@ -6627,23 +6514,22 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			DEDataDefinitionFieldLinkModelImpl.FIELDNAME_COLUMN_BITMASK);
 
 		_finderPathCountByC_DDMSI_F = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByC_DDMSI_F",
+			Long.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"countByC_DDMSI_F",
 			new String[] {
 				Long.class.getName(), Long.class.getName(),
 				String.class.getName()
 			});
 
 		_finderPathWithPaginationCountByC_DDMSI_F = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "countByC_DDMSI_F",
+			Long.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+			"countByC_DDMSI_F",
 			new String[] {
 				Long.class.getName(), Long.class.getName(),
 				String.class.getName()
 			});
 
 		_finderPathFetchByC_C_DDMSI_F = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled,
 			DEDataDefinitionFieldLinkImpl.class, FINDER_CLASS_NAME_ENTITY,
 			"fetchByC_C_DDMSI_F",
 			new String[] {
@@ -6656,16 +6542,16 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 			DEDataDefinitionFieldLinkModelImpl.FIELDNAME_COLUMN_BITMASK);
 
 		_finderPathCountByC_C_DDMSI_F = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByC_C_DDMSI_F",
+			Long.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"countByC_C_DDMSI_F",
 			new String[] {
 				Long.class.getName(), Long.class.getName(),
 				Long.class.getName(), String.class.getName()
 			});
 
 		_finderPathWithPaginationCountByC_C_DDMSI_F = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "countByC_C_DDMSI_F",
+			Long.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+			"countByC_C_DDMSI_F",
 			new String[] {
 				Long.class.getName(), Long.class.getName(),
 				Long.class.getName(), String.class.getName()
@@ -6686,12 +6572,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 		unbind = "-"
 	)
 	public void setConfiguration(Configuration configuration) {
-		super.setConfiguration(configuration);
-
-		_columnBitmaskEnabled = GetterUtil.getBoolean(
-			configuration.get(
-				"value.object.column.bitmask.enabled.com.liferay.data.engine.model.DEDataDefinitionFieldLink"),
-			true);
 	}
 
 	@Override
@@ -6711,8 +6591,6 @@ public class DEDataDefinitionFieldLinkPersistenceImpl
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		super.setSessionFactory(sessionFactory);
 	}
-
-	private boolean _columnBitmaskEnabled;
 
 	@Reference
 	protected EntityCache entityCache;

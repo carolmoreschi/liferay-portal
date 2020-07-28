@@ -13,7 +13,8 @@
 	}
 
 	.data-engine-form-builder > .sheet {
-		margin: 24px 0 0;
+		margin: 24px auto 0;
+		max-width: 808px;
 	}
 
 	.taglib-empty-result-message {
@@ -32,6 +33,7 @@
 }
 
 .apps-popover {
+	max-width: 450px;
 	z-index: 999;
 }
 
@@ -158,7 +160,7 @@ body.open .app-builder-upper-toolbar {
 }
 
 .remove-object-field-message {
-	color: #6b6c7e;
+	color: #272833;
 	font-size: 14px;
 }
 
@@ -177,6 +179,12 @@ body.open .app-builder-upper-toolbar {
 	max-height: 200px;
 	max-width: 418px;
 	width: 100%;
+
+	.dropdown-item {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 
 	.dropdown-section {
 		padding: 0.5rem;

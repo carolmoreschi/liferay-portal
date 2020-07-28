@@ -54,21 +54,42 @@ Layout selLayout = layoutsSEODisplayContext.getSelLayout();
 				value="open-graph"
 			/>
 
-			<p class="text-muted">
+			<p class="text-secondary">
 				<liferay-ui:message key="open-graph-description" />
 			</p>
 
 			<c:choose>
 				<c:when test="<%= selLayout.isTypeAssetDisplay() %>">
 					<div class="dpt-mapping">
-						<aui:input disabled="<%= true %>" label="title" localized="<%= false %>" name="openGraphTitle" />
-						<aui:input disabled="<%= true %>" label="description" localized="<%= false %>" name="openGraphDescription" />
-						<aui:input disabled="<%= true %>" label="image" localized="<%= false %>" name="openGraphImageTitle" />
-						<aui:input disabled="<%= true %>" label="open-graph-image-alt-description" name="openGraphImageAlt" />
+						<div class="dpt-mapping-placeholder">
+							<aui:input disabled="<%= true %>" label="title" localized="<%= false %>" name="openGraphTitle" />
+
+							<div class="form-text">
+								<liferay-ui:message arguments='<%= new String[] {"text", "title"} %>' key="map-a-x-field-it-will-be-used-as-x" />
+							</div>
+
+							<aui:input disabled="<%= true %>" label="description" localized="<%= false %>" name="openGraphDescription" />
+
+							<div class="form-text">
+								<liferay-ui:message arguments='<%= new String[] {"text", "description"} %>' key="map-a-x-field-it-will-be-used-as-x" />
+							</div>
+
+							<aui:input disabled="<%= true %>" label="image" localized="<%= false %>" name="openGraphImageTitle" />
+
+							<div class="form-text">
+								<liferay-ui:message arguments='<%= new String[] {"image", "image"} %>' key="map-a-x-field-it-will-be-used-as-x" />
+							</div>
+
+							<aui:input disabled="<%= true %>" label="open-graph-image-alt-description" name="openGraphImageAlt" />
+
+							<div class="form-text">
+								<liferay-ui:message arguments='<%= new String[] {"text", "open-graph-image-alt-description"} %>' key="map-a-x-field-it-will-be-used-as-x" />
+							</div>
+						</div>
 
 						<react:component
-							data="<%= layoutsSEODisplayContext.getSEOMappingData() %>"
 							module="js/seo/display_page_templates/OpenGraphMapping"
+							props="<%= layoutsSEODisplayContext.getOpenGraphMappingData() %>"
 							servletContext="<%= application %>"
 						/>
 					</div>
@@ -113,7 +134,7 @@ Layout selLayout = layoutsSEODisplayContext.getSelLayout();
 						<div>
 
 							<%
-							Map<String, Object> data = HashMapBuilder.<String, Object>put(
+							Map<String, Object> props = HashMapBuilder.<String, Object>put(
 								"displayType", "og"
 							).put(
 								"targets",
@@ -150,8 +171,8 @@ Layout selLayout = layoutsSEODisplayContext.getSelLayout();
 							%>
 
 							<react:component
-								data="<%= data %>"
 								module="js/seo/PreviewSeo.es"
+								props="<%= props %>"
 								servletContext="<%= application %>"
 							/>
 						</div>

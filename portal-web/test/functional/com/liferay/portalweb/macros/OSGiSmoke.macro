@@ -1,8 +1,8 @@
 definition {
 
 	macro Smoke {
-		GlobalMenu.gotoPortlet(
-			category = "Apps",
+		ApplicationsMenu.gotoPortlet(
+			category = "System",
 			panel = "Control Panel",
 			portlet = "App Manager");
 

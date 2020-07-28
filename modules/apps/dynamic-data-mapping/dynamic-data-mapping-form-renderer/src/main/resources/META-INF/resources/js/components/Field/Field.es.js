@@ -16,10 +16,13 @@ import './Field.scss';
 
 import ClayButton from '@clayui/button';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
+import {sub} from 'dynamic-data-mapping-form-field-type/util/strings.es';
 import MetalComponent from 'metal-component';
 import React, {Suspense, lazy, useCallback, useRef, useState} from 'react';
 
 import {usePage} from '../../hooks/usePage.es';
+import {useStorage} from '../../hooks/useStorage.es';
+import {AutoFocus} from '../AutoFocus.es';
 import {ErrorBoundary} from '../ErrorBoundary.es';
 import {MetalComponentAdapter} from './MetalComponentAdapter.es';
 import {ParentFieldContext} from './ParentFieldContext.es';
@@ -35,46 +38,51 @@ const load = (fieldModule) => {
 		Liferay.Loader.require(
 			[fieldModule],
 			(Field) => resolve(Field),
-			(error) => reject(error)
+			(error) => reject({error, network: true})
 		);
 	});
 };
 
 const useLazy = () => {
+	const {components} = useStorage();
 
-	// To have a better effect, we need to move this to a higher
-	// component above PageRenderer or FormRenderer because we
-	// can have two instances of it on the same page and they
-	// are destroyed all the time.
+	return useCallback(
+		(fieldModule) => {
+			if (!components.has(fieldModule)) {
+				const Component = lazy(() => {
+					return load(fieldModule)
+						.then((instance) => {
+							if (!(instance && instance.default)) {
+								return null;
+							}
 
-	const components = useRef(new Map());
+							// To maintain compatibility with fields in Metal+Soy,
+							// we call the bridge component to handle this component.
 
-	return useCallback((fieldModule) => {
-		if (!components.current.has(fieldModule)) {
-			const Component = lazy(() => {
-				return load(fieldModule).then((instance) => {
-					if (!(instance && instance.default)) {
-						return null;
-					}
+							if (
+								MetalComponent.isComponentCtor(instance.default)
+							) {
+								return {
+									default: MetalComponentAdapter,
+								};
+							}
 
-					// To maintain compatibility with fields in Metal+Soy,
-					// we call the bridge component to handle this component.
+							return instance;
+						})
+						.catch((error) => {
+							components.delete(fieldModule);
 
-					if (MetalComponent.isComponentCtor(instance.default)) {
-						return {
-							default: MetalComponentAdapter,
-						};
-					}
-
-					return instance;
+							throw error;
+						});
 				});
-			});
 
-			components.current.set(fieldModule, Component);
-		}
+				components.set(fieldModule, Component);
+			}
 
-		return components.current.get(fieldModule);
-	}, []);
+			return components.get(fieldModule);
+		},
+		[components]
+	);
 };
 
 class FieldEventStruct {
@@ -112,60 +120,87 @@ const mountStruct = (event, field, value) => {
 	return new FieldEventStruct(event, field, value);
 };
 
-export const Field = ({field, onBlur, onChange, onFocus, ...otherProps}) => {
-	const {
-		store: {fieldTypes},
-	} = usePage();
-	const [hasError, setHasError] = useState(false);
-	const loadField = useLazy();
+const FieldLazy = ({
+	field,
+	fieldTypes,
+	onBlur,
+	onChange,
+	onFocus,
+	...otherProps
+}) => {
+	const focusDurationRef = useRef({end: null, start: null});
+
+	const ComponentLazy = useLazy()(getModule(fieldTypes, field.type));
+
+	return (
+		<ComponentLazy
+			onBlur={(event) => {
+				focusDurationRef.current.end = new Date();
+				onBlur(mountStruct(event, field), focusDurationRef.current);
+			}}
+			onChange={(event, value) =>
+				onChange(mountStruct(event, field, value))
+			}
+			onFocus={(event) => {
+				focusDurationRef.current.start = new Date();
+				onFocus(mountStruct(event, field));
+			}}
+			visible
+			{...field}
+			{...otherProps}
+		/>
+	);
+};
+
+export const Field = ({field, ...otherProps}) => {
+	const {fieldTypes} = usePage();
+	const [hasError, setHasError] = useState();
 
 	if (!fieldTypes) {
 		return <ClayLoadingIndicator />;
 	}
 
-	const fieldModule = getModule(fieldTypes, field.type);
-	const FieldLazy = loadField(fieldModule);
-
 	if (hasError) {
 		return (
 			<div className="ddm-field-renderer--error">
 				<p className="ddm-field-renderer--title">
-					Oops! An error happening.
+					{sub(
+						Liferay.Language.get(
+							'there-was-an-error-when-loading-the-x-field'
+						),
+						[field.type]
+					)}
 				</p>
-				<ClayButton
-					displayType="secondary"
-					onClick={() => setHasError(false)}
-					small
-				>
-					Try Again!
-				</ClayButton>
+				{hasError.network && (
+					<ClayButton
+						className="ddm-field-renderer--button"
+						displayType="secondary"
+						onClick={() => setHasError(false)}
+						small
+					>
+						{Liferay.Language.get('refresh')}
+					</ClayButton>
+				)}
 			</div>
 		);
 	}
 
 	return (
-		<ErrorBoundary onError={() => setHasError(true)}>
+		<ErrorBoundary onError={setHasError}>
 			<Suspense fallback={<ClayLoadingIndicator />}>
 				<ParentFieldContext.Provider value={field}>
-					<div
-						className="ddm-field"
-						data-field-name={field.fieldName}
-					>
-						<FieldLazy
-							visible
-							{...field}
-							{...otherProps}
-							onBlur={(event) =>
-								onBlur(mountStruct(event, field))
-							}
-							onChange={(event, value) =>
-								onChange(mountStruct(event, field, value))
-							}
-							onFocus={(event) =>
-								onFocus(mountStruct(event, field))
-							}
-						/>
-					</div>
+					<AutoFocus>
+						<div
+							className="ddm-field"
+							data-field-name={field.fieldName}
+						>
+							<FieldLazy
+								field={field}
+								fieldTypes={fieldTypes}
+								{...otherProps}
+							/>
+						</div>
+					</AutoFocus>
 				</ParentFieldContext.Provider>
 			</Suspense>
 		</ErrorBoundary>

@@ -13,10 +13,10 @@
  */
 
 import {
+	FormSupport,
 	PagesVisitor,
 	normalizeFieldName,
 } from 'dynamic-data-mapping-form-renderer';
-import {findFieldByFieldName} from 'dynamic-data-mapping-form-renderer/js/components/FormRenderer/FormSupport.es';
 
 export const generateFieldName = (
 	pages,
@@ -27,7 +27,7 @@ export const generateFieldName = (
 	let counter = 0;
 	let fieldName = normalizeFieldName(desiredName);
 
-	let existingField = findFieldByFieldName(pages, fieldName);
+	let existingField = FormSupport.findFieldByFieldName(pages, fieldName);
 
 	while (
 		(existingField && existingField.fieldName !== currentName) ||
@@ -37,7 +37,7 @@ export const generateFieldName = (
 			fieldName = normalizeFieldName(desiredName) + counter;
 		}
 
-		existingField = findFieldByFieldName(pages, fieldName);
+		existingField = FormSupport.findFieldByFieldName(pages, fieldName);
 
 		counter++;
 	}
@@ -53,11 +53,15 @@ export const getFieldProperty = (pages, fieldName, propertyName) => {
 	const visitor = new PagesVisitor(pages);
 	let propertyValue;
 
-	visitor.mapFields((field) => {
-		if (field.fieldName === fieldName) {
-			propertyValue = field[propertyName];
-		}
-	});
+	visitor.mapFields(
+		(field) => {
+			if (field.fieldName === fieldName) {
+				propertyValue = field[propertyName];
+			}
+		},
+		true,
+		true
+	);
 
 	return propertyValue;
 };

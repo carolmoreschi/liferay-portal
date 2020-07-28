@@ -35,6 +35,8 @@ definition {
 	macro addAssignees {
 		LexiconEntry.gotoAdd();
 
+		WaitForLiferayEvent.initializeLiferayEventLog();
+
 		SelectFrame(locator1 = "IFrame#SELECT_ASSIGNEES");
 
 		Search.searchCP(searchTerm = "${assigneeName}");
@@ -420,7 +422,7 @@ definition {
 	}
 
 	macro removeAssignee {
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Roles");
@@ -479,7 +481,7 @@ definition {
 	macro removeStagingAdminRole {
 		var roleTitle = "Staging Admin";
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Roles");
@@ -496,7 +498,7 @@ definition {
 	}
 
 	macro tearDownCP {
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Roles");

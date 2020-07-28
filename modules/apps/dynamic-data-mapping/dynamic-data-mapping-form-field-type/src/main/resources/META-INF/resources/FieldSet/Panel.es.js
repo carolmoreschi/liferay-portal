@@ -17,7 +17,7 @@ import './Panel.scss';
 import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
 import classNames from 'classnames';
-import {EVENT_TYPES, usePage} from 'dynamic-data-mapping-form-renderer';
+import {EVENT_TYPES, useForm} from 'dynamic-data-mapping-form-renderer';
 import React from 'react';
 
 import useHeightTransition from './useHeightTransition.es';
@@ -29,6 +29,7 @@ import useHeightTransition from './useHeightTransition.es';
  */
 const Panel = ({
 	children,
+	name,
 	readOnly,
 	repeatable,
 	showLabel,
@@ -38,7 +39,7 @@ const Panel = ({
 	const panelRef = React.useRef(null);
 	const [expanded, setExpanded] = React.useState(true);
 
-	const {dispatch} = usePage();
+	const dispatch = useForm();
 
 	const [
 		transitioning,
@@ -97,7 +98,8 @@ const Panel = ({
 
 												dispatch({
 													payload: name,
-													type: EVENT_TYPES.REMOVED,
+													type:
+														EVENT_TYPES.FIELD_REMOVED,
 												});
 											}}
 											small
@@ -117,7 +119,8 @@ const Panel = ({
 
 											dispatch({
 												payload: name,
-												type: EVENT_TYPES.REPEATED,
+												type:
+													EVENT_TYPES.FIELD_REPEATED,
 											});
 										}}
 										small

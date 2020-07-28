@@ -1,4 +1,4 @@
-import {PageTypes} from './PageTypes';
+import {LayoutTypes} from './LayoutTypes';
 
 export interface Config {
 	addFragmentEntryLinkCommentURL: string;
@@ -32,7 +32,7 @@ export interface Config {
 		};
 	};
 
-	containerItemEnabled: boolean;
+	containerItemFlexEnabled: boolean;
 
 	defaultEditorConfigurations: {
 		[key: 'comment' | 'rich-text' | 'text']: {
@@ -62,6 +62,8 @@ export interface Config {
 	getCollectionFieldURL: string;
 	getCollectionMappingFieldsURL: string;
 	getExperienceUsedPortletsURL: string;
+	getIframeContentCssURL: string;
+	getIframeContentURL: string;
 	getPageContentsURL: string;
 	imageSelectorURL: string;
 	infoItemSelectorURL: string;
@@ -71,9 +73,9 @@ export interface Config {
 	};
 
 	layoutConversionWarningMessages: string[] | null;
+	layoutType: LayoutTypes[keyof LayoutTypes];
 	masterUsed: boolean;
 	moveItemURL: string;
-	pageType: PageTypes[keyof PageTypes];
 	panels: string[][];
 	pending: boolean;
 	plid: string;

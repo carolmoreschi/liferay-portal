@@ -10,21 +10,23 @@
  */
 
 import '@testing-library/jest-dom/extend-expect';
-import {fireEvent, render} from '@testing-library/react';
+import {act, cleanup, fireEvent, render} from '@testing-library/react';
 import EditAppContext, {
 	reducer,
 } from 'app-builder-web/js/pages/apps/edit/EditAppContext.es';
 import React, {useReducer, useState} from 'react';
 
 import DeployAppModal from '../../../../src/main/resources/META-INF/resources/js/pages/apps/edit/DeployAppModal.es';
-import configReducer from '../../../../src/main/resources/META-INF/resources/js/pages/apps/edit/configReducer.es';
+import configReducer, {
+	getInitialConfig,
+} from '../../../../src/main/resources/META-INF/resources/js/pages/apps/edit/configReducer.es';
 import AppContextProviderWrapper from '../../../AppContextProviderWrapper.es';
 
-const EditAppContextProviderWrapper = ({children}) => {
+const EditAppContextProviderWrapper = ({children, edit}) => {
 	const [{app}, dispatch] = useReducer(reducer, {
 		app: {
-			active: true,
-			appDeployments: [],
+			active: edit,
+			appDeployments: edit ? [{settings: {}, type: 'standalone'}] : [],
 			dataLayoutId: null,
 			dataListViewId: null,
 			name: {
@@ -33,21 +35,20 @@ const EditAppContextProviderWrapper = ({children}) => {
 			scope: 'workflow',
 		},
 	});
-	const [config, dispatchConfig] = useReducer(configReducer, {
-		dataObject: {},
-		formView: {},
-		tableView: {},
-	});
+	const [config, dispatchConfig] = useReducer(
+		configReducer,
+		getInitialConfig()
+	);
 
-	const [isModalVisible, setModalVisible] = useState(true);
+	const [isDeployModalVisible, setDeployModalVisible] = useState(true);
 
 	const editState = {
-		appId: 1234,
+		appId: edit ? 1234 : undefined,
 		config,
 		dispatch,
 		dispatchConfig,
-		isModalVisible,
-		setModalVisible,
+		isDeployModalVisible,
+		setDeployModalVisible,
 		state: {app},
 	};
 
@@ -61,38 +62,83 @@ const EditAppContextProviderWrapper = ({children}) => {
 };
 
 describe('DeployAppModal', () => {
+	const mockOnSave = jest.fn().mockImplementation((callback) => callback());
+
 	beforeAll(() => {
 		jest.useFakeTimers();
 	});
 
-	it('renders all deployment modes correctly', async () => {
-		const {getByText, queryByText} = render(<DeployAppModal />, {
-			wrapper: EditAppContextProviderWrapper,
+	afterEach(cleanup);
+
+	describe('Add', () => {
+		it('renders correctly and submit', async () => {
+			const {baseElement, getByText} = render(
+				<DeployAppModal onSave={mockOnSave} />,
+				{wrapper: EditAppContextProviderWrapper}
+			);
+
+			act(() => {
+				jest.runAllTimers();
+			});
+
+			const deployButton = getByText('done');
+
+			const toggleSwitches = baseElement.querySelectorAll(
+				'input.toggle-switch-check'
+			);
+
+			expect(deployButton).toBeDisabled();
+			expect(toggleSwitches.length).toBe(3);
+
+			await act(async () => {
+				await fireEvent.click(toggleSwitches[1]);
+			});
+
+			expect(deployButton).toBeEnabled();
+
+			await act(async () => {
+				await fireEvent.click(deployButton);
+			});
+
+			expect(deployButton).toBeDisabled();
+			expect(mockOnSave).toHaveBeenCalled();
+
+			act(() => {
+				jest.runAllTimers();
+			});
 		});
+	});
 
-		jest.runAllTimers();
+	describe('Edit', () => {
+		it('renders correctly and submit', async () => {
+			const {baseElement, getByText} = render(
+				<EditAppContextProviderWrapper edit>
+					<DeployAppModal />
+				</EditAppContextProviderWrapper>
+			);
 
-		const toggleSwitches = document.querySelectorAll(
-			'input.toggle-switch-check'
-		);
-		const deployButton = getByText('done');
+			act(() => {
+				jest.runAllTimers();
+			});
 
-		expect(deployButton).toBeDisabled();
-		expect(toggleSwitches.length).toBe(3);
-		expect(queryByText('widget')).toBeTruthy();
-		expect(queryByText('deploy-a-widget')).toBeTruthy();
-		expect(queryByText('standalone')).toBeTruthy();
-		expect(
-			queryByText('deploy-a-standalone-app-with-a-direct-link')
-		).toBeTruthy();
-		expect(queryByText('product-menu')).toBeTruthy();
-		expect(
-			queryByText('deploy-to-the-control-panel-or-a-site-menu')
-		).toBeTruthy();
-		expect(queryByText('cancel')).toBeTruthy();
+			const deployButton = getByText('done');
+			const toggleSwitches = baseElement.querySelectorAll(
+				'input.toggle-switch-check'
+			);
 
-		await fireEvent.click(toggleSwitches[1]);
+			expect(deployButton).toBeEnabled();
+			expect(toggleSwitches.length).toBe(3);
+			expect(toggleSwitches[1].checked).toBeTruthy();
 
-		expect(deployButton).toBeEnabled();
+			await act(async () => {
+				await fireEvent.click(deployButton);
+			});
+
+			expect(deployButton).toBeDisabled();
+
+			act(() => {
+				jest.runAllTimers();
+			});
+		});
 	});
 });

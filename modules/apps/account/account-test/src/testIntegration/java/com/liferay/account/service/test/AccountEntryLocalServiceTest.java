@@ -416,19 +416,19 @@ public class AccountEntryLocalServiceTest {
 	@Test
 	public void testSearchByType() throws Exception {
 		AccountEntry businessAccountEntry = _addAccountEntry();
-		AccountEntry personalAccountEntry = _addPersonalAccountEntry();
+		AccountEntry personAccountEntry = _addPersonAccountEntry();
 
 		_assertSearchWithParams(
-			Arrays.asList(businessAccountEntry, personalAccountEntry), null);
+			Arrays.asList(businessAccountEntry, personAccountEntry), null);
 
 		_assertSearchWithParams(
 			Collections.singletonList(businessAccountEntry),
 			_getLinkedHashMap(
 				"type", AccountConstants.ACCOUNT_ENTRY_TYPE_BUSINESS));
 		_assertSearchWithParams(
-			Collections.singletonList(personalAccountEntry),
+			Collections.singletonList(personAccountEntry),
 			_getLinkedHashMap(
-				"type", AccountConstants.ACCOUNT_ENTRY_TYPE_PERSONAL));
+				"type", AccountConstants.ACCOUNT_ENTRY_TYPE_PERSON));
 		_assertSearchWithParams(
 			Collections.emptyList(), _getLinkedHashMap("type", "invalidType"));
 	}
@@ -602,8 +602,8 @@ public class AccountEntryLocalServiceTest {
 		return accountEntry;
 	}
 
-	private AccountEntry _addPersonalAccountEntry() throws Exception {
-		return AccountEntryTestUtil.addPersonalAccountEntry(
+	private AccountEntry _addPersonAccountEntry() throws Exception {
+		return AccountEntryTestUtil.addPersonAccountEntry(
 			_accountEntryLocalService);
 	}
 

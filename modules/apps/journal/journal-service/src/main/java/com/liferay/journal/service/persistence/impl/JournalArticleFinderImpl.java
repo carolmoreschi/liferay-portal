@@ -1983,7 +1983,7 @@ public class JournalArticleFinderImpl
 			return StringPool.BLANK;
 		}
 
-		StringBundler sb = new StringBundler(ddmStructureKeys.length * 3 + 1);
+		StringBundler sb = new StringBundler((ddmStructureKeys.length * 3) + 1);
 
 		sb.append(StringPool.OPEN_PARENTHESIS);
 
@@ -2005,7 +2005,7 @@ public class JournalArticleFinderImpl
 			return StringPool.BLANK;
 		}
 
-		StringBundler sb = new StringBundler(folderIds.size() * 3 + 1);
+		StringBundler sb = new StringBundler((folderIds.size() * 3) + 1);
 
 		sb.append(StringPool.OPEN_PARENTHESIS);
 

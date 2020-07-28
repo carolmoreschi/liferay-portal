@@ -24,11 +24,12 @@ exports[`KeyValue has a helptext 1`] = `
       <label
         class="control-label key-value-label"
       >
-        field-name
+        field-id
         :
       </label>
       <input
         class="key-value-input"
+        tabindex="0"
         type="text"
         value=""
       />
@@ -71,11 +72,12 @@ exports[`KeyValue has a label 1`] = `
       <label
         class="control-label key-value-label"
       >
-        field-name
+        field-id
         :
       </label>
       <input
         class="key-value-input"
+        tabindex="0"
         type="text"
         value=""
       />
@@ -109,11 +111,12 @@ exports[`KeyValue has a predefined Value 1`] = `
       <label
         class="control-label key-value-label"
       >
-        field-name
+        field-id
         :
       </label>
       <input
         class="key-value-input"
+        tabindex="0"
         type="text"
         value=""
       />
@@ -146,11 +149,12 @@ exports[`KeyValue has a value 1`] = `
       <label
         class="control-label key-value-label"
       >
-        field-name
+        field-id
         :
       </label>
       <input
         class="key-value-input"
+        tabindex="0"
         type="text"
         value=""
       />
@@ -183,11 +187,12 @@ exports[`KeyValue has an id 1`] = `
       <label
         class="control-label key-value-label"
       >
-        field-name
+        field-id
         :
       </label>
       <input
         class="key-value-input"
+        tabindex="0"
         type="text"
         value=""
       />
@@ -221,11 +226,12 @@ exports[`KeyValue is not editable 1`] = `
       <label
         class="control-label key-value-label"
       >
-        field-name
+        field-id
         :
       </label>
       <input
         class="key-value-input"
+        tabindex="0"
         type="text"
         value=""
       />
@@ -258,11 +264,12 @@ exports[`KeyValue is not required 1`] = `
       <label
         class="control-label key-value-label"
       >
-        field-name
+        field-id
         :
       </label>
       <input
         class="key-value-input"
+        tabindex="0"
         type="text"
         value=""
       />
@@ -300,11 +307,12 @@ exports[`KeyValue renders Label if showLabel is true 1`] = `
       <label
         class="control-label key-value-label"
       >
-        field-name
+        field-id
         :
       </label>
       <input
         class="key-value-input"
+        tabindex="0"
         type="text"
         value=""
       />
@@ -337,11 +345,12 @@ exports[`KeyValue renders component with a key 1`] = `
       <label
         class="control-label key-value-label"
       >
-        field-name
+        field-id
         :
       </label>
       <input
         class="key-value-input"
+        tabindex="0"
         type="text"
         value="key"
       />

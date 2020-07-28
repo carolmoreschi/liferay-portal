@@ -70,7 +70,7 @@ renderResponse.setTitle(assetListDisplayContext.getAssetListEntryTitle());
 														iconCssClass="btn btn-monospaced btn-outline-borderless btn-outline-secondary btn-sm"
 														id="addAssetListEntryVariationIcon"
 														markupView="lexicon"
-														url='<%= "javascript:" + renderResponse.getNamespace() + "openSelectSegmentsEntryDialog();" %>'
+														url='<%= "javascript:" + liferayPortletResponse.getNamespace() + "openSelectSegmentsEntryDialog();" %>'
 													/>
 												</c:if>
 											</li>
@@ -113,7 +113,7 @@ renderResponse.setTitle(assetListDisplayContext.getAssetListEntryTitle());
 								<liferay-frontend:empty-result-message
 									actionDropdownItems="<%= (availableSegmentsEntries.size() > 0) ? editAssetListDisplayContext.getAssetListEntryVariationActionDropdownItems() : null %>"
 									animationType="<%= EmptyResultMessageKeys.AnimationType.NONE %>"
-									componentId='<%= renderResponse.getNamespace() + "emptyResultMessageComponent" %>'
+									componentId='<%= liferayPortletResponse.getNamespace() + "emptyResultMessageComponent" %>'
 									description='<%= LanguageUtil.get(request, "no-personalized-variations-were-found") %>'
 									elementType='<%= LanguageUtil.get(request, "personalized-variations") %>'
 								/>
@@ -151,26 +151,20 @@ renderResponse.setTitle(assetListDisplayContext.getAssetListEntryTitle());
 	</portlet:actionURL>
 
 	function <portlet:namespace />openSelectSegmentsEntryDialog() {
-		Liferay.Util.selectEntity(
-			{
-				dialog: {
-					constrain: true,
-					modal: true,
-				},
-				id: '<portlet:namespace />selectEntity',
-				title:
-					'<liferay-ui:message arguments="personalized-variation" key="new-x" />',
-				uri:
-					'<%= editAssetListDisplayContext.getSelectSegmentsEntryURL() %>',
-			},
-			function (event) {
+		Liferay.Util.openModal({
+			id: '<portlet:namespace />selectEntity',
+			onSelect: function (selectedItem) {
 				Liferay.Util.postForm(document.<portlet:namespace />fm, {
 					data: {
-						segmentsEntryId: event.entityid,
+						segmentsEntryId: selectedItem.entityid,
 					},
 					url: '<%= addAssetListEntryVariationURL %>',
 				});
-			}
-		);
+			},
+			selectEventName: '<portlet:namespace />selectEntity',
+			title:
+				'<liferay-ui:message arguments="personalized-variation" key="new-x" />',
+			url: '<%= editAssetListDisplayContext.getSelectSegmentsEntryURL() %>',
+		});
 	}
 </script>

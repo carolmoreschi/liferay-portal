@@ -124,6 +124,12 @@ public class PortalUpgradeProcessRegistryImpl
 
 		upgradeProcesses.put(
 			new Version(8, 16, 0), new UpgradeDLFileEntryType());
+
+		upgradeProcesses.put(
+			new Version(8, 17, 0), new UpgradeAssetVocabulary());
+
+		upgradeProcesses.put(
+			new Version(8, 18, 0), new UpgradeLayoutStyleBookEntry());
 	}
 
 }

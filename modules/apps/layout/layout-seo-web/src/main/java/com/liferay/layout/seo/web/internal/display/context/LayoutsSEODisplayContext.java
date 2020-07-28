@@ -27,8 +27,10 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.info.display.contributor.InfoDisplayContributor;
 import com.liferay.info.display.contributor.InfoDisplayContributorTracker;
+import com.liferay.info.exception.NoSuchFormVariationException;
+import com.liferay.info.form.InfoForm;
+import com.liferay.info.item.InfoItemServiceTracker;
 import com.liferay.info.item.provider.InfoItemFormProvider;
-import com.liferay.info.item.provider.InfoItemServiceTracker;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.item.selector.ItemSelectorCriterion;
 import com.liferay.item.selector.criteria.FileEntryItemSelectorReturnType;
@@ -60,7 +62,6 @@ import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -328,6 +329,29 @@ public class LayoutsSEODisplayContext {
 		}
 	}
 
+	public HashMap<String, Object> getOpenGraphMappingData()
+		throws PortalException {
+
+		return HashMapBuilder.<String, Object>putAll(
+			_getBaseSEOMappingData(
+				_getInfoForm(_getLayoutPageTemplateEntry()),
+				_getLayoutPageTemplateEntry())
+		).put(
+			"openGraphDescription",
+			_selLayout.getTypeSettingsProperty(
+				"mapped-openGraphDescription", "description")
+		).put(
+			"openGraphImage",
+			_selLayout.getTypeSettingsProperty("mapped-openGraphImage", null)
+		).put(
+			"openGraphImageAlt",
+			_selLayout.getTypeSettingsProperty("mapped-openGraphImageAlt", null)
+		).put(
+			"openGraphTitle",
+			_selLayout.getTypeSettingsProperty("mapped-openGraphTitle", "title")
+		).build();
+	}
+
 	public String getPageTitleSuffix() throws PortalException {
 		Company company = _themeDisplay.getCompany();
 
@@ -394,50 +418,16 @@ public class LayoutsSEODisplayContext {
 	}
 
 	public HashMap<String, Object> getSEOMappingData() throws PortalException {
-		LayoutPageTemplateEntry layoutPageTemplateEntry =
-			_layoutPageTemplateEntryLocalService.
-				fetchLayoutPageTemplateEntryByPlid(_selPlid);
-
-		return HashMapBuilder.<String, Object>put(
+		return HashMapBuilder.<String, Object>putAll(
+			_getBaseSEOMappingData(
+				_getInfoForm(_getLayoutPageTemplateEntry()),
+				_getLayoutPageTemplateEntry())
+		).put(
 			"description",
-			_selLayout.getDescription(
-				LocaleUtil.fromLanguageId(_selLayout.getDefaultLanguageId()))
+			_selLayout.getTypeSettingsProperty(
+				"mapped-description", "description")
 		).put(
-			"fields",
-			_infoItemServiceTracker.getInfoItemService(
-				InfoItemFormProvider.class,
-				layoutPageTemplateEntry.getClassName()
-			).getInfoForm(
-			).getAllInfoFields(
-			).stream(
-			).map(
-				infoField -> JSONUtil.put(
-					"key", infoField.getName()
-				).put(
-					"label", infoField.getLabel(_themeDisplay.getLocale())
-				)
-			).collect(
-				Collectors.toList()
-			)
-		).put(
-			"selectedSource",
-			JSONUtil.put(
-				"className", layoutPageTemplateEntry.getClassName()
-			).put(
-				"classNameLabel",
-				_getTypeLabel(layoutPageTemplateEntry.getClassName())
-			).put(
-				"classTypeId", layoutPageTemplateEntry.getClassTypeId()
-			).put(
-				"classTypeLabel",
-				_getSubtypeLabel(
-					layoutPageTemplateEntry.getClassName(),
-					layoutPageTemplateEntry.getClassTypeId())
-			)
-		).put(
-			"title",
-			_selLayout.getTitle(
-				LocaleUtil.fromLanguageId(_selLayout.getDefaultLanguageId()))
+			"title", _selLayout.getTypeSettingsProperty("mapped-title", "title")
 		).build();
 	}
 
@@ -474,6 +464,65 @@ public class LayoutsSEODisplayContext {
 			_liferayPortletRequest, "privateLayout");
 
 		return _privateLayout;
+	}
+
+	private HashMap<String, Object> _getBaseSEOMappingData(
+			InfoForm infoForm, LayoutPageTemplateEntry layoutPageTemplateEntry)
+		throws PortalException {
+
+		return HashMapBuilder.<String, Object>put(
+			"defaultLanguageId", _selLayout.getDefaultLanguageId()
+		).put(
+			"fields",
+			infoForm.getAllInfoFields(
+			).stream(
+			).map(
+				infoField -> JSONUtil.put(
+					"key", infoField.getName()
+				).put(
+					"label", infoField.getLabel(_themeDisplay.getLocale())
+				).put(
+					"type",
+					infoField.getInfoFieldType(
+					).getName()
+				)
+			).collect(
+				Collectors.toList()
+			)
+		).put(
+			"selectedSource",
+			JSONUtil.put(
+				"className", layoutPageTemplateEntry.getClassName()
+			).put(
+				"classNameLabel",
+				_getTypeLabel(layoutPageTemplateEntry.getClassName())
+			).put(
+				"classTypeId", layoutPageTemplateEntry.getClassTypeId()
+			).put(
+				"classTypeLabel",
+				_getSubtypeLabel(
+					layoutPageTemplateEntry.getClassName(),
+					layoutPageTemplateEntry.getClassTypeId())
+			)
+		).build();
+	}
+
+	private InfoForm _getInfoForm(
+			LayoutPageTemplateEntry layoutPageTemplateEntry)
+		throws NoSuchFormVariationException {
+
+		InfoItemFormProvider<?> infoItemFormProvider =
+			_infoItemServiceTracker.getFirstInfoItemService(
+				InfoItemFormProvider.class,
+				layoutPageTemplateEntry.getClassName());
+
+		return infoItemFormProvider.getInfoForm(
+			String.valueOf(layoutPageTemplateEntry.getClassTypeId()));
+	}
+
+	private LayoutPageTemplateEntry _getLayoutPageTemplateEntry() {
+		return _layoutPageTemplateEntryLocalService.
+			fetchLayoutPageTemplateEntryByPlid(_selPlid);
 	}
 
 	private Long _getSelPlid() {

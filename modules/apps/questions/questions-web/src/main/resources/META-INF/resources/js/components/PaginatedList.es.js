@@ -27,6 +27,7 @@ const PaginatedList = ({
 	changePage,
 	children,
 	data,
+	emptyState,
 	showEmptyState,
 }) => {
 	const deltaValues = [4, 8, 20, 40, 60];
@@ -35,6 +36,7 @@ const PaginatedList = ({
 
 	return (
 		<>
+			{emptyState && !data.totalCount && {...emptyState}}
 			{showEmptyState && !data.totalCount && (
 				<ClayEmptyState
 					description={Liferay.Language.get('there-are-no-results')}
@@ -49,7 +51,7 @@ const PaginatedList = ({
 						<ClayPaginationBarWithBasicItems
 							activeDelta={activeDelta}
 							activePage={activePage}
-							className="w-100"
+							className="c-mt-4 w-100"
 							deltas={deltas}
 							ellipsisBuffer={3}
 							onDeltaChange={changeDelta}

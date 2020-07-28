@@ -16,14 +16,17 @@ package com.liferay.journal.web.internal.info.item.provider;
 
 import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.document.library.util.DLURLHelper;
+import com.liferay.dynamic.data.mapping.info.field.converter.DDMFormFieldInfoFieldConverter;
 import com.liferay.dynamic.data.mapping.kernel.DDMFormField;
 import com.liferay.dynamic.data.mapping.kernel.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.kernel.DDMFormValues;
 import com.liferay.dynamic.data.mapping.kernel.Value;
-import com.liferay.info.field.InfoField;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldType;
+import com.liferay.dynamic.data.mapping.storage.constants.FieldConstants;
+import com.liferay.dynamic.data.mapping.util.DDMBeanTranslator;
 import com.liferay.info.field.InfoFieldValue;
-import com.liferay.info.field.type.TextInfoFieldType;
 import com.liferay.info.localized.InfoLocalizedValue;
+import com.liferay.info.type.WebImage;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -35,7 +38,6 @@ import com.liferay.portal.kernel.sanitizer.Sanitizer;
 import com.liferay.portal.kernel.sanitizer.SanitizerUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.DateUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.text.DateFormat;
@@ -60,7 +62,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = DDMFormValuesInfoFieldValuesProvider.class)
 public class DDMFormValuesInfoFieldValuesProvider<T extends GroupedModel> {
 
-	public List<InfoFieldValue<InfoLocalizedValue<String>>> getInfoFieldValues(
+	public List<InfoFieldValue<InfoLocalizedValue<Object>>> getInfoFieldValues(
 		T t, DDMFormValues ddmFormValues) {
 
 		List<DDMFormFieldValue> ddmFormFieldValues =
@@ -70,7 +72,7 @@ public class DDMFormValuesInfoFieldValuesProvider<T extends GroupedModel> {
 
 		return stream.flatMap(
 			ddmFormFieldValue -> {
-				List<InfoFieldValue<InfoLocalizedValue<String>>>
+				List<InfoFieldValue<InfoLocalizedValue<Object>>>
 					infoFieldValues = _getInfoFieldValues(t, ddmFormFieldValue);
 
 				return infoFieldValues.stream();
@@ -82,7 +84,7 @@ public class DDMFormValuesInfoFieldValuesProvider<T extends GroupedModel> {
 
 	private void _addDDMFormFieldValue(
 		T t, DDMFormFieldValue ddmFormFieldValue,
-		List<InfoFieldValue<InfoLocalizedValue<String>>> infoFieldValues) {
+		List<InfoFieldValue<InfoLocalizedValue<Object>>> infoFieldValues) {
 
 		_addNestedFields(t, ddmFormFieldValue, infoFieldValues);
 
@@ -95,7 +97,7 @@ public class DDMFormValuesInfoFieldValuesProvider<T extends GroupedModel> {
 
 	private void _addNestedFields(
 		T t, DDMFormFieldValue ddmFormFieldValue,
-		List<InfoFieldValue<InfoLocalizedValue<String>>> infoFieldValues) {
+		List<InfoFieldValue<InfoLocalizedValue<Object>>> infoFieldValues) {
 
 		Map<String, List<DDMFormFieldValue>> nestedDDMFormFieldValuesMap =
 			ddmFormFieldValue.getNestedDDMFormFieldValuesMap();
@@ -111,7 +113,7 @@ public class DDMFormValuesInfoFieldValuesProvider<T extends GroupedModel> {
 		}
 	}
 
-	private Optional<InfoFieldValue<InfoLocalizedValue<String>>>
+	private Optional<InfoFieldValue<InfoLocalizedValue<Object>>>
 		_getInfoFieldValue(T t, DDMFormFieldValue ddmFormFieldValue) {
 
 		Value value = ddmFormFieldValue.getValue();
@@ -120,40 +122,65 @@ public class DDMFormValuesInfoFieldValuesProvider<T extends GroupedModel> {
 			return Optional.empty();
 		}
 
-		DDMFormField ddmFormField = ddmFormFieldValue.getDDMFormField();
-
 		return Optional.of(
 			new InfoFieldValue<>(
-				new InfoField(
-					TextInfoFieldType.INSTANCE,
-					InfoLocalizedValue.localize(
-						getClass(), ddmFormFieldValue.getName()),
-					ddmFormField.isLocalizable(), ddmFormFieldValue.getName()),
+				_ddmFormFieldInfoFieldConverter.convert(
+					_ddmBeanTranslator.translate(
+						ddmFormFieldValue.getDDMFormField())),
 				InfoLocalizedValue.builder(
 				).defaultLocale(
 					value.getDefaultLocale()
-				).addValues(
-					value.getValues(
-					).entrySet(
-					).stream(
-					).collect(
-						Collectors.toMap(
-							Map.Entry::getKey,
-							entry -> _sanitizeDDMFormFieldValue(
-								t, ddmFormFieldValue, entry.getKey()))
-					)
+				).value(
+					consumer -> {
+						for (Locale locale : value.getAvailableLocales()) {
+							consumer.accept(
+								locale,
+								_sanitizeDDMFormFieldValue(
+									t, ddmFormFieldValue, locale));
+						}
+					}
 				).build()));
 	}
 
-	private List<InfoFieldValue<InfoLocalizedValue<String>>>
+	private List<InfoFieldValue<InfoLocalizedValue<Object>>>
 		_getInfoFieldValues(T t, DDMFormFieldValue ddmFormFieldValue) {
 
-		List<InfoFieldValue<InfoLocalizedValue<String>>> infoFieldValues =
+		List<InfoFieldValue<InfoLocalizedValue<Object>>> infoFieldValues =
 			new ArrayList<>();
 
 		_addDDMFormFieldValue(t, ddmFormFieldValue, infoFieldValues);
 
 		return infoFieldValues;
+	}
+
+	private WebImage _getWebImage(JSONObject jsonObject) {
+		try {
+			String uuid = jsonObject.getString("uuid");
+			long groupId = jsonObject.getLong("groupId");
+
+			if (Validator.isNull(uuid) && (groupId == 0)) {
+				return null;
+			}
+
+			FileEntry fileEntry = _dlAppService.getFileEntryByUuidAndGroupId(
+				uuid, groupId);
+
+			WebImage webImage = new WebImage(
+				_dlURLHelper.getDownloadURL(
+					fileEntry, fileEntry.getFileVersion(), null,
+					StringPool.BLANK));
+
+			webImage.setAlt(jsonObject.getString("alt"));
+
+			return webImage;
+		}
+		catch (Exception exception) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(exception, exception);
+			}
+		}
+
+		return null;
 	}
 
 	private Object _sanitizeDDMFormFieldValue(
@@ -164,8 +191,13 @@ public class DDMFormValuesInfoFieldValuesProvider<T extends GroupedModel> {
 		String valueString = value.getString(locale);
 
 		try {
-			if (Objects.equals(ddmFormFieldValue.getType(), "date") ||
-				Objects.equals(ddmFormFieldValue.getType(), "ddm-date")) {
+			if (Objects.equals(
+					ddmFormFieldValue.getType(), DDMFormFieldType.DATE) ||
+				Objects.equals(ddmFormFieldValue.getType(), "date")) {
+
+				if (Validator.isNull(valueString)) {
+					return null;
+				}
 
 				DateFormat dateFormat = DateFormat.getDateInstance(
 					DateFormat.SHORT, locale);
@@ -176,23 +208,37 @@ public class DDMFormValuesInfoFieldValuesProvider<T extends GroupedModel> {
 				return dateFormat.format(date);
 			}
 			else if (Objects.equals(
-						ddmFormFieldValue.getType(), "ddm-decimal") ||
-					 Objects.equals(ddmFormFieldValue.getType(), "numeric")) {
+						ddmFormFieldValue.getType(),
+						DDMFormFieldType.DECIMAL) ||
+					 Objects.equals(
+						 ddmFormFieldValue.getType(),
+						 DDMFormFieldType.NUMERIC)) {
+
+				if (Validator.isNull(valueString)) {
+					return null;
+				}
 
 				NumberFormat numberFormat = NumberFormat.getNumberInstance(
 					locale);
 
-				return numberFormat.format(GetterUtil.getDouble(valueString));
+				DDMFormField ddmFormField = ddmFormFieldValue.getDDMFormField();
+
+				String dataType = ddmFormField.getDataType();
+
+				if (dataType.equals(FieldConstants.DOUBLE) ||
+					dataType.equals(FieldConstants.FLOAT)) {
+
+					numberFormat.setMinimumFractionDigits(1);
+				}
+
+				return numberFormat.format(numberFormat.parse(valueString));
 			}
-			else if (Objects.equals(ddmFormFieldValue.getType(), "ddm-image") ||
+			else if (Objects.equals(
+						ddmFormFieldValue.getType(), DDMFormFieldType.IMAGE) ||
 					 Objects.equals(ddmFormFieldValue.getType(), "image")) {
 
-				JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
-					valueString);
-
-				jsonObject.put("url", _transformFileEntryURL(valueString));
-
-				return jsonObject;
+				return _getWebImage(
+					JSONFactoryUtil.createJSONObject(valueString));
 			}
 
 			return SanitizerUtil.sanitize(
@@ -209,34 +255,14 @@ public class DDMFormValuesInfoFieldValuesProvider<T extends GroupedModel> {
 		}
 	}
 
-	private String _transformFileEntryURL(String data) {
-		try {
-			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(data);
-
-			String uuid = jsonObject.getString("uuid");
-			long groupId = jsonObject.getLong("groupId");
-
-			if (Validator.isNull(uuid) && (groupId == 0)) {
-				return StringPool.BLANK;
-			}
-
-			FileEntry fileEntry = _dlAppService.getFileEntryByUuidAndGroupId(
-				uuid, groupId);
-
-			return _dlURLHelper.getDownloadURL(
-				fileEntry, fileEntry.getFileVersion(), null, StringPool.BLANK);
-		}
-		catch (Exception exception) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(exception, exception);
-			}
-		}
-
-		return StringPool.BLANK;
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		DDMFormValuesInfoFieldValuesProvider.class);
+
+	@Reference
+	private DDMBeanTranslator _ddmBeanTranslator;
+
+	@Reference
+	private DDMFormFieldInfoFieldConverter _ddmFormFieldInfoFieldConverter;
 
 	@Reference
 	private DLAppService _dlAppService;

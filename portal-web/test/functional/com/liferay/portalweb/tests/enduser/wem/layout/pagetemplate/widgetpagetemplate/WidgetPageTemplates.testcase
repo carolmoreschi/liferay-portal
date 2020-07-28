@@ -39,11 +39,9 @@ definition {
 		property portal.acceptance = "true";
 		property testray.component.names = "Training";
 
-		PageTemplatesAdminGlobalSite.openGlobalPageTemplatesAdmin();
-
-		PageTemplatesAdminGlobalSite.addCP(
-			pageTemplateActive = "Active",
-			pageTemplateName = "Page Template Name");
+		JSONLayoutpagetemplate.addGlobalPageTemplateEntry(
+			pageTemplateEntryActive = "true",
+			pageTemplateEntryName = "Page Template Name");
 
 		JSONGroup.addGroup(groupName = "Site Name");
 
@@ -97,6 +95,8 @@ definition {
 	@description = "This is a use case for LPS-115361. Add a widget page template in normal site."
 	@priority = "5"
 	test AddPageTemplate {
+		property portal.acceptance = "true";
+
 		task ("Add a new site") {
 			JSONGroup.addGroup(groupName = "Site Name");
 		}
@@ -131,6 +131,8 @@ definition {
 	@description = "This is a use case for LPS-115361. Can not delete a widget page template is used by a page in normal site."
 	@priority = "5"
 	test CannotDeletePageTemplateIsUsedByAPage {
+		property portal.acceptance = "true";
+
 		task ("Add a new site") {
 			JSONGroup.addGroup(groupName = "Site Name");
 		}
@@ -142,13 +144,20 @@ definition {
 		}
 
 		task ("Add a widget page template") {
+			JSONLayoutpagetemplate.addLayoutPageTemplateEntry(
+				groupName = "Site Name",
+				layoutPageTemplateCollectionName = "Page Template Collection",
+				layoutPageTemplateEntryName = "Page Template Name",
+				layoutPageTemplateStatus = "Approved",
+				layoutPageTemplateType = "Widget Page Template");
+
 			PageTemplatesAdmin.openPageTemplatesAdmin(siteURLKey = "site-name");
 
 			Navigator.gotoNavNested(navNested = "Page Template Collection");
 
-			PageTemplatesAdmin.addPageTemplate(
-				pageTemplateName = "Page Template Name",
-				pageTemplateType = "Widget Page Template");
+			PageTemplatesAdmin.gotoPageTemplateEllipsisItem(
+				item = "Edit",
+				pageTemplateName = "Page Template Name");
 
 			AssertTextEquals(
 				locator1 = "ControlMenu#HEADING",
@@ -234,11 +243,11 @@ definition {
 	test DeleteGlobalPageTemplate {
 		property portal.acceptance = "true";
 
-		PageTemplatesAdminGlobalSite.openGlobalPageTemplatesAdmin();
+		JSONLayoutpagetemplate.addGlobalPageTemplateEntry(
+			pageTemplateEntryActive = "true",
+			pageTemplateEntryName = "Page Template Name");
 
-		PageTemplatesAdminGlobalSite.addCP(
-			pageTemplateActive = "Active",
-			pageTemplateName = "Page Template Name");
+		PageTemplatesAdminGlobalSite.openGlobalPageTemplatesAdmin();
 
 		PageTemplatesAdminGlobalSite.deleteCP(pageTemplateName = "Page Template Name");
 
@@ -248,6 +257,8 @@ definition {
 	@description = "This is a use case for LPS-115361. Delete a widget page template in normal site."
 	@priority = "5"
 	test DeletePageTemplate {
+		property portal.acceptance = "true";
+
 		task ("Add a new site") {
 			JSONGroup.addGroup(groupName = "Site Name");
 		}
@@ -259,17 +270,12 @@ definition {
 		}
 
 		task ("Add a widget page template") {
-			PageTemplatesAdmin.openPageTemplatesAdmin(siteURLKey = "site-name");
-
-			Navigator.gotoNavNested(navNested = "Page Template Collection");
-
-			PageTemplatesAdmin.addPageTemplate(
-				pageTemplateName = "Page Template Name",
-				pageTemplateType = "Widget Page Template");
-
-			AssertTextEquals(
-				locator1 = "ControlMenu#HEADING",
-				value1 = "Page Template Name");
+			JSONLayoutpagetemplate.addLayoutPageTemplateEntry(
+				groupName = "Site Name",
+				layoutPageTemplateCollectionName = "Page Template Collection",
+				layoutPageTemplateEntryName = "Page Template Name",
+				layoutPageTemplateStatus = "Approved",
+				layoutPageTemplateType = "Widget Page Template");
 		}
 
 		task ("Delete the widget page template") {
@@ -288,11 +294,11 @@ definition {
 	test EditGlobalPageTemplate {
 		property portal.acceptance = "true";
 
-		PageTemplatesAdminGlobalSite.openGlobalPageTemplatesAdmin();
+		JSONLayoutpagetemplate.addGlobalPageTemplateEntry(
+			pageTemplateEntryActive = "true",
+			pageTemplateEntryName = "Page Template Name");
 
-		PageTemplatesAdminGlobalSite.addCP(
-			pageTemplateActive = "Active",
-			pageTemplateName = "Page Template Name");
+		PageTemplatesAdminGlobalSite.openGlobalPageTemplatesAdmin();
 
 		PageTemplatesAdminGlobalSite.gotoPageTemplateViaEdit(pageTemplateName = "Page Template Name");
 
@@ -315,11 +321,12 @@ definition {
 
 	@priority = "4"
 	test EditGlobalPageTemplateDescription {
-		PageTemplatesAdminGlobalSite.openGlobalPageTemplatesAdmin();
+		JSONLayoutpagetemplate.addGlobalPageTemplateEntry(
+			pageTemplateEntryActive = "true",
+			pageTemplateEntryDescription = "This is a page template description",
+			pageTemplateEntryName = "Page Template Name");
 
-		PageTemplatesAdminGlobalSite.addCP(
-			pageTemplateActive = "Active",
-			pageTemplateName = "Page Template Name");
+		PageTemplatesAdminGlobalSite.openGlobalPageTemplatesAdmin();
 
 		PageTemplatesAdminGlobalSite.editDescription(
 			pageTemplateDescription = "This is a page template description",
@@ -333,6 +340,8 @@ definition {
 	@description = "This is a use case for LPS-115361. Edit a widget page template in normal site."
 	@priority = "5"
 	test EditPageTemplate {
+		property portal.acceptance = "true";
+
 		task ("Add a new site") {
 			JSONGroup.addGroup(groupName = "Site Name");
 		}
@@ -344,17 +353,12 @@ definition {
 		}
 
 		task ("Add a widget page template") {
-			PageTemplatesAdmin.openPageTemplatesAdmin(siteURLKey = "site-name");
-
-			Navigator.gotoNavNested(navNested = "Page Template Collection");
-
-			PageTemplatesAdmin.addPageTemplate(
-				pageTemplateName = "Page Template Name",
-				pageTemplateType = "Widget Page Template");
-
-			AssertTextEquals(
-				locator1 = "ControlMenu#HEADING",
-				value1 = "Page Template Name");
+			JSONLayoutpagetemplate.addLayoutPageTemplateEntry(
+				groupName = "Site Name",
+				layoutPageTemplateCollectionName = "Page Template Collection",
+				layoutPageTemplateEntryName = "Page Template Name",
+				layoutPageTemplateStatus = "Approved",
+				layoutPageTemplateType = "Widget Page Template");
 		}
 
 		task ("Edit the widget page template") {
@@ -374,6 +378,7 @@ definition {
 
 	@priority = "5"
 	test ImportLAR {
+		property portal.acceptance = "true";
 		property testray.component.names = "Training";
 
 		PageTemplatesAdminGlobalSite.openGlobalPageTemplatesAdmin();
@@ -465,11 +470,11 @@ definition {
 	test RenameGlobalPageTemplate {
 		property testray.component.names = "Page Templates";
 
-		PageTemplatesAdminGlobalSite.openGlobalPageTemplatesAdmin();
+		JSONLayoutpagetemplate.addGlobalPageTemplateEntry(
+			pageTemplateEntryActive = "true",
+			pageTemplateEntryName = "Page Template Name");
 
-		PageTemplatesAdminGlobalSite.addCP(
-			pageTemplateActive = "Active",
-			pageTemplateName = "Page Template Name");
+		PageTemplatesAdminGlobalSite.openGlobalPageTemplatesAdmin();
 
 		var siteName = TestCase.getSiteName(siteName = "${siteName}");
 

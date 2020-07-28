@@ -15,7 +15,6 @@
 package com.liferay.layout.admin.web.internal.display.context;
 
 import com.liferay.exportimport.kernel.staging.LayoutStagingUtil;
-import com.liferay.layout.admin.web.internal.configuration.util.CollectionLayoutsConfigurationUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -38,6 +37,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -47,7 +47,9 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.util.LayoutTypeControllerTracker;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -138,6 +140,10 @@ public class MillerColumnsDisplayContext {
 				"breadcrumbEntries", _getBreadcrumbEntriesJSONArray()
 			).put(
 				"getItemChildrenURL", getLayoutChildrenURL()
+			).put(
+				"languageDirection", _getLanguageDirection()
+			).put(
+				"languageId", _themeDisplay.getLanguageId()
 			).put(
 				"layoutColumns", getLayoutColumnsJSONArray()
 			).put(
@@ -360,20 +366,12 @@ public class MillerColumnsDisplayContext {
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		if (_layoutsAdminDisplayContext.isShowAddRootLayoutButton()) {
-			if (!CollectionLayoutsConfigurationUtil.enabled()) {
-				jsonArray.put(
-					_getAddRootLayoutActionJSONObject(
-						privatePages, "quickAction"));
-			}
-			else {
-				jsonArray.put(
-					_getAddRootLayoutActionJSONObject(
-						privatePages, "layoutAction")
-				).put(
-					_getAddLayoutCollectionActionJSONObject(
-						LayoutConstants.DEFAULT_PLID, privatePages)
-				);
-			}
+			jsonArray.put(
+				_getAddRootLayoutActionJSONObject(privatePages, "layoutAction")
+			).put(
+				_getAddLayoutCollectionActionJSONObject(
+					LayoutConstants.DEFAULT_PLID, privatePages)
+			);
 		}
 
 		if (_layoutsAdminDisplayContext.isShowFirstColumnConfigureAction()) {
@@ -437,28 +435,36 @@ public class MillerColumnsDisplayContext {
 		return firstColumnJSONArray;
 	}
 
+	private Map<String, String> _getLanguageDirection() {
+		Map<String, String> languageDirection = new HashMap<>();
+
+		for (Locale curLocale :
+				LanguageUtil.getAvailableLocales(
+					_themeDisplay.getScopeGroupId())) {
+
+			languageDirection.put(
+				LocaleUtil.toLanguageId(curLocale),
+				LanguageUtil.get(curLocale, "lang.dir"));
+		}
+
+		return languageDirection;
+	}
+
 	private JSONArray _getLayoutActionsJSONArray(Layout layout)
 		throws Exception {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		if (_layoutsAdminDisplayContext.isShowAddChildPageAction(layout)) {
-			if (!CollectionLayoutsConfigurationUtil.enabled()) {
-				jsonArray.put(
-					_getAddChildPageActionJSONObject(layout, "quickAction"));
-			}
-			else {
-				jsonArray.put(
-					_getAddChildPageActionJSONObject(layout, "layoutAction")
-				).put(
-					_getAddLayoutCollectionActionJSONObject(
-						layout.getPlid(), layout.isPrivateLayout())
-				);
-			}
+			jsonArray.put(
+				_getAddChildPageActionJSONObject(layout, "layoutAction")
+			).put(
+				_getAddLayoutCollectionActionJSONObject(
+					layout.getPlid(), layout.isPrivateLayout())
+			);
 		}
 
-		Layout draftLayout = LayoutLocalServiceUtil.fetchLayout(
-			PortalUtil.getClassNameId(Layout.class), layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (layout.isDenied() || layout.isPending()) {
 			jsonArray.put(
@@ -652,6 +658,23 @@ public class MillerColumnsDisplayContext {
 				));
 		}
 
+		if (_layoutsAdminDisplayContext.isShowViewCollectionItemsAction(
+				layout)) {
+
+			jsonArray.put(
+				JSONUtil.put(
+					"id", "viewCollectionItems"
+				).put(
+					"label",
+					LanguageUtil.get(
+						_httpServletRequest, "view-collection-items")
+				).put(
+					"url",
+					_layoutsAdminDisplayContext.getViewCollectionItemsURL(
+						layout)
+				));
+		}
+
 		return jsonArray;
 	}
 
@@ -698,13 +721,10 @@ public class MillerColumnsDisplayContext {
 		return jsonArray;
 	}
 
-	private JSONArray _getLayoutStatesJSONArray(Layout layout)
-		throws Exception {
-
+	private JSONArray _getLayoutStatesJSONArray(Layout layout) {
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
-		Layout draftLayout = LayoutLocalServiceUtil.fetchLayout(
-			PortalUtil.getClassNameId(Layout.class), layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (layout.isTypeContent()) {
 			boolean published = GetterUtil.getBoolean(

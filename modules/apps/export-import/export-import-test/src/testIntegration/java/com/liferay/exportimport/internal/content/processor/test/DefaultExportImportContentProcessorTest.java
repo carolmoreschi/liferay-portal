@@ -21,8 +21,8 @@ import com.liferay.document.library.kernel.service.DLAppHelperLocalServiceUtil;
 import com.liferay.document.library.kernel.service.DLAppLocalServiceUtil;
 import com.liferay.exportimport.content.processor.ExportImportContentProcessor;
 import com.liferay.exportimport.content.processor.ExportImportContentProcessorRegistryUtil;
-import com.liferay.exportimport.kernel.configuration.ExportImportConfigurationConstants;
 import com.liferay.exportimport.kernel.configuration.ExportImportConfigurationSettingsMapFactoryUtil;
+import com.liferay.exportimport.kernel.configuration.constants.ExportImportConfigurationConstants;
 import com.liferay.exportimport.kernel.exception.ExportImportContentValidationException;
 import com.liferay.exportimport.kernel.lar.ExportImportHelperUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
@@ -55,6 +55,7 @@ import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
+import com.liferay.portal.kernel.test.constants.TestDataConstants;
 import com.liferay.portal.kernel.test.randomizerbumpers.NumericStringRandomizerBumper;
 import com.liferay.portal.kernel.test.randomizerbumpers.UniqueStringRandomizerBumper;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -62,7 +63,6 @@ import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
-import com.liferay.portal.kernel.test.util.TestDataConstants;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
@@ -80,7 +80,6 @@ import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portal.util.PortalImpl;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.registry.Filter;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceTracker;
@@ -137,9 +136,8 @@ public class DefaultExportImportContentProcessorTest {
 		sb.append(ExportImportContentProcessor.class.getName());
 		sb.append("))");
 
-		Filter filter = registry.getFilter(sb.toString());
-
-		_serviceTracker = registry.trackServices(filter);
+		_serviceTracker = registry.trackServices(
+			registry.getFilter(sb.toString()));
 
 		_serviceTracker.open();
 	}
@@ -311,17 +309,13 @@ public class DefaultExportImportContentProcessorTest {
 		TestReaderWriter testReaderWriter =
 			(TestReaderWriter)_portletDataContextExport.getZipWriter();
 
-		List<String> entries = testReaderWriter.getEntries();
-
 		_assertContainsReference(
-			entries, DLFileEntryConstants.getClassName(),
+			testReaderWriter.getEntries(), DLFileEntryConstants.getClassName(),
 			_fileEntry.getFileEntryId());
-
-		List<String> binaryEntries = testReaderWriter.getBinaryEntries();
 
 		_assertContainsBinary(
-			binaryEntries, DLFileEntryConstants.getClassName(),
-			_fileEntry.getFileEntryId());
+			testReaderWriter.getBinaryEntries(),
+			DLFileEntryConstants.getClassName(), _fileEntry.getFileEntryId());
 
 		int count = 0;
 

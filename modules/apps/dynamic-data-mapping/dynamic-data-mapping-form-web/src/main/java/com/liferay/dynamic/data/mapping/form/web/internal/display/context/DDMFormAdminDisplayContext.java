@@ -28,7 +28,6 @@ import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingContext;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormTemplateContextFactory;
 import com.liferay.dynamic.data.mapping.form.values.factory.DDMFormValuesFactory;
 import com.liferay.dynamic.data.mapping.form.web.internal.configuration.DDMFormWebConfiguration;
-import com.liferay.dynamic.data.mapping.form.web.internal.configuration.FFDDMFormWebConfigurationUtil;
 import com.liferay.dynamic.data.mapping.form.web.internal.constants.DDMFormWebKeys;
 import com.liferay.dynamic.data.mapping.form.web.internal.display.context.util.DDMFormAdminRequestHelper;
 import com.liferay.dynamic.data.mapping.form.web.internal.display.context.util.FormInstancePermissionCheckerHelper;
@@ -444,7 +443,6 @@ public class DDMFormAdminDisplayContext {
 		return NavigationItemListBuilder.add(
 			navigationItem -> {
 				navigationItem.setActive(true);
-				navigationItem.setHref(StringPool.BLANK);
 
 				HttpServletRequest httpServletRequest =
 					formAdminRequestHelper.getRequest();
@@ -538,26 +536,39 @@ public class DDMFormAdminDisplayContext {
 		HttpServletRequest httpServletRequest =
 			formAdminRequestHelper.getRequest();
 
+		int activeNavItem = ParamUtil.getInteger(
+			httpServletRequest, "activeNavItem");
+
 		return NavigationItemListBuilder.add(
 			navigationItem -> {
 				navigationItem.putData("action", "showForm");
-				navigationItem.setActive(true);
-				navigationItem.setHref(StringPool.BLANK);
+
+				if (activeNavItem == _NAV_ITEM_FORM) {
+					navigationItem.setActive(true);
+				}
+
 				navigationItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "form"));
 			}
 		).add(
 			navigationItem -> {
 				navigationItem.putData("action", "showRules");
-				navigationItem.setHref(StringPool.BLANK);
+
+				if (activeNavItem == _NAV_ITEM_RULES) {
+					navigationItem.setActive(true);
+				}
+
 				navigationItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "rules"));
 			}
 		).add(
-			this::isShowReport,
 			navigationItem -> {
 				navigationItem.putData("action", "showReport");
-				navigationItem.setHref(StringPool.BLANK);
+
+				if (activeNavItem == _NAV_ITEM_REPORT) {
+					navigationItem.setActive(true);
+				}
+
 				navigationItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "entries"));
 			}
@@ -932,8 +943,15 @@ public class DDMFormAdminDisplayContext {
 		DDMFormBuilderContextResponse ddmFormBuilderContextResponse =
 			_ddmFormBuilderContextFactory.create(ddmFormBuilderContextRequest);
 
-		return jsonSerializer.serializeDeep(
-			ddmFormBuilderContextResponse.getContext());
+		Map<String, Object> context =
+			ddmFormBuilderContextResponse.getContext();
+
+		context.put(
+			"activeNavItem",
+			ParamUtil.getInteger(
+				renderRequest, "activeNavItem", _NAV_ITEM_FORM));
+
+		return jsonSerializer.serializeDeep(context);
 	}
 
 	public String getSharedFormURL() {
@@ -1041,10 +1059,6 @@ public class DDMFormAdminDisplayContext {
 
 	public boolean isShowPublishAlert() {
 		return ParamUtil.getBoolean(renderRequest, "showPublishAlert");
-	}
-
-	public boolean isShowReport() {
-		return FFDDMFormWebConfigurationUtil.reportEnabled();
 	}
 
 	public String serializeSettingsForm(PageContext pageContext)
@@ -1211,6 +1225,13 @@ public class DDMFormAdminDisplayContext {
 	}
 
 	protected Locale getDefaultLocale() {
+		String i18nLanguageId = (String)renderRequest.getAttribute(
+			WebKeys.I18N_LANGUAGE_ID);
+
+		if (Validator.isNotNull(i18nLanguageId)) {
+			return LocaleUtil.fromLanguageId(i18nLanguageId);
+		}
+
 		ThemeDisplay themeDisplay = formAdminRequestHelper.getThemeDisplay();
 
 		return Optional.ofNullable(
@@ -1547,6 +1568,12 @@ public class DDMFormAdminDisplayContext {
 	}
 
 	private static final String[] _DISPLAY_VIEWS = {"descriptive", "list"};
+
+	private static final int _NAV_ITEM_FORM = 0;
+
+	private static final int _NAV_ITEM_REPORT = 2;
+
+	private static final int _NAV_ITEM_RULES = 1;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DDMFormAdminDisplayContext.class);

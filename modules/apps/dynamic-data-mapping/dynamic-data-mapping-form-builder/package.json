@@ -33,21 +33,14 @@
 		],
 		"testPathIgnorePatterns": [
 			"Evaluator",
-			"fieldSupport",
 			"FormBuilder",
 			"FormRenderer",
-			"LayoutProvider/handlers/columnResizedHandler",
 			"LayoutProvider/handlers/fieldDeletedHandler",
-			"LayoutProvider/handlers/fieldEditedHandler",
 			"LayoutProvider/handlers/fieldSetAddedHandler",
-			"LayoutProvider/handlers/focusedFieldEvaluationEndedHandler",
-			"LayoutProvider/LayoutProvider",
 			"LayoutProvider/util",
 			"PageRenderer",
 			"RuleBuilder",
-			"RuleEditor",
-			"RuleList",
-			"Sidebar.es.js"
+			"RuleEditor"
 		]
 	},
 	"main": "js/index.es.js",
@@ -58,5 +51,5 @@
 		"format": "liferay-npm-scripts fix",
 		"test": "metalsoy -s \"test/**/*.soy\" -d \"test\" && liferay-npm-scripts test"
 	},
-	"version": "3.0.29"
+	"version": "3.0.36"
 }

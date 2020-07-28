@@ -14,10 +14,9 @@
 
 import ClayIcon from '@clayui/icon';
 import classNames from 'classnames';
-import {usePrevious} from 'frontend-js-react-web';
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {DndProvider} from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+import {HTML5Backend} from 'react-dnd-html5-backend';
 
 import {FieldBase} from '../FieldBase/ReactFieldBase.es';
 import KeyValue from '../KeyValue/KeyValue.es';
@@ -68,7 +67,6 @@ const Option = React.forwardRef(
 const refreshFields = (defaultLanguageId, editingLanguageId, options) =>
 	[
 		...options.map((option) => ({
-			...option,
 			generateKeyword: isOptionValueGenerated(
 				defaultLanguageId,
 				editingLanguageId,
@@ -76,10 +74,9 @@ const refreshFields = (defaultLanguageId, editingLanguageId, options) =>
 				option
 			),
 			id: random(),
+			...option,
 		})),
-		defaultLanguageId === editingLanguageId
-			? {...defaultOption, generateKeyword: true, id: random()}
-			: false,
+		{...defaultOption, generateKeyword: true, id: random()},
 	].filter((field) => field && Object.keys(field).length > 0);
 
 const Options = ({
@@ -90,8 +87,6 @@ const Options = ({
 	onChange,
 	value = {},
 }) => {
-	const prevEditingLanguageId = usePrevious(editingLanguageId);
-
 	const normalizedValue = useMemo(() => {
 		const formattedValue = {...value};
 
@@ -116,22 +111,13 @@ const Options = ({
 	});
 
 	useEffect(() => {
-		if (prevEditingLanguageId !== editingLanguageId) {
-			const options =
-				normalizedValue[editingLanguageId] ||
-				normalizedValue[defaultLanguageId] ||
-				[];
+		const options =
+			normalizedValue[editingLanguageId] ||
+			normalizedValue[defaultLanguageId] ||
+			[];
 
-			setFields(
-				refreshFields(defaultLanguageId, editingLanguageId, options)
-			);
-		}
-	}, [
-		defaultLanguageId,
-		editingLanguageId,
-		normalizedValue,
-		prevEditingLanguageId,
-	]);
+		setFields(refreshFields(defaultLanguageId, editingLanguageId, options));
+	}, [defaultLanguageId, editingLanguageId, normalizedValue]);
 
 	const defaultOptionRef = useRef(
 		fields.length === 2 &&
@@ -142,41 +128,45 @@ const Options = ({
 	const fieldsFilter = (fields) => {
 		const _fields = [...fields];
 
-		if (defaultLanguageId === editingLanguageId) {
-			_fields.splice(_fields.length - 1, 1);
+		_fields.splice(_fields.length - 1, 1);
 
-			let _normalizedValue = {...normalizedValue};
+		let _normalizedValue = {...normalizedValue};
 
-			const availableLanguageIds = Object.getOwnPropertyNames(
-				normalizedValue
-			);
+		const availableLanguageIds = Object.getOwnPropertyNames(
+			normalizedValue
+		);
 
-			availableLanguageIds.forEach((languageId) => {
-				_normalizedValue = {
-					..._normalizedValue,
-					[languageId]: synchroniseValue(_fields, languageId),
-				};
-			});
+		availableLanguageIds.forEach((languageId) => {
+			_normalizedValue = {
+				..._normalizedValue,
+				[languageId]: synchroniseValue(_fields, languageId),
+			};
+		});
 
-			return _normalizedValue;
-		}
-
-		return {...normalizedValue, [editingLanguageId]: _fields};
+		return _normalizedValue;
 	};
 
 	const synchroniseValue = (fields, languageId) => {
-		if (defaultLanguageId === languageId) {
+		if (editingLanguageId === languageId) {
 			return [...fields];
 		}
 
 		const _values = [];
 
-		fields.forEach((localizedValue) => {
+		fields.forEach((localizedValue, index) => {
+			let newLocalizedValue = localizedValue;
+
+			if (normalizedValue[languageId][index]) {
+				newLocalizedValue = {
+					...newLocalizedValue,
+					label: normalizedValue[languageId][index].label,
+				};
+			}
 			_values.push(
 				normalizedValue[languageId].find(
 					(_localizedValue) =>
 						_localizedValue.value == localizedValue.value
-				) || localizedValue
+				) || newLocalizedValue
 			);
 		});
 
@@ -209,13 +199,11 @@ const Options = ({
 	const add = (fields, index, property, value) => {
 		fields[index][property] = value;
 
-		if (defaultLanguageId === editingLanguageId) {
-			fields.push({
-				...defaultOption,
-				generateKeyword: true,
-				id: random(),
-			});
-		}
+		fields.push({
+			...defaultOption,
+			generateKeyword: true,
+			id: random(),
+		});
 
 		return [fields, index, property, value];
 	};
@@ -300,6 +288,7 @@ const Main = ({
 	defaultLanguageId = themeDisplay.getLanguageId(),
 	editingLanguageId = themeDisplay.getLanguageId(),
 	onChange,
+	keywordReadOnly,
 	placeholder = Liferay.Language.get('enter-an-option'),
 	readOnly,
 	required,
@@ -316,43 +305,37 @@ const Main = ({
 				onChange={(value) => onChange({}, value)}
 				value={value}
 			>
-				{({
-					defaultOptionRef,
-					handleBlur,
-					handleField,
-					index,
-					option,
-				}) => (
-					<KeyValue
-						generateKeyword={option.generateKeyword}
-						keyword={option.value}
-						keywordReadOnly={
-							defaultLanguageId !== editingLanguageId
-						}
-						name={`option${index}`}
-						onBlur={handleBlur}
-						onChange={(event) =>
-							handleField('label', event.target.value)
-						}
-						onFocus={() => {
-							if (defaultOptionRef.current) {
-								handleField('label', '');
-								defaultOptionRef.current = false;
+				{({defaultOptionRef, handleBlur, handleField, index, option}) =>
+					option && (
+						<KeyValue
+							generateKeyword={option.generateKeyword}
+							keyword={option.value}
+							keywordReadOnly={keywordReadOnly}
+							name={`option${index}`}
+							onBlur={handleBlur}
+							onChange={(event) =>
+								handleField('label', event.target.value)
 							}
-						}}
-						onKeywordBlur={handleBlur}
-						onKeywordChange={(event, value, generate) => {
-							handleField('generateKeyword', generate);
-							handleField('value', value);
-						}}
-						placeholder={placeholder}
-						readOnly={option.disabled}
-						required={required}
-						showLabel={false}
-						value={option.label}
-						visible={visible}
-					/>
-				)}
+							onFocus={() => {
+								if (defaultOptionRef.current) {
+									handleField('label', '');
+									defaultOptionRef.current = false;
+								}
+							}}
+							onKeywordBlur={handleBlur}
+							onKeywordChange={(event, value, generate) => {
+								handleField('generateKeyword', generate);
+								handleField('value', value);
+							}}
+							placeholder={placeholder}
+							readOnly={option.disabled}
+							required={required}
+							showLabel={false}
+							value={option.label}
+							visible={visible}
+						/>
+					)
+				}
 			</Options>
 		</FieldBase>
 	</DndProvider>

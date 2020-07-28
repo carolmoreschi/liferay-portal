@@ -19,6 +19,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItem;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.jsp.JspException;
@@ -77,6 +78,19 @@ public class NavigationBarTag extends BaseContainerTag {
 		_inverted = false;
 		_navigationItems = null;
 		_spritemap = null;
+	}
+
+	@Override
+	protected String getHydratedModuleName() {
+		return "frontend-taglib-clay/NavigationBar";
+	}
+
+	@Override
+	protected Map<String, Object> prepareProps(Map<String, Object> props) {
+		props.put("inverted", _inverted);
+		props.put("navigationItems", _navigationItems);
+
+		return super.prepareProps(props);
 	}
 
 	@Override

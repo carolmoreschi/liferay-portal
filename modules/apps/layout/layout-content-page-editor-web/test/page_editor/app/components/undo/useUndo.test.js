@@ -18,11 +18,6 @@ import * as Actions from '../../../../../src/main/resources/META-INF/resources/p
 import useUndo from '../../../../../src/main/resources/META-INF/resources/page_editor/app/components/undo/useUndo';
 import * as ExperienceActions from '../../../../../src/main/resources/META-INF/resources/page_editor/plugins/experience/actions';
 
-jest.mock(
-	'../../../../../src/main/resources/META-INF/resources/page_editor/app/config',
-	() => ({config: {undoEnabled: true}})
-);
-
 describe('useUndo', () => {
 
 	// List of the actions that do not need undo
@@ -36,11 +31,13 @@ describe('useUndo', () => {
 		Actions.ADD_UNDO_ACTION,
 		Actions.ADD_REDO_ACTION,
 		Actions.ADD_USED_WIDGET,
+		Actions.CHANGE_MASTER_LAYOUT,
 		Actions.DELETE_FRAGMENT_ENTRY_LINK_COMMENT,
 		Actions.DELETE_WIDGETS,
 		Actions.EDIT_FRAGMENT_ENTRY_LINK_COMMENT,
 		Actions.INIT,
 		Actions.LOAD_REDUCER,
+		Actions.SET_FRAGMENT_EDITABLES,
 		Actions.SWITCH_SIDEBAR_PANEL,
 		Actions.TOGGLE_PERMISSION,
 		Actions.TOGGLE_SHOW_RESOLVED_COMMENTS,

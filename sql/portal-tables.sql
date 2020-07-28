@@ -203,6 +203,7 @@ create table AssetVocabulary (
 	title STRING null,
 	description STRING null,
 	settings_ STRING null,
+	visibilityType INTEGER,
 	lastPublishDate DATE null,
 	primary key (vocabularyId, ctCollectionId)
 );
@@ -633,6 +634,7 @@ create table Layout (
 	iconImageId LONG,
 	themeId VARCHAR(75) null,
 	colorSchemeId VARCHAR(75) null,
+	styleBookEntryId LONG,
 	css TEXT null,
 	priority INTEGER,
 	masterLayoutPlid LONG,

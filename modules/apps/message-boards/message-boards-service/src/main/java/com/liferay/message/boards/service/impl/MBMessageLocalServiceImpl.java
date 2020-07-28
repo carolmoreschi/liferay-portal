@@ -316,13 +316,12 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 			discussion = true;
 		}
 
-		Map<String, Object> options = HashMapBuilder.<String, Object>put(
-			"discussion", discussion
-		).build();
-
 		body = SanitizerUtil.sanitize(
 			user.getCompanyId(), groupId, userId, MBMessage.class.getName(),
-			messageId, "text/" + format, Sanitizer.MODE_ALL, body, options);
+			messageId, "text/" + format, Sanitizer.MODE_ALL, body,
+			HashMapBuilder.<String, Object>put(
+				"discussion", discussion
+			).build());
 
 		validate(subject, body);
 
@@ -464,9 +463,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 		// Workflow
 
-		startWorkflowInstance(userId, message, serviceContext);
-
-		return message;
+		return startWorkflowInstance(userId, message, serviceContext);
 	}
 
 	@Override
@@ -697,16 +694,6 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 			_mbThreadLocalService.deleteMBThread(thread);
 
-			// Category
-
-			if ((message.getCategoryId() !=
-					MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) &&
-				(message.getCategoryId() !=
-					MBCategoryConstants.DISCUSSION_CATEGORY_ID)) {
-
-				MBUtil.updateCategoryStatistics(message.getCategoryId());
-			}
-
 			// Indexer
 
 			Indexer<MBThread> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
@@ -794,31 +781,11 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 							WorkflowConstants.STATUS_APPROVED, comparator);
 
 					if (prevAndNextMessages[2] == null) {
-						thread.setLastPostByUserId(
-							prevAndNextMessages[0].getUserId());
-						thread.setLastPostDate(
+						_mbThreadLocalService.updateLastPostDate(
+							thread.getThreadId(),
 							prevAndNextMessages[0].getModifiedDate());
-
-						_mbThreadLocalService.updateMBThread(thread);
 					}
 				}
-			}
-
-			// Thread
-
-			if (message.isApproved()) {
-				MBUtil.updateThreadMessageCount(thread.getThreadId());
-			}
-
-			// Category
-
-			if ((message.getCategoryId() !=
-					MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) &&
-				(message.getCategoryId() !=
-					MBCategoryConstants.DISCUSSION_CATEGORY_ID) &&
-				!message.isDraft()) {
-
-				MBUtil.updateCategoryMessageCount(message.getCategoryId());
 			}
 
 			// Indexer
@@ -965,15 +932,15 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 	@Override
 	public List<MBMessage> getCategoryMessages(
 		long groupId, long categoryId, int status, int start, int end,
-		OrderByComparator<MBMessage> obc) {
+		OrderByComparator<MBMessage> orderByComparator) {
 
 		if (status == WorkflowConstants.STATUS_ANY) {
 			return mbMessagePersistence.findByG_C(
-				groupId, categoryId, start, end, obc);
+				groupId, categoryId, start, end, orderByComparator);
 		}
 
 		return mbMessagePersistence.findByG_C_S(
-			groupId, categoryId, status, start, end, obc);
+			groupId, categoryId, status, start, end, orderByComparator);
 	}
 
 	@Override
@@ -1039,15 +1006,15 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 	@Override
 	public List<MBMessage> getCompanyMessages(
 		long companyId, int status, int start, int end,
-		OrderByComparator<MBMessage> obc) {
+		OrderByComparator<MBMessage> orderByComparator) {
 
 		if (status == WorkflowConstants.STATUS_ANY) {
 			return mbMessagePersistence.findByCompanyId(
-				companyId, start, end, obc);
+				companyId, start, end, orderByComparator);
 		}
 
 		return mbMessagePersistence.findByC_S(
-			companyId, status, start, end, obc);
+			companyId, status, start, end, orderByComparator);
 	}
 
 	@Override
@@ -1199,13 +1166,15 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 	@Override
 	public List<MBMessage> getGroupMessages(
 		long groupId, int status, int start, int end,
-		OrderByComparator<MBMessage> obc) {
+		OrderByComparator<MBMessage> orderByComparator) {
 
 		if (status == WorkflowConstants.STATUS_ANY) {
-			return mbMessagePersistence.findByGroupId(groupId, start, end, obc);
+			return mbMessagePersistence.findByGroupId(
+				groupId, start, end, orderByComparator);
 		}
 
-		return mbMessagePersistence.findByG_S(groupId, status, start, end, obc);
+		return mbMessagePersistence.findByG_S(
+			groupId, status, start, end, orderByComparator);
 	}
 
 	@Override
@@ -1223,15 +1192,15 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 	@Override
 	public List<MBMessage> getGroupMessages(
 		long groupId, long userId, int status, int start, int end,
-		OrderByComparator<MBMessage> obc) {
+		OrderByComparator<MBMessage> orderByComparator) {
 
 		if (status == WorkflowConstants.STATUS_ANY) {
 			return mbMessagePersistence.findByG_U(
-				groupId, userId, start, end, obc);
+				groupId, userId, start, end, orderByComparator);
 		}
 
 		return mbMessagePersistence.findByG_U_S(
-			groupId, userId, status, start, end, obc);
+			groupId, userId, status, start, end, orderByComparator);
 	}
 
 	@Override
@@ -1502,39 +1471,40 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 	@Override
 	public List<MBMessage> getUserDiscussionMessages(
 		long userId, long classNameId, long classPK, int status, int start,
-		int end, OrderByComparator<MBMessage> obc) {
+		int end, OrderByComparator<MBMessage> orderByComparator) {
 
 		if (status == WorkflowConstants.STATUS_ANY) {
 			return mbMessagePersistence.findByU_C_C(
-				userId, classNameId, classPK, start, end, obc);
+				userId, classNameId, classPK, start, end, orderByComparator);
 		}
 
 		return mbMessagePersistence.findByU_C_C_S(
-			userId, classNameId, classPK, status, start, end, obc);
+			userId, classNameId, classPK, status, start, end,
+			orderByComparator);
 	}
 
 	@Override
 	public List<MBMessage> getUserDiscussionMessages(
 		long userId, long[] classNameIds, int status, int start, int end,
-		OrderByComparator<MBMessage> obc) {
+		OrderByComparator<MBMessage> orderByComparator) {
 
 		if (status == WorkflowConstants.STATUS_ANY) {
 			return mbMessagePersistence.findByU_C(
-				userId, classNameIds, start, end, obc);
+				userId, classNameIds, start, end, orderByComparator);
 		}
 
 		return mbMessagePersistence.findByU_C_S(
-			userId, classNameIds, status, start, end, obc);
+			userId, classNameIds, status, start, end, orderByComparator);
 	}
 
 	@Override
 	public List<MBMessage> getUserDiscussionMessages(
 		long userId, String className, long classPK, int status, int start,
-		int end, OrderByComparator<MBMessage> obc) {
+		int end, OrderByComparator<MBMessage> orderByComparator) {
 
 		return getUserDiscussionMessages(
 			userId, classNameLocalService.getClassNameId(className), classPK,
-			status, start, end, obc);
+			status, start, end, orderByComparator);
 	}
 
 	@Override
@@ -2374,7 +2344,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		}
 	}
 
-	protected void startWorkflowInstance(
+	protected MBMessage startWorkflowInstance(
 			long userId, MBMessage message, ServiceContext serviceContext)
 		throws PortalException {
 
@@ -2384,7 +2354,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 				getMessageURL(message, serviceContext)
 			).build();
 
-		WorkflowHandlerRegistryUtil.startWorkflowInstance(
+		return WorkflowHandlerRegistryUtil.startWorkflowInstance(
 			message.getCompanyId(), message.getGroupId(), userId,
 			message.getWorkflowClassName(), message.getMessageId(), message,
 			serviceContext, workflowContext);
@@ -2433,7 +2403,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		}
 	}
 
-	protected void updateThreadStatus(
+	protected MBThread updateThreadStatus(
 			MBThread thread, MBMessage message, User user, int oldStatus,
 			Date modifiedDate)
 		throws PortalException {
@@ -2441,18 +2411,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		int status = message.getStatus();
 
 		if (status == oldStatus) {
-			return;
-		}
-
-		MBCategory category = null;
-
-		if ((thread.getCategoryId() !=
-				MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) &&
-			(thread.getCategoryId() !=
-				MBCategoryConstants.DISCUSSION_CATEGORY_ID)) {
-
-			category = _mbCategoryPersistence.findByPrimaryKey(
-				thread.getCategoryId());
+			return thread;
 		}
 
 		if (thread.getRootMessageId() == message.getMessageId()) {
@@ -2461,60 +2420,31 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 			thread.setStatusByUserId(user.getUserId());
 			thread.setStatusByUserName(user.getFullName());
 			thread.setStatusDate(modifiedDate);
+
+			if (status == WorkflowConstants.STATUS_APPROVED) {
+				if (message.isAnonymous()) {
+					thread.setLastPostByUserId(0);
+				}
+				else {
+					thread.setLastPostByUserId(message.getUserId());
+				}
+
+				thread.setLastPostDate(modifiedDate);
+			}
+
+			thread = mbThreadPersistence.update(thread);
+
+			Indexer<MBThread> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+				MBThread.class);
+
+			indexer.reindex(thread);
+		}
+		else if (status == WorkflowConstants.STATUS_APPROVED) {
+			_mbThreadLocalService.updateLastPostDate(
+				thread.getThreadId(), modifiedDate);
 		}
 
-		if (status == WorkflowConstants.STATUS_APPROVED) {
-			if (message.isAnonymous()) {
-				thread.setLastPostByUserId(0);
-			}
-			else {
-				thread.setLastPostByUserId(message.getUserId());
-			}
-
-			thread.setLastPostDate(modifiedDate);
-
-			if (category != null) {
-				category.setLastPostDate(modifiedDate);
-
-				category = _mbCategoryPersistence.update(category);
-
-				Indexer<MBCategory> indexer =
-					_indexerRegistry.nullSafeGetIndexer(MBCategory.class);
-
-				indexer.reindex(category);
-			}
-		}
-
-		if ((oldStatus == WorkflowConstants.STATUS_APPROVED) ||
-			(status == WorkflowConstants.STATUS_APPROVED)) {
-
-			// Thread
-
-			MBUtil.updateThreadMessageCount(thread.getThreadId());
-
-			// Category
-
-			if ((category != null) &&
-				(thread.getRootMessageId() == message.getMessageId())) {
-
-				MBUtil.updateCategoryStatistics(category.getCategoryId());
-			}
-
-			if ((category != null) &&
-				!(thread.getRootMessageId() == message.getMessageId())) {
-
-				MBUtil.updateCategoryMessageCount(category.getCategoryId());
-			}
-		}
-
-		// Indexer
-
-		thread = mbThreadPersistence.update(thread);
-
-		Indexer<MBThread> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-			MBThread.class);
-
-		indexer.reindex(thread);
+		return thread;
 	}
 
 	protected void validate(String subject, String body)
@@ -2656,14 +2586,13 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 		body = getBody(subject, body, message.getFormat());
 
-		Map<String, Object> options = HashMapBuilder.<String, Object>put(
-			"discussion", message.isDiscussion()
-		).build();
-
 		body = SanitizerUtil.sanitize(
 			message.getCompanyId(), message.getGroupId(), userId,
 			MBMessage.class.getName(), messageId, "text/" + message.getFormat(),
-			Sanitizer.MODE_ALL, body, options);
+			Sanitizer.MODE_ALL, body,
+			HashMapBuilder.<String, Object>put(
+				"discussion", message.isDiscussion()
+			).build());
 
 		validate(subject, body);
 
@@ -2687,7 +2616,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 			// Thread
 
-			updateThreadStatus(
+			thread = updateThreadStatus(
 				thread, message, userLocalService.getUser(userId), oldStatus,
 				modifiedDate);
 
@@ -2728,7 +2657,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 			thread.setPriority(priority);
 
-			_mbThreadLocalService.updateMBThread(thread);
+			thread = _mbThreadLocalService.updateMBThread(thread);
 
 			updatePriorities(thread.getThreadId(), priority);
 		}
@@ -2750,9 +2679,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 		// Workflow
 
-		startWorkflowInstance(userId, message, serviceContext);
-
-		return message;
+		return startWorkflowInstance(userId, message, serviceContext);
 	}
 
 	private void _updateSocialActivity(

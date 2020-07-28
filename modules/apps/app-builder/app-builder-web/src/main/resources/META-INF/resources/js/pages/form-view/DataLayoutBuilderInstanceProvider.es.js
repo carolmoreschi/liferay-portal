@@ -15,7 +15,6 @@
 import {DataLayoutBuilderActions} from 'data-engine-taglib';
 import React, {useContext, useEffect} from 'react';
 
-import generateDataDefinitionFieldName from '../../utils/generateDataDefinitionFieldName.es';
 import DataLayoutBuilderContext from './DataLayoutBuilderInstanceContext.es';
 import FormViewContext from './FormViewContext.es';
 import useDeleteDefinitionField from './useDeleteDefinitionField.es';
@@ -26,9 +25,7 @@ export default ({children, dataLayoutBuilder}) => {
 	const [
 		{
 			config: {allowNestedFields},
-			dataDefinition,
 			editingLanguageId,
-			focusedField,
 		},
 		dispatch,
 	] = useContext(FormViewContext);
@@ -40,25 +37,10 @@ export default ({children, dataLayoutBuilder}) => {
 	const saveAsFieldset = useSaveAsFieldset({dataLayoutBuilder});
 
 	useEffect(() => {
-		const provider = dataLayoutBuilder.getLayoutProvider();
-
-		provider.props = {
-			...provider.props,
-			availableLanguageIds: [
-				...new Set([
-					...provider.props.availableLanguageIds,
-					editingLanguageId,
-				]),
-			],
+		dataLayoutBuilder.onEditingLanguageIdChange({
 			editingLanguageId,
-		};
-
-		if (Object.keys(focusedField).length) {
-			provider.getEvents().fieldClicked(focusedField);
-		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [dataLayoutBuilder, dispatch, editingLanguageId]);
+		});
+	}, [dataLayoutBuilder, editingLanguageId]);
 
 	useEffect(() => {
 		const provider = dataLayoutBuilder.getLayoutProvider();
@@ -123,7 +105,6 @@ export default ({children, dataLayoutBuilder}) => {
 		provider.props = {
 			...provider.props,
 			fieldActions,
-			shouldAutoGenerateName: () => false,
 		};
 
 		provider.getEvents().fieldHovered(fieldHovered);
@@ -134,22 +115,6 @@ export default ({children, dataLayoutBuilder}) => {
 		onDeleteDefinitionField,
 		saveAsFieldset,
 	]);
-
-	useEffect(() => {
-		const provider = dataLayoutBuilder.getLayoutProvider();
-
-		provider.props.fieldNameGenerator = (
-			desiredFieldName,
-			currentFieldName,
-			blacklist
-		) =>
-			generateDataDefinitionFieldName(
-				dataDefinition,
-				desiredFieldName,
-				currentFieldName,
-				blacklist
-			);
-	}, [dataDefinition, dataLayoutBuilder]);
 
 	return (
 		<DataLayoutBuilderContext.Provider

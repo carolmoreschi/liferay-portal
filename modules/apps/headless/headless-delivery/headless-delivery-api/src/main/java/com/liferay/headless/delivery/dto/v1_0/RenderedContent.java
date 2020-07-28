@@ -172,6 +172,38 @@ public class RenderedContent {
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected String renderedContentURL;
 
+	@Schema(
+		description = "optional field with the rendered content, can be embedded with nestedFields"
+	)
+	public String getRenderedContentValue() {
+		return renderedContentValue;
+	}
+
+	public void setRenderedContentValue(String renderedContentValue) {
+		this.renderedContentValue = renderedContentValue;
+	}
+
+	@JsonIgnore
+	public void setRenderedContentValue(
+		UnsafeSupplier<String, Exception> renderedContentValueUnsafeSupplier) {
+
+		try {
+			renderedContentValue = renderedContentValueUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField(
+		description = "optional field with the rendered content, can be embedded with nestedFields"
+	)
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected String renderedContentValue;
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -251,6 +283,20 @@ public class RenderedContent {
 			sb.append("\"");
 		}
 
+		if (renderedContentValue != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"renderedContentValue\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(renderedContentValue));
+
+			sb.append("\"");
+		}
+
 		sb.append("}");
 
 		return sb.toString();
@@ -266,6 +312,16 @@ public class RenderedContent {
 		String string = String.valueOf(object);
 
 		return string.replaceAll("\"", "\\\\\"");
+	}
+
+	private static boolean _isArray(Object value) {
+		if (value == null) {
+			return false;
+		}
+
+		Class<?> clazz = value.getClass();
+
+		return clazz.isArray();
 	}
 
 	private static String _toJSON(Map<String, ?> map) {
@@ -286,9 +342,7 @@ public class RenderedContent {
 
 			Object value = entry.getValue();
 
-			Class<?> clazz = value.getClass();
-
-			if (clazz.isArray()) {
+			if (_isArray(value)) {
 				sb.append("[");
 
 				Object[] valueArray = (Object[])value;

@@ -14,8 +14,8 @@
 
 package com.liferay.journal.web.internal.portlet.action;
 
-import com.liferay.info.item.provider.InfoItemFormProvider;
-import com.liferay.info.item.provider.InfoItemServiceTracker;
+import com.liferay.info.item.InfoItemServiceTracker;
+import com.liferay.info.item.provider.InfoItemFieldValuesProvider;
 import com.liferay.journal.constants.JournalPortletKeys;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalService;
@@ -31,11 +31,14 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.zip.ZipWriter;
 import com.liferay.portal.kernel.zip.ZipWriterFactoryUtil;
-import com.liferay.translation.exporter.TranslationInfoFormValuesExporter;
+import com.liferay.translation.exporter.TranslationInfoItemFieldValuesExporter;
+import com.liferay.translation.exporter.TranslationInfoItemFieldValuesExporterTracker;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.util.Optional;
 
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
@@ -70,16 +73,32 @@ public class ExportTranslationMVCResourceCommand implements MVCResourceCommand {
 				themeDisplay.getScopeGroupId(),
 				ParamUtil.getString(resourceRequest, "articleId"));
 
-			InfoItemFormProvider<JournalArticle> infoItemFormProvider =
-				(InfoItemFormProvider<JournalArticle>)
-					_infoItemServiceTracker.getInfoItemService(
-						InfoItemFormProvider.class,
-						JournalArticle.class.getName());
+			InfoItemFieldValuesProvider<JournalArticle>
+				infoItemFieldValuesProvider =
+					(InfoItemFieldValuesProvider<JournalArticle>)
+						_infoItemServiceTracker.getFirstInfoItemService(
+							InfoItemFieldValuesProvider.class,
+							JournalArticle.class.getName());
 
 			String sourceLanguageId = ParamUtil.getString(
 				resourceRequest, "sourceLanguageId");
 
 			ZipWriter zipWriter = ZipWriterFactoryUtil.getZipWriter();
+
+			String exportMimeType = ParamUtil.getString(
+				resourceRequest, "exportMimeType");
+
+			Optional<TranslationInfoItemFieldValuesExporter>
+				exportFileFormatOptional =
+					_translationInfoItemFieldValuesExporterTracker.
+						getTranslationInfoItemFieldValuesExporterOptional(
+							exportMimeType);
+
+			TranslationInfoItemFieldValuesExporter
+				translationInfoItemFieldValuesExporter =
+					exportFileFormatOptional.orElseThrow(
+						() -> new PortalException(
+							"Unknown export mime type: " + exportMimeType));
 
 			for (String targetLanguageId :
 					ParamUtil.getStringValues(
@@ -91,10 +110,12 @@ public class ExportTranslationMVCResourceCommand implements MVCResourceCommand {
 						article.getTitle(themeDisplay.getLocale()),
 						StringPool.DASH, sourceLanguageId, StringPool.DASH,
 						targetLanguageId, ".xlf"),
-					_translationInfoFormValuesExporter.export(
-						infoItemFormProvider.getInfoFormValues(article),
-						LocaleUtil.fromLanguageId(sourceLanguageId),
-						LocaleUtil.fromLanguageId(targetLanguageId)));
+					translationInfoItemFieldValuesExporter.
+						exportInfoItemFieldValues(
+							infoItemFieldValuesProvider.getInfoItemFieldValues(
+								article),
+							LocaleUtil.fromLanguageId(sourceLanguageId),
+							LocaleUtil.fromLanguageId(targetLanguageId)));
 			}
 
 			try (InputStream inputStream = new FileInputStream(
@@ -102,8 +123,9 @@ public class ExportTranslationMVCResourceCommand implements MVCResourceCommand {
 
 				PortletResponseUtil.sendFile(
 					resourceRequest, resourceResponse,
-					article.getTitle(themeDisplay.getLocale()) +
-						sourceLanguageId + ".zip",
+					StringBundler.concat(
+						article.getTitle(themeDisplay.getLocale()),
+						StringPool.DASH, sourceLanguageId, ".zip"),
 					inputStream, ContentTypes.APPLICATION_ZIP);
 			}
 
@@ -121,7 +143,7 @@ public class ExportTranslationMVCResourceCommand implements MVCResourceCommand {
 	private JournalArticleLocalService _journalArticleLocalService;
 
 	@Reference
-	private TranslationInfoFormValuesExporter
-		_translationInfoFormValuesExporter;
+	private TranslationInfoItemFieldValuesExporterTracker
+		_translationInfoItemFieldValuesExporterTracker;
 
 }

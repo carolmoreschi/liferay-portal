@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.util.CamelCaseUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TextFormatter;
 import com.liferay.portal.kernel.util.TreeMapBuilder;
@@ -27,24 +28,24 @@ import com.liferay.portal.tools.rest.builder.internal.freemarker.tool.java.JavaM
 import com.liferay.portal.tools.rest.builder.internal.freemarker.tool.java.JavaMethodSignature;
 import com.liferay.portal.tools.rest.builder.internal.freemarker.tool.java.parser.util.OpenAPIParserUtil;
 import com.liferay.portal.tools.rest.builder.internal.freemarker.util.OpenAPIUtil;
+import com.liferay.portal.tools.rest.builder.internal.yaml.config.ConfigYAML;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.Content;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.Delete;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.Get;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.OpenAPIYAML;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.Operation;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.Parameter;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.PathItem;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.Post;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.Put;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.RequestBody;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.Response;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.ResponseCode;
+import com.liferay.portal.tools.rest.builder.internal.yaml.openapi.Schema;
 import com.liferay.portal.vulcan.multipart.MultipartBody;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.permission.Permission;
-import com.liferay.portal.vulcan.yaml.config.ConfigYAML;
-import com.liferay.portal.vulcan.yaml.openapi.Content;
-import com.liferay.portal.vulcan.yaml.openapi.Delete;
-import com.liferay.portal.vulcan.yaml.openapi.Get;
-import com.liferay.portal.vulcan.yaml.openapi.OpenAPIYAML;
-import com.liferay.portal.vulcan.yaml.openapi.Operation;
-import com.liferay.portal.vulcan.yaml.openapi.Parameter;
-import com.liferay.portal.vulcan.yaml.openapi.PathItem;
-import com.liferay.portal.vulcan.yaml.openapi.Post;
-import com.liferay.portal.vulcan.yaml.openapi.Put;
-import com.liferay.portal.vulcan.yaml.openapi.RequestBody;
-import com.liferay.portal.vulcan.yaml.openapi.Response;
-import com.liferay.portal.vulcan.yaml.openapi.ResponseCode;
-import com.liferay.portal.vulcan.yaml.openapi.Schema;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -244,6 +245,9 @@ public class ResourceOpenAPIParser {
 
 		if (methodName.equals("delete" + schemaName) ||
 			methodName.equals("post" + parentSchemaName + schemaName) ||
+			methodName.equals(
+				StringBundler.concat(
+					"post", parentSchemaName, "Id", schemaName)) ||
 			methodName.equals("put" + schemaName)) {
 
 			String batchPath = null;
@@ -358,7 +362,10 @@ public class ResourceOpenAPIParser {
 
 		Operation operation = javaMethodSignature.getOperation();
 
-		batchOperation.setOperationId(operation.getOperationId() + "Batch");
+		if (batchOperation.getOperationId() != null) {
+			batchOperation.setOperationId(operation.getOperationId() + "Batch");
+		}
+
 		batchOperation.setParameters(
 			_getBatchParameters(operation, schemaName));
 		batchOperation.setTags(operation.getTags());

@@ -40,7 +40,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Contenido",
-			panel = "Site Administration",
 			portlet = "Formularios");
 
 		FormsAdminNavigator.gotoAddForm();
@@ -61,7 +60,7 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.save(localeSaveForm = "Guardar formulario");
+		Form.save(localeSaveForm = "Guardar");
 	}
 
 	@priority = "4"
@@ -71,7 +70,7 @@ definition {
 
 		User.firstLoginPG();
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
 			portlet = "Instance Settings");
@@ -91,7 +90,7 @@ definition {
 			userLastName = "userln",
 			userScreenName = "usersn");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -111,7 +110,7 @@ definition {
 
 		PortalSettings.configureTimeZone(timeZone = "(UTC) Coordinated Universal Time");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -200,7 +199,7 @@ definition {
 			localizedAnswer = "Respuesta",
 			localizedSaveButton = "Guardar");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Configuración",
 			panel = "Panel de control",
 			portlet = "Configuración de instancia");
@@ -289,7 +288,7 @@ definition {
 			}
 		}
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -377,14 +376,12 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Settings");
 
 		Site.configureCurrentLanguagesCP(defaultSiteLanguage = "Spanish (Spain)");
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
-			panel = "Site Administration",
 			portlet = "Pages");
 
 		SitePages.addPublicPage(pageName = "Test Page");
@@ -395,7 +392,7 @@ definition {
 			userLastName = "userln",
 			userScreenName = "usersn");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -408,7 +405,7 @@ definition {
 			groupName = "Site Name",
 			userEmailAddress = "userea@liferay.com");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");

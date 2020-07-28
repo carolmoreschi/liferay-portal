@@ -31,6 +31,7 @@ import com.liferay.headless.delivery.dto.v1_0.MessageBoardMessage;
 import com.liferay.headless.delivery.dto.v1_0.MessageBoardSection;
 import com.liferay.headless.delivery.dto.v1_0.MessageBoardThread;
 import com.liferay.headless.delivery.dto.v1_0.NavigationMenu;
+import com.liferay.headless.delivery.dto.v1_0.NavigationMenuItem;
 import com.liferay.headless.delivery.dto.v1_0.Rating;
 import com.liferay.headless.delivery.dto.v1_0.StructuredContent;
 import com.liferay.headless.delivery.dto.v1_0.StructuredContentFolder;
@@ -337,7 +338,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {blogPostingImage(blogPostingImageId: ___){contentUrl, encodingFormat, fileExtension, id, sizeInBytes, title, viewableBy}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {blogPostingImage(blogPostingImageId: ___){contentUrl, contentValue, encodingFormat, fileExtension, id, sizeInBytes, title, viewableBy}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(
 		description = "Retrieves the blog post's image. The binary image is returned as a relative URL to the image itself."
@@ -738,7 +739,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {document(documentId: ___){actions, adaptedImages, aggregateRating, contentUrl, creator, customFields, dateCreated, dateModified, description, documentFolderId, documentType, encodingFormat, fileExtension, id, keywords, numberOfComments, relatedContents, sizeInBytes, taxonomyCategoryBriefs, taxonomyCategoryIds, title, viewableBy}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {document(documentId: ___){actions, adaptedImages, aggregateRating, contentUrl, contentValue, creator, customFields, dateCreated, dateModified, description, documentFolderId, documentType, encodingFormat, fileExtension, id, keywords, numberOfComments, relatedContents, sizeInBytes, taxonomyCategoryBriefs, taxonomyCategoryIds, title, viewableBy}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(description = "Retrieves the document.")
 	public Document document(@GraphQLName("documentId") Long documentId)
@@ -1034,7 +1035,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {knowledgeBaseAttachment(knowledgeBaseAttachmentId: ___){contentUrl, encodingFormat, fileExtension, id, sizeInBytes, title}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {knowledgeBaseAttachment(knowledgeBaseAttachmentId: ___){contentUrl, contentValue, encodingFormat, fileExtension, id, sizeInBytes, title}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(description = "Retrieves the knowledge base attachment.")
 	public KnowledgeBaseAttachment knowledgeBaseAttachment(
@@ -1118,7 +1119,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {messageBoardAttachment(messageBoardAttachmentId: ___){contentUrl, encodingFormat, fileExtension, id, sizeInBytes, title}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {messageBoardAttachment(messageBoardAttachmentId: ___){contentUrl, contentValue, encodingFormat, fileExtension, id, sizeInBytes, title}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(description = "Retrieves the message board attachment.")
 	public MessageBoardAttachment messageBoardAttachment(
@@ -1468,7 +1469,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {messageBoardThread(messageBoardThreadId: ___){actions, aggregateRating, articleBody, creator, creatorStatistics, customFields, dateCreated, dateModified, encodingFormat, friendlyUrlPath, hasValidAnswer, headline, id, keywords, messageBoardSectionId, numberOfMessageBoardAttachments, numberOfMessageBoardMessages, relatedContents, showAsQuestion, siteId, subscribed, taxonomyCategoryBriefs, taxonomyCategoryIds, threadType, viewCount, viewableBy}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {messageBoardThread(messageBoardThreadId: ___){actions, aggregateRating, articleBody, creator, creatorStatistics, customFields, dateCreated, dateModified, encodingFormat, friendlyUrlPath, hasValidAnswer, headline, id, keywords, messageBoardSectionId, numberOfMessageBoardAttachments, numberOfMessageBoardMessages, relatedContents, seen, showAsQuestion, siteId, subscribed, taxonomyCategoryBriefs, taxonomyCategoryIds, threadType, viewCount, viewableBy}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(description = "Retrieves the message board thread.")
 	public MessageBoardThread messageBoardThread(
@@ -1535,7 +1536,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {messageBoardThreadByFriendlyUrlPath(friendlyUrlPath: ___, siteKey: ___){actions, aggregateRating, articleBody, creator, creatorStatistics, customFields, dateCreated, dateModified, encodingFormat, friendlyUrlPath, hasValidAnswer, headline, id, keywords, messageBoardSectionId, numberOfMessageBoardAttachments, numberOfMessageBoardMessages, relatedContents, showAsQuestion, siteId, subscribed, taxonomyCategoryBriefs, taxonomyCategoryIds, threadType, viewCount, viewableBy}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {messageBoardThreadByFriendlyUrlPath(friendlyUrlPath: ___, siteKey: ___){actions, aggregateRating, articleBody, creator, creatorStatistics, customFields, dateCreated, dateModified, encodingFormat, friendlyUrlPath, hasValidAnswer, headline, id, keywords, messageBoardSectionId, numberOfMessageBoardAttachments, numberOfMessageBoardMessages, relatedContents, seen, showAsQuestion, siteId, subscribed, taxonomyCategoryBriefs, taxonomyCategoryIds, threadType, viewCount, viewableBy}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField
 	public MessageBoardThread messageBoardThreadByFriendlyUrlPath(
@@ -1555,7 +1556,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {navigationMenu(navigationMenuId: ___){actions, creator, dateCreated, dateModified, id, name, navigationMenuItems, siteId}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {navigationMenu(navigationMenuId: ___){actions, creator, dateCreated, dateModified, id, name, navigationMenuItems, navigationType, siteId}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(description = "")
 	public NavigationMenu navigationMenu(
@@ -1654,7 +1655,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {structuredContentByKey(key: ___, siteKey: ___){actions, aggregateRating, availableLanguages, contentFields, contentStructureId, contentTemplates, creator, customFields, dateCreated, dateModified, datePublished, description, description_i18n, friendlyUrlPath, friendlyUrlPath_i18n, id, key, keywords, numberOfComments, relatedContents, renderedContents, siteId, subscribed, taxonomyCategoryBriefs, taxonomyCategoryIds, title, title_i18n, uuid, viewableBy}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {structuredContentByKey(key: ___, siteKey: ___){actions, aggregateRating, availableLanguages, contentFields, contentStructureId, creator, customFields, dateCreated, dateModified, datePublished, description, description_i18n, friendlyUrlPath, friendlyUrlPath_i18n, id, key, keywords, numberOfComments, relatedContents, renderedContents, siteId, subscribed, taxonomyCategoryBriefs, taxonomyCategoryIds, title, title_i18n, uuid, viewableBy}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(
 		description = "Retrieves a structured content by its key (`articleKey`)."
@@ -1675,7 +1676,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {structuredContentByUuid(siteKey: ___, uuid: ___){actions, aggregateRating, availableLanguages, contentFields, contentStructureId, contentTemplates, creator, customFields, dateCreated, dateModified, datePublished, description, description_i18n, friendlyUrlPath, friendlyUrlPath_i18n, id, key, keywords, numberOfComments, relatedContents, renderedContents, siteId, subscribed, taxonomyCategoryBriefs, taxonomyCategoryIds, title, title_i18n, uuid, viewableBy}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {structuredContentByUuid(siteKey: ___, uuid: ___){actions, aggregateRating, availableLanguages, contentFields, contentStructureId, creator, customFields, dateCreated, dateModified, datePublished, description, description_i18n, friendlyUrlPath, friendlyUrlPath_i18n, id, key, keywords, numberOfComments, relatedContents, renderedContents, siteId, subscribed, taxonomyCategoryBriefs, taxonomyCategoryIds, title, title_i18n, uuid, viewableBy}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(description = "Retrieves a structured content by its UUID.")
 	public StructuredContent structuredContentByUuid(
@@ -1747,7 +1748,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {structuredContent(structuredContentId: ___){actions, aggregateRating, availableLanguages, contentFields, contentStructureId, contentTemplates, creator, customFields, dateCreated, dateModified, datePublished, description, description_i18n, friendlyUrlPath, friendlyUrlPath_i18n, id, key, keywords, numberOfComments, relatedContents, renderedContents, siteId, subscribed, taxonomyCategoryBriefs, taxonomyCategoryIds, title, title_i18n, uuid, viewableBy}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {structuredContent(structuredContentId: ___){actions, aggregateRating, availableLanguages, contentFields, contentStructureId, creator, customFields, dateCreated, dateModified, datePublished, description, description_i18n, friendlyUrlPath, friendlyUrlPath_i18n, id, key, keywords, numberOfComments, relatedContents, renderedContents, siteId, subscribed, taxonomyCategoryBriefs, taxonomyCategoryIds, title, title_i18n, uuid, viewableBy}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(description = "Retrieves the structured content via its ID.")
 	public StructuredContent structuredContent(
@@ -2013,7 +2014,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {wikiPageAttachment(wikiPageAttachmentId: ___){contentUrl, encodingFormat, fileExtension, id, sizeInBytes, title}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {wikiPageAttachment(wikiPageAttachmentId: ___){contentUrl, contentValue, encodingFormat, fileExtension, id, sizeInBytes, title}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField(description = "Retrieves the wiki page attachment.")
 	public WikiPageAttachment wikiPageAttachment(
@@ -3798,6 +3799,169 @@ public class Query {
 
 		@GraphQLField
 		protected long totalCount;
+
+	}
+
+	@GraphQLTypeExtension(Comment.class)
+	public class ParentCommentCommentIdTypeExtension {
+
+		public ParentCommentCommentIdTypeExtension(Comment comment) {
+			_comment = comment;
+		}
+
+		@GraphQLField(description = "Retrieves the comment.")
+		public Comment parentComment() throws Exception {
+			return _applyComponentServiceObjects(
+				_commentResourceComponentServiceObjects,
+				Query.this::_populateResourceContext,
+				commentResource -> commentResource.getComment(
+					_comment.getParentCommentId()));
+		}
+
+		private Comment _comment;
+
+	}
+
+	@GraphQLTypeExtension(DocumentFolder.class)
+	public class ParentDocumentFolderDocumentFolderIdTypeExtension {
+
+		public ParentDocumentFolderDocumentFolderIdTypeExtension(
+			DocumentFolder documentFolder) {
+
+			_documentFolder = documentFolder;
+		}
+
+		@GraphQLField(description = "Retrieves the document folder.")
+		public DocumentFolder parentDocumentFolder() throws Exception {
+			return _applyComponentServiceObjects(
+				_documentFolderResourceComponentServiceObjects,
+				Query.this::_populateResourceContext,
+				documentFolderResource ->
+					documentFolderResource.getDocumentFolder(
+						_documentFolder.getParentDocumentFolderId()));
+		}
+
+		private DocumentFolder _documentFolder;
+
+	}
+
+	@GraphQLTypeExtension(MessageBoardMessage.class)
+	public class ParentMessageBoardMessageMessageBoardMessageIdTypeExtension {
+
+		public ParentMessageBoardMessageMessageBoardMessageIdTypeExtension(
+			MessageBoardMessage messageBoardMessage) {
+
+			_messageBoardMessage = messageBoardMessage;
+		}
+
+		@GraphQLField(description = "Retrieves the message board message.")
+		public MessageBoardMessage parentMessageBoardMessage()
+			throws Exception {
+
+			return _applyComponentServiceObjects(
+				_messageBoardMessageResourceComponentServiceObjects,
+				Query.this::_populateResourceContext,
+				messageBoardMessageResource ->
+					messageBoardMessageResource.getMessageBoardMessage(
+						_messageBoardMessage.getParentMessageBoardMessageId()));
+		}
+
+		private MessageBoardMessage _messageBoardMessage;
+
+	}
+
+	@GraphQLTypeExtension(MessageBoardSection.class)
+	public class ParentMessageBoardSectionMessageBoardSectionIdTypeExtension {
+
+		public ParentMessageBoardSectionMessageBoardSectionIdTypeExtension(
+			MessageBoardSection messageBoardSection) {
+
+			_messageBoardSection = messageBoardSection;
+		}
+
+		@GraphQLField(description = "Retrieves the message board section.")
+		public MessageBoardSection parentMessageBoardSection()
+			throws Exception {
+
+			return _applyComponentServiceObjects(
+				_messageBoardSectionResourceComponentServiceObjects,
+				Query.this::_populateResourceContext,
+				messageBoardSectionResource ->
+					messageBoardSectionResource.getMessageBoardSection(
+						_messageBoardSection.getParentMessageBoardSectionId()));
+		}
+
+		private MessageBoardSection _messageBoardSection;
+
+	}
+
+	@GraphQLTypeExtension(NavigationMenuItem.class)
+	public class ParentNavigationMenuItemNavigationMenuIdTypeExtension {
+
+		public ParentNavigationMenuItemNavigationMenuIdTypeExtension(
+			NavigationMenuItem navigationMenuItem) {
+
+			_navigationMenuItem = navigationMenuItem;
+		}
+
+		@GraphQLField(description = "")
+		public NavigationMenu parentNavigationMenu() throws Exception {
+			return _applyComponentServiceObjects(
+				_navigationMenuResourceComponentServiceObjects,
+				Query.this::_populateResourceContext,
+				navigationMenuResource ->
+					navigationMenuResource.getNavigationMenu(
+						_navigationMenuItem.getParentNavigationMenuId()));
+		}
+
+		private NavigationMenuItem _navigationMenuItem;
+
+	}
+
+	@GraphQLTypeExtension(StructuredContentFolder.class)
+	public class
+		ParentStructuredContentFolderStructuredContentFolderIdTypeExtension {
+
+		public ParentStructuredContentFolderStructuredContentFolderIdTypeExtension(
+			StructuredContentFolder structuredContentFolder) {
+
+			_structuredContentFolder = structuredContentFolder;
+		}
+
+		@GraphQLField(description = "Retrieves the structured content folder.")
+		public StructuredContentFolder parentStructuredContentFolder()
+			throws Exception {
+
+			return _applyComponentServiceObjects(
+				_structuredContentFolderResourceComponentServiceObjects,
+				Query.this::_populateResourceContext,
+				structuredContentFolderResource ->
+					structuredContentFolderResource.getStructuredContentFolder(
+						_structuredContentFolder.
+							getParentStructuredContentFolderId()));
+		}
+
+		private StructuredContentFolder _structuredContentFolder;
+
+	}
+
+	@GraphQLTypeExtension(WikiPage.class)
+	public class ParentWikiPageWikiPageIdTypeExtension {
+
+		public ParentWikiPageWikiPageIdTypeExtension(WikiPage wikiPage) {
+			_wikiPage = wikiPage;
+		}
+
+		@GraphQLField(description = "Retrieves the wiki page")
+		public WikiPage parentWikiPage() throws Exception {
+			return _applyComponentServiceObjects(
+				_wikiPageResourceComponentServiceObjects,
+				Query.this::_populateResourceContext,
+				wikiPageResource -> wikiPageResource.getWikiPage(
+					_wikiPage.getParentWikiPageId()));
+		}
+
+		private WikiPage _wikiPage;
 
 	}
 

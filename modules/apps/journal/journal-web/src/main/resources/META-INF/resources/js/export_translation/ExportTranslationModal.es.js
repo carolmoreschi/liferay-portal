@@ -24,39 +24,48 @@ const noop = () => {};
 
 const ExportTranslationModal = ({
 	articleIds,
+	availableExportFileFormats,
 	availableSourceLocales,
 	availableTargetLocales,
+	defaultSourceLanguageId,
 	exportTranslationURL,
 	observer,
 	onModalClose = noop,
 }) => {
 	const {namespace} = useContext(ExportTranslationContext);
 
-	const [sourceLanguageId, setSourceLanguageId] = useState(
-		availableSourceLocales[0].languageId
+	const [exportMimeType, setExportMimeType] = useState(
+		availableExportFileFormats[0].mimeType
 	);
 
-	const [selectedTargetLocales, setSelectedTargetLocales] = useState([]);
+	const [sourceLanguageId, setSourceLanguageId] = useState(
+		defaultSourceLanguageId
+	);
+
+	const [selectedTargetLanguageIds, setSelectedTargetLanguageIds] = useState(
+		[]
+	);
 
 	const exportTranslationPortletURL = Liferay.Util.PortletURL.createPortletURL(
 		exportTranslationURL,
 		{
 			articleId: articleIds[0],
+			exportMimeType,
 			sourceLanguageId,
-			targetLanguageIds: selectedTargetLocales.join(','),
+			targetLanguageIds: selectedTargetLanguageIds.join(','),
 		}
 	);
 
-	const onChangeTarget = (checked, selectedLocaleId) => {
+	const onChangeTarget = (checked, selectedLanguageId) => {
 		if (checked) {
-			setSelectedTargetLocales(
-				selectedTargetLocales.concat(selectedLocaleId)
+			setSelectedTargetLanguageIds(
+				selectedTargetLanguageIds.concat(selectedLanguageId)
 			);
 		}
 		else {
-			setSelectedTargetLocales(
-				selectedTargetLocales.filter(
-					(localeId) => localeId != selectedLocaleId
+			setSelectedTargetLanguageIds(
+				selectedTargetLanguageIds.filter(
+					(languageId) => languageId != selectedLanguageId
 				)
 			);
 		}
@@ -92,9 +101,39 @@ const ExportTranslationModal = ({
 		}
 	};
 
+	const ExportFileFormats = () => {
+		if (availableExportFileFormats.length == 1) {
+			return (
+				<ClayInput
+					readOnly
+					value={availableExportFileFormats[0].displayName}
+				/>
+			);
+		}
+		else {
+			return (
+				<ClaySelect
+					name={`_${namespace}_exportMimeType`}
+					onChange={(e) => {
+						setExportMimeType(e.currentTarget.value);
+					}}
+					value={exportMimeType}
+				>
+					{availableExportFileFormats.map((exportFileFormat) => (
+						<ClaySelect.Option
+							key={exportFileFormat.mimeType}
+							label={exportFileFormat.displayName}
+							value={exportFileFormat.mimeType}
+						/>
+					))}
+				</ClaySelect>
+			);
+		}
+	};
+
 	const TargetLocale = ({locale}) => {
 		const languageId = locale.languageId;
-		const checked = selectedTargetLocales.indexOf(languageId) != -1;
+		const checked = selectedTargetLanguageIds.indexOf(languageId) != -1;
 
 		return (
 			<ClayCheckbox
@@ -126,6 +165,12 @@ const ExportTranslationModal = ({
 				}}
 			>
 				<ClayModal.Body scrollable>
+					<h5>{Liferay.Language.get('export-file-format')}</h5>
+
+					<ClayForm.Group className="w-50">
+						<ExportFileFormats />
+					</ClayForm.Group>
+
 					<h5>{Liferay.Language.get('origin-language')}</h5>
 
 					<ClayForm.Group>
@@ -165,7 +210,9 @@ const ExportTranslationModal = ({
 							</ClayButton>
 
 							<ClayButton
-								disabled={selectedTargetLocales.length === 0}
+								disabled={
+									selectedTargetLanguageIds.length === 0
+								}
 								displayType="primary"
 								type="submit"
 							>
@@ -181,6 +228,12 @@ const ExportTranslationModal = ({
 
 ExportTranslationModal.propTypes = {
 	articleIds: PropTypes.array,
+	availableExportFileFormats: PropTypes.arrayOf(
+		PropTypes.shape({
+			displayName: PropTypes.string,
+			mimeType: PropTypes.string,
+		})
+	).isRequired,
 	availableSourceLocales: PropTypes.arrayOf(
 		PropTypes.shape({
 			displayName: PropTypes.string,
@@ -193,6 +246,7 @@ ExportTranslationModal.propTypes = {
 			languageId: PropTypes.string,
 		})
 	).isRequired,
+	defaultSourceLanguageId: PropTypes.string.isRequired,
 };
 
 export default ExportTranslationModal;

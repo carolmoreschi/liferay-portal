@@ -71,7 +71,7 @@ definition {
 
 		Alert.viewSuccessMessage();
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -419,7 +419,7 @@ definition {
 			userLastName = "${userLastName}",
 			userScreenName = "${userScreenName}");
 
-		AssertElementPresent(locator1 = "Message#SUCCESS");
+		VerifyElementPresent(locator1 = "Message#SUCCESS");
 	}
 
 	macro addMultipleCP {
@@ -427,7 +427,7 @@ definition {
 			var userEmailAddress = "${userEmail}";
 			var userName = StringUtil.replace("${userEmail}", "@liferay.com", "");
 
-			GlobalMenu.gotoPortlet(
+			ApplicationsMenu.gotoPortlet(
 				category = "Users",
 				panel = "Control Panel",
 				portlet = "Users and Organizations");
@@ -889,7 +889,7 @@ definition {
 			locator1 = "UsersAndOrganizationsEditUser#ROLES_REGULAR_ROLES_SELECT_LINK",
 			value1 = "Select");
 
-		Pause(locator1 = "5000");
+		Pause(locator1 = "3000");
 
 		SelectFrame(locator1 = "IFrame#SELECT_REGULAR_ROLE");
 
@@ -1105,7 +1105,7 @@ definition {
 			locator1 = "TextInput#UPLOAD_FILE",
 			value1 = "${imageName}");
 
-		Pause(locator1 = "10000");
+		Pause(locator1 = "3000");
 
 		WaitForElementPresent(locator1 = "UsersAndOrganizationsEditUser#USER_PORTRAIT_CROPPER");
 
@@ -1309,6 +1309,32 @@ definition {
 				locator1 = "TextInput#POSTAL_CODE",
 				value1 = "${postalCode}");
 		}
+
+		PortletEntry.save();
+	}
+
+	macro editCategorizationCP {
+		UserNavigator.gotoUser(userScreenName = "${userScreenName}");
+
+		AssertElementPresent(locator1 = "UsersAndOrganizationsEditUser#CATEGORIZATION_LABEL");
+
+		AssertElementPresent(
+			key_vocabularyName = "${vocabularyName}",
+			locator1 = "UsersAndOrganizationsEditUser#VOCABULARY_LABEL");
+
+		AssertElementPresent.assertVisible(
+			locator1 = "UsersAndOrganizationsEditUser#DETAILS_CATEGORY_SELECT",
+			value1 = "Select");
+
+		AssertClick(
+			locator1 = "UsersAndOrganizationsEditUser#DETAILS_CATEGORY_SELECT",
+			value1 = "Select");
+
+		AssertElementPresent(
+			key_iframeTitle = "Select ${vocabularyName}",
+			locator1 = "IFrame#IFRAME_TITLE");
+
+		AssetCategorization.selectCategory(categoryName = "${categoryName}");
 
 		PortletEntry.save();
 	}
@@ -1685,15 +1711,22 @@ definition {
 			locator1 = "TextInput#SITE_SEARCH_KEYWORDS",
 			value1 = "${siteName}");
 
-		KeyPress(
-			locator1 = "TextInput#SEARCH",
-			value1 = "\RETURN");
+		var browserType = PropsUtil.get("browser.type");
 
-		AssertTextEquals.assertPartialText(
-			locator1 = "UsersAndOrganizationsEditUser#SITES_TABLE_NAME",
-			value1 = "${siteName}");
+		if ("${browserType}" != "safari") {
+			KeyPress(
+				locator1 = "TextInput#SEARCH",
+				value1 = "\RETURN");
 
-		Click(locator1 = "SitesSelectSite#SITES_TABLE_CHOOSE_SITE_LINK");
+			AssertTextEquals.assertPartialText(
+				locator1 = "UsersAndOrganizationsEditUser#SITES_TABLE_NAME",
+				value1 = "${siteName}");
+
+			Click(locator1 = "SitesSelectSite#SITES_TABLE_CHOOSE_SITE_LINK");
+		}
+		else {
+			Click.javaScriptClick(locator1 = "SitesSelectSite#SITES_TABLE_CHOOSE_SITE_LINK");
+		}
 
 		SelectFrame(value1 = "relative=top");
 
@@ -2046,7 +2079,7 @@ definition {
 						value1 = "test");
 				}
 
-				Button.clickSave();
+				Button.click(button = "Save");
 			}
 
 			if (IsElementPresent.pauseIsElementPresent(locator1 = "TextInput#ANSWER")) {
@@ -2054,7 +2087,7 @@ definition {
 					locator1 = "TextInput#ANSWER",
 					value1 = "test");
 
-				Button.clickSave();
+				Button.click(button = "Save");
 			}
 		}
 
@@ -2231,7 +2264,7 @@ definition {
 
 	macro resetPassword {
 		if (IsElementPresent.pauseIsElementPresent(locator1 = "TextInput#PASSWORD")) {
-			if ((isSet(syntaxCheckingEnabled)) && ("${syntaxCheckingEnabled}" == "true")) {
+			if ("${syntaxCheckingEnabled}" == "true") {
 				Type(
 					locator1 = "TextInput#PASSWORD_1",
 					value1 = "${resetPassword}");
@@ -2241,7 +2274,7 @@ definition {
 					value1 = "${resetPassword}");
 			}
 			else {
-				if ((isSet(setupWizardEnabled)) && ("${setupWizardEnabled}" == "true")) {
+				if ("${setupWizardEnabled}" == "true") {
 					Type(
 						locator1 = "TextInput#PASSWORD_1",
 						value1 = "test2");
@@ -2268,11 +2301,9 @@ definition {
 	}
 
 	macro searchCP {
-		Pause(locator1 = "5000");
-
 		Search.searchCP(searchTerm = "${searchTerm}");
 
-		Pause(locator1 = "5000");
+		AssertElementPresent(locator1 = "Search#SEARCH_INFO");
 	}
 
 	macro setPasswordByResetLink {
@@ -2377,7 +2408,7 @@ definition {
 	}
 
 	macro tearDownCP {
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -2414,7 +2445,7 @@ definition {
 	}
 
 	macro tearDownSpecificUser {
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -2858,16 +2889,6 @@ definition {
 		AssertTextEquals(
 			locator1 = "UsersAndOrganizationsEditUser#USER_GROUPS_TABLE_NAME",
 			value1 = "${userGroupName}");
-	}
-
-	macro viewUserSiteCP {
-		UserNavigator.gotoMemberships();
-
-		var key_siteName = "${siteName}";
-
-		AssertTextEquals(
-			locator1 = "UsersAndOrganizationsEditUser#SITES_TABLE_NAME",
-			value1 = "${siteName}");
 	}
 
 }

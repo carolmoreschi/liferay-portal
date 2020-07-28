@@ -14,6 +14,8 @@
 
 package com.liferay.change.tracking.service.impl;
 
+import com.liferay.change.tracking.closure.CTClosure;
+import com.liferay.change.tracking.closure.CTClosureFactory;
 import com.liferay.change.tracking.constants.CTActionKeys;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.exception.CTEnclosureException;
@@ -23,8 +25,6 @@ import com.liferay.change.tracking.model.CTAutoResolutionInfo;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTCollectionTable;
 import com.liferay.change.tracking.model.CTEntry;
-import com.liferay.change.tracking.reference.closure.CTClosure;
-import com.liferay.change.tracking.reference.closure.CTClosureFactory;
 import com.liferay.change.tracking.service.CTProcessLocalService;
 import com.liferay.change.tracking.service.base.CTCollectionServiceBaseImpl;
 import com.liferay.change.tracking.service.persistence.CTAutoResolutionInfoPersistence;
@@ -202,7 +202,7 @@ public class CTCollectionServiceImpl extends CTCollectionServiceBaseImpl {
 					String primaryKeyName = iterator.next();
 
 					StringBundler sb = new StringBundler(
-						2 * ctEntries.size() + 7);
+						(2 * ctEntries.size()) + 7);
 
 					sb.append("delete from ");
 					sb.append(ctPersistence.getTableName());
@@ -284,15 +284,16 @@ public class CTCollectionServiceImpl extends CTCollectionServiceBaseImpl {
 	@Override
 	public List<CTCollection> getCTCollections(
 		long companyId, int status, String keywords, int start, int end,
-		OrderByComparator<CTCollection> obc) {
+		OrderByComparator<CTCollection> orderByComparator) {
 
 		DSLQuery dslQuery = DSLQueryFactoryUtil.select(
+			CTCollectionTable.INSTANCE
 		).from(
 			CTCollectionTable.INSTANCE
 		).where(
 			_getPredicate(companyId, status, keywords)
 		).orderBy(
-			CTCollectionTable.INSTANCE, obc
+			CTCollectionTable.INSTANCE, orderByComparator
 		).limit(
 			start, end
 		);

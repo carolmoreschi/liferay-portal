@@ -54,11 +54,12 @@ exports[`Options shows the options 1`] = `
               <label
                 class="control-label key-value-label"
               >
-                field-name
+                field-id
                 :
               </label>
               <input
                 class="key-value-input"
+                tabindex="0"
                 type="text"
                 value="Option1"
               />
@@ -124,11 +125,12 @@ exports[`Options shows the options 1`] = `
               <label
                 class="control-label key-value-label"
               >
-                field-name
+                field-id
                 :
               </label>
               <input
                 class="key-value-input"
+                tabindex="0"
                 type="text"
                 value="Option2"
               />
@@ -194,11 +196,12 @@ exports[`Options shows the options 1`] = `
               <label
                 class="control-label key-value-label"
               >
-                field-name
+                field-id
                 :
               </label>
               <input
                 class="key-value-input"
+                tabindex="0"
                 type="text"
                 value=""
               />

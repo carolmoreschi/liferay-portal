@@ -28,7 +28,7 @@ import EditTableViewContext, {
 	UPDATE_FOCUSED_COLUMN,
 } from './EditTableViewContext.es';
 import TableViewFiltersList from './TableViewFilters.es';
-import {getFieldTypeLabel} from './utils.es';
+import {getFieldLabel, getFieldTypeLabel} from './utils.es';
 
 const BtnAction = ({angle = 'left', className, onClick}) => (
 	<Button
@@ -41,9 +41,10 @@ const BtnAction = ({angle = 'left', className, onClick}) => (
 );
 
 const FiltersSidebarHeader = () => {
-	const [{dataDefinition, fieldTypes, focusedColumn}, dispatch] = useContext(
-		EditTableViewContext
-	);
+	const [
+		{dataDefinition, editingLanguageId, fieldTypes, focusedColumn},
+		dispatch,
+	] = useContext(EditTableViewContext);
 
 	const onClickBack = () => {
 		dispatch({payload: {fieldName: null}, type: UPDATE_FOCUSED_COLUMN});
@@ -67,8 +68,9 @@ const FiltersSidebarHeader = () => {
 						dragAlignment="none"
 						draggable={false}
 						icon={fieldType}
-						label={DataDefinitionUtils.getFieldLabel(
+						label={getFieldLabel(
 							dataDefinition,
+							editingLanguageId,
 							focusedColumn
 						)}
 						name={focusedColumn}
@@ -84,24 +86,46 @@ const FieldsTabContent = ({keywords, onAddFieldName}) => {
 		{
 			dataDefinition: {dataDefinitionFields = []},
 			dataListView: {fieldNames},
+			editingLanguageId,
 			fieldTypes,
 		},
 	] = useContext(EditTableViewContext);
 
+	const fieldTypesItems = [];
+
+	const fieldTypeModel = ({
+		fieldType,
+		label: {[editingLanguageId]: label},
+		name,
+	}) => ({
+		description: getFieldTypeLabel(fieldTypes, fieldType),
+		disabled: fieldNames.some((fieldName) => fieldName === name),
+		icon: fieldType,
+		label,
+		name,
+	});
+
+	dataDefinitionFields.forEach(
+		({nestedDataDefinitionFields, ...dataDefinitionField}) => {
+			if (nestedDataDefinitionFields.length) {
+				fieldTypesItems.push(
+					...nestedDataDefinitionFields.map((nestedField) =>
+						fieldTypeModel(nestedField)
+					)
+				);
+			}
+			else {
+				fieldTypesItems.push(fieldTypeModel(dataDefinitionField));
+			}
+		}
+	);
+
+	fieldTypesItems.sort((a, b) => a.label.localeCompare(b.label));
+
 	return (
 		<FieldTypeList
 			dragType={DragTypes.DRAG_FIELD_TYPE}
-			fieldTypes={dataDefinitionFields.map(
-				({fieldType, label: {en_US: label}, name}) => ({
-					description: getFieldTypeLabel(fieldTypes, fieldType),
-					disabled: fieldNames.some(
-						(fieldName) => fieldName === name
-					),
-					icon: fieldType,
-					label,
-					name,
-				})
-			)}
+			fieldTypes={fieldTypesItems}
 			keywords={keywords}
 			onDoubleClick={({name}) => onAddFieldName(name, fieldNames.length)}
 		/>

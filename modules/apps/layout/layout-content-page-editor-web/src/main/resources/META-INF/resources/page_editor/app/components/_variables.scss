@@ -10,7 +10,11 @@ $sidebarButtonWidth: 42px;
 $sidebarContentWidth: 280px;
 $toolbarBorderWidth: 1px;
 
-$floatingToolbarPanelMinWidth: 288px;
+$floatingToolbarPanelMaxHeight: 408px;
+$floatingToolbarPanelMinWidth: 278px;
+
+$controlMenuHeight: 48px;
+$desktopControlMenuHeight: 56px;
 
 $dropTargetWidth: 5px;
 
@@ -24,5 +28,5 @@ $floatingToolbarPanelZIndex: 987;
 $floatingToolbarZIndex: 987;
 $sidebarZIndex: 988;
 $dragPreviewLayer: 991;
+$undoHistoryOverlayZIndex: 1001;
 $modalZIndex: 1050;
-$shimZIndex: 9999;

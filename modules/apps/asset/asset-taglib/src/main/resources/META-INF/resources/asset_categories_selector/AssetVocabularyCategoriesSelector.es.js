@@ -141,8 +141,12 @@ function AssetVocabulariesCategoriesSelector({
 		});
 
 		const itemSelectorDialog = new ItemSelectorDialog({
+			buttonAddLabel: Liferay.Language.get('done'),
+			dialogClasses: 'modal-lg',
 			eventName,
-			title: Liferay.Language.get('select-categories'),
+			title: label
+				? Liferay.Util.sub(Liferay.Language.get('select-x'), label)
+				: Liferay.Language.get('select-categories'),
 			url,
 		});
 

@@ -209,6 +209,7 @@
 		<field name="settings" type="String">
 			<hint name="max-length">4000</hint>
 		</field>
+		<field name="visibilityType" type="int" />
 		<field name="lastPublishDate" type="Date" />
 	</model>
 	<model name="com.liferay.counter.kernel.model.Counter">
@@ -732,6 +733,7 @@
 		<field name="iconImageId" type="long" />
 		<field name="themeId" type="String" />
 		<field name="colorSchemeId" type="String" />
+		<field name="styleBookEntryId" type="long" />
 		<field name="css" type="String">
 			<hint-collection name="CLOB" />
 		</field>

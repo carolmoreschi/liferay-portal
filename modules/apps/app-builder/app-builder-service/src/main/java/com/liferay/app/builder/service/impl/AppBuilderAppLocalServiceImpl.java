@@ -18,6 +18,7 @@ import com.liferay.app.builder.constants.AppBuilderAppConstants;
 import com.liferay.app.builder.model.AppBuilderApp;
 import com.liferay.app.builder.model.AppBuilderAppDeployment;
 import com.liferay.app.builder.service.AppBuilderAppDeploymentLocalService;
+import com.liferay.app.builder.service.AppBuilderAppVersionLocalService;
 import com.liferay.app.builder.service.base.AppBuilderAppLocalServiceBaseImpl;
 import com.liferay.dynamic.data.lists.model.DDLRecordSet;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalService;
@@ -75,7 +76,13 @@ public class AppBuilderAppLocalServiceImpl
 		appBuilderApp.setNameMap(nameMap);
 		appBuilderApp.setScope(scope);
 
-		return appBuilderAppPersistence.update(appBuilderApp);
+		appBuilderApp = appBuilderAppPersistence.update(appBuilderApp);
+
+		_appBuilderAppVersionLocalService.addAppBuilderAppVersion(
+			groupId, companyId, userId, appBuilderApp.getAppBuilderAppId(),
+			ddlRecordSetId, ddmStructureId, ddmStructureLayoutId);
+
+		return appBuilderApp;
 	}
 
 	/**
@@ -116,9 +123,13 @@ public class AppBuilderAppLocalServiceImpl
 			scope);
 	}
 
+	@Indexable(type = IndexableType.DELETE)
 	@Override
 	public AppBuilderApp deleteAppBuilderApp(long appBuilderAppId)
 		throws PortalException {
+
+		AppBuilderApp appBuilderApp = appBuilderAppPersistence.remove(
+			appBuilderAppId);
 
 		List<AppBuilderAppDeployment> appBuilderAppDeployments =
 			_appBuilderAppDeploymentLocalService.getAppBuilderAppDeployments(
@@ -131,7 +142,10 @@ public class AppBuilderAppLocalServiceImpl
 				appBuilderAppDeployment.getAppBuilderAppDeploymentId());
 		}
 
-		return super.deleteAppBuilderApp(appBuilderAppId);
+		_appBuilderAppVersionLocalService.deleteAppBuilderAppVersions(
+			appBuilderAppId);
+
+		return appBuilderApp;
 	}
 
 	@Override
@@ -141,7 +155,8 @@ public class AppBuilderAppLocalServiceImpl
 		List<AppBuilderApp> appBuilderApps = getAppBuilderApps(ddmStructureId);
 
 		for (AppBuilderApp appBuilderApp : appBuilderApps) {
-			deleteAppBuilderApp(appBuilderApp.getAppBuilderAppId());
+			appBuilderAppLocalService.deleteAppBuilderApp(
+				appBuilderApp.getAppBuilderAppId());
 		}
 	}
 
@@ -255,6 +270,8 @@ public class AppBuilderAppLocalServiceImpl
 		AppBuilderApp appBuilderApp = appBuilderAppPersistence.findByPrimaryKey(
 			appBuilderAppId);
 
+		long oldDDMStructureLayoutId = appBuilderApp.getDdmStructureLayoutId();
+
 		appBuilderApp.setUserId(user.getUserId());
 		appBuilderApp.setUserName(user.getFullName());
 		appBuilderApp.setModifiedDate(new Date());
@@ -264,12 +281,27 @@ public class AppBuilderAppLocalServiceImpl
 		appBuilderApp.setDeDataListViewId(deDataListViewId);
 		appBuilderApp.setNameMap(nameMap);
 
-		return appBuilderAppPersistence.update(appBuilderApp);
+		appBuilderApp = appBuilderAppPersistence.update(appBuilderApp);
+
+		if (oldDDMStructureLayoutId !=
+				appBuilderApp.getDdmStructureLayoutId()) {
+
+			_appBuilderAppVersionLocalService.addAppBuilderAppVersion(
+				appBuilderApp.getGroupId(), appBuilderApp.getCompanyId(),
+				userId, appBuilderApp.getAppBuilderAppId(),
+				appBuilderApp.getDdlRecordSetId(), ddmStructureId,
+				ddmStructureLayoutId);
+		}
+
+		return appBuilderApp;
 	}
 
 	@Reference
 	private AppBuilderAppDeploymentLocalService
 		_appBuilderAppDeploymentLocalService;
+
+	@Reference
+	private AppBuilderAppVersionLocalService _appBuilderAppVersionLocalService;
 
 	@Reference
 	private DDLRecordSetLocalService _ddlRecordSetLocalService;

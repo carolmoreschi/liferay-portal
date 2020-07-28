@@ -15,24 +15,7 @@ definition {
 
 		Navigator.openURL();
 
-		if ("${testPortalInstance}" != "true") {
-
-			GlobalMenu.gotoPortlet(
-				category = "Configuration",
-				panel = "Control Panel",
-				portlet = "Search");
-
-			SearchAdministration.executeSearchActions(actionsDescription = "Reindex all search indexes.");
-		}
-
-		GlobalMenu.gotoPortlet(
-			category = "Workflow",
-			panel = "Applications",
-			portlet = "Metrics");
-
-		WorkflowMetrics.executeIndexActions(actionDescription = "Workflow Indexes");
-
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
 			portlet = "Metrics");
@@ -47,22 +30,19 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
-		Workflow.configureWorkflow(
-			workflowDefinition = "No Workflow",
-			workflowResourceValue = "Blogs Entry");
+		Workflow._tearDownWorkflow();
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
 			portlet = "Metrics");
 
 		WorkflowMetrics.tearDown();
 
-		Workflow.tearDownSpecificWorkflowDefinition(workflowDefinitionTitle = "Single Approver Alternative");
+		Workflow.tearDownWorkflowDefinitions();
 
 		if ("${testPortalInstance}" == "true") {
 			PortalInstances.tearDownCP();
@@ -292,7 +272,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -307,7 +286,7 @@ definition {
 
 		WorkflowMetrics.executeWorkflowScript(scriptName = "CompleteTasksAssignedToUsers.groovy");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
 			portlet = "Metrics");
@@ -395,7 +374,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -403,7 +381,7 @@ definition {
 			workflowDefinition = "Single Approver",
 			workflowResourceValue = "Blogs Entry");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
 			portlet = "Metrics");
@@ -512,15 +490,12 @@ definition {
 	@description = "LRQA-53633 Automate LPS-103368: [Dashboard] Apply searches in the workload distribution for all assignees"
 	@priority = "5"
 	test ApplySearchesForAllAssignees {
-		property portal.upstream = "quarantine";
-
 		property test.name.skip.portal.instance = "WorkflowMetrics#ApplySearchesForAllAssignees";
 
 		var siteName = TestCase.getSiteName(siteName = "${siteName}");
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -620,10 +595,15 @@ definition {
 		WorkflowMetrics.goToBulkReassignSelectTasks();
 		AssertElementPresent(locator1 = "WorkflowReassignModal#BULK_REASSIGN_MODAL");
 		WorkflowMetrics.assertSelectTasksModalTable();
-		WorkflowMetrics.goToBulkReassignSelectNewAssignee();
+
+		WorkflowMetrics.selectReassignTasks(taskList = "Blogs Entry: Blogs Entry Title 1,Blogs Entry: Blogs Entry Title 2");
 		WorkflowMetrics.assertNewAssigneeModalTable();
 		AssertElementPresent(locator1 = "WorkflowReassignModal#PERMISSION_TOOLTIP");
 		AssertElementPresent(locator1 = "WorkflowReassignModal#NEXT_BUTTON_DISABLED");
+		WorkflowMetrics.selectNewAssignee(taskList = "Blogs Entry: Blogs Entry Title 1,Blogs Entry: Blogs Entry Title 2");
+
+		WorkflowMetrics.goToBulkReassignSelectTasks();
+		WorkflowMetrics.selectReassignTasks(taskList = "Blogs Entry: Blogs Entry Title 3,Blogs Entry: Blogs Entry Title 4,Blogs Entry: Blogs Entry Title 5");
 		WorkflowMetrics.selectNewAssigneeBulkTask(nameOfAssignee = "Test Test");
 		WorkflowMetrics.goToWorkflowAllItems();
 
@@ -639,6 +619,14 @@ definition {
 			key_workflowInstanceAssignee = "Test Test",
 			key_workflowInstanceName = "Blogs Entry: Blogs Entry Title 3",
 			locator1 = "WorkflowAllItems#WORKFLOW_ALL_ITEMS_TABLE_CURRENT_ASSIGNEE_VALUE");
+		AssertElementPresent(
+			key_workflowInstanceAssignee = "Test Test",
+			key_workflowInstanceName = "Blogs Entry: Blogs Entry Title 4",
+			locator1 = "WorkflowAllItems#WORKFLOW_ALL_ITEMS_TABLE_CURRENT_ASSIGNEE_VALUE");
+		AssertElementPresent(
+			key_workflowInstanceAssignee = "Test Test",
+			key_workflowInstanceName = "Blogs Entry: Blogs Entry Title 5",
+			locator1 = "WorkflowAllItems#WORKFLOW_ALL_ITEMS_TABLE_CURRENT_ASSIGNEE_VALUE");
 
 		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
 
@@ -650,6 +638,12 @@ definition {
 			locator1 = "MyWorkflowTasks#TABLE_GENERIC_ASSET_TITLE");
 		AssertElementPresent(
 			key_workflowAssetTitle = "Blogs Entry Title 3",
+			locator1 = "MyWorkflowTasks#TABLE_GENERIC_ASSET_TITLE");
+		AssertElementPresent(
+			key_workflowAssetTitle = "Blogs Entry Title 4",
+			locator1 = "MyWorkflowTasks#TABLE_GENERIC_ASSET_TITLE");
+		AssertElementPresent(
+			key_workflowAssetTitle = "Blogs Entry Title 5",
 			locator1 = "MyWorkflowTasks#TABLE_GENERIC_ASSET_TITLE");
 	}
 
@@ -678,8 +672,177 @@ definition {
 			locator1 = "WorkflowReassignModal#NEW_ASSIGNEE",
 			value1 = "Test");
 		AssertElementPresent(
-			key_nameOfAssignee = "No results found.",
+			key_nameOfAssignee = "No results were found.",
 			locator1 = "WorkflowReassignModal#REASSIGN_TASK_NEW_ASSIGNEE_DROPDOWN");
+	}
+
+	@description = "LRQA-53629 Automate LRQA-53629: Automate LPS-100679: [Performance] Change the order of the all steps performance list"
+	@priority = "5"
+	test ChangePerformanceByStepOrder {
+		property portal.acceptance = "true";
+
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
+		ProductMenu.gotoPortlet(
+			category = "Configuration",
+			portlet = "Workflow",
+			site = "${siteName}");
+
+		Workflow.configureWorkflow(
+			workflowDefinition = "Single Approver",
+			workflowResourceValue = "Blogs Entry");
+
+		WorkflowMetrics.goToWorkflowSLASettings(workflowProcessName = "Single Approver");
+
+		Click(locator1 = "WorkflowMetricsSLA#ADD_NEW_SLA_BUTTON");
+
+		WorkflowMetrics.fillSLAForm(
+			slaDefinitionDays = "0",
+			slaDefinitionDescription = "SLA Description",
+			slaDefinitionEnd = "Process Ends: Approved",
+			slaDefinitionHours = "00:03",
+			slaDefinitionName = "Review",
+			slaDefinitionStart = "Process Begins");
+
+		Button.clickSave();
+
+		WorkflowMetrics.goToWorkflowSLASettings(workflowProcessName = "Single Approver");
+
+		Click(locator1 = "WorkflowMetricsSLA#ADD_NEW_SLA_BUTTON");
+
+		WorkflowMetrics.fillSLAForm(
+			slaDefinitionDays = "0",
+			slaDefinitionDescription = "SLA Description",
+			slaDefinitionEnd = "Process Ends: Approved",
+			slaDefinitionHours = "00:01",
+			slaDefinitionName = "Update",
+			slaDefinitionStart = "Enters Task: Update");
+
+		Button.clickSave();
+
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry Content",
+			entryTitle = "Blogs Entry Title1");
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry Content",
+			entryTitle = "Blogs Entry Title2");
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry1 Content",
+			entryTitle = "Blogs Entry Title3");
+
+		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
+
+		Workflow.assignToMeTaskByActions(
+			workflowAssetTitle = "Blogs Entry Title1",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Review");
+
+		Workflow.rejectTaskByActions(
+			workflowAssetTitle = "Blogs Entry Title1",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Review");
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver");
+
+		WorkflowMetrics.waitForSLA(
+			key_expectedValue = "0",
+			key_status = "OVERDUE");
+
+		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
+
+		Workflow.resubmitTaskByActions(
+			workflowAssetTitle = "Blogs Entry Title1",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Update");
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver");
+
+		WorkflowMetrics.waitForSLA(
+			key_expectedValue = "0",
+			key_status = "OVERDUE");
+
+		WorkflowMetrics.waitForSLA(
+			key_expectedValue = "1",
+			key_status = "OVERDUE");
+
+		WorkflowMetrics.waitForSLA(
+			key_expectedValue = "2",
+			key_status = "OVERDUE");
+
+		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
+
+		Workflow.assignToMeTaskByActions(
+			workflowAssetTitle = "Blogs Entry Title2",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Review");
+
+		Workflow.assignToMeTaskByActions(
+			workflowAssetTitle = "Blogs Entry Title3",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Review");
+
+		Workflow.assignToMeTaskByActions(
+			workflowAssetTitle = "Blogs Entry Title1",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Review");
+
+		Workflow.approveTaskByActions(
+			workflowAssetTitle = "Blogs Entry Title2",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Review");
+
+		Workflow.approveTaskByActions(
+			workflowAssetTitle = "Blogs Entry Title3",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Review");
+
+		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
+
+		Workflow.approveTaskByActions(
+			workflowAssetTitle = "Blogs Entry Title1",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Review");
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver");
+
+		Click(locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_TAB");
+
+		Click(
+			key_stepsNumber = "2",
+			locator1 = "WorkflowMetricsPerformanceByStep#METRICS_PERFORMANCE_BY_STEP_CARD_VIEW_ALL_STEPS");
+
+		AssertElementPresent(
+			key_rowName = "Update",
+			key_rowNumber = "1",
+			locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_BY_STEP_ROW_ORDER_CHECK");
+		AssertElementPresent(
+			key_rowName = "Review",
+			key_rowNumber = "2",
+			locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_BY_STEP_ROW_ORDER_CHECK");
+		Click(locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_BY_STEP_SLA_BREACHED_REORDER");
+		AssertElementPresent(
+			key_rowName = "Review",
+			key_rowNumber = "1",
+			locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_BY_STEP_ROW_ORDER_CHECK");
+		AssertElementPresent(
+			key_rowName = "Update",
+			key_rowNumber = "2",
+			locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_BY_STEP_ROW_ORDER_CHECK");
+		Click(locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_BY_STEP_AVG_TIME_REORDER");
+		AssertElementPresent(
+			key_rowName = "Review",
+			key_rowNumber = "1",
+			locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_BY_STEP_ROW_ORDER_CHECK");
+		AssertElementPresent(
+			key_rowName = "Update",
+			key_rowNumber = "2",
+			locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_BY_STEP_ROW_ORDER_CHECK");
+		Click(locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_BY_STEP_AVG_TIME_REORDER");
+		AssertElementPresent(
+			key_rowName = "Review",
+			key_rowNumber = "2",
+			locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_BY_STEP_ROW_ORDER_CHECK");
+		Click(locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_BY_STEP_SLA_BREACHED_REORDER");
 	}
 
 	@description = "Verify if the default filter values are correct and if the chart is displayed (LPS-98001)"
@@ -733,12 +896,10 @@ definition {
 	@priority = "5"
 	test FilterAllItemsList {
 		property portal.upstream = "quarantine";
-
 		var siteName = TestCase.getSiteName(siteName = "${siteName}");
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -938,7 +1099,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs",
 			site = "${siteName}");
 
@@ -946,7 +1106,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
-			panel = "Site Administration",
 			portlet = "Blogs",
 			site = "${siteName}");
 
@@ -1018,6 +1177,21 @@ definition {
 			taskName = "Completed");
 	}
 
+	@description = "LRQA-53649 Automate LPS-87560: Verify metrics available or not for CE and DXP customers"
+	@priority = "5"
+	test MetricsAvailableForDXP {
+		property portal.acceptance = "true";
+
+		ApplicationsMenuHelper.openApplicationsMenu();
+
+		ApplicationsMenu.gotoPanel(panel = "Applications");
+
+		AssertElementPresent(
+			key_category = "Workflow",
+			key_portlet = "Metrics",
+			locator1 = "ApplicationsMenu#PORTLET");
+	}
+
 	@description = "LRQA-55452 Automate LPS-102663: [Dashboard] Reassign Workflow instances individually"
 	@priority = "5"
 	test ReassignWorkflowInstance {
@@ -1034,7 +1208,7 @@ definition {
 
 		WorkflowMetrics.assertAssignees();
 
-		WorkflowMetrics.selectNewAssignee();
+		WorkflowMetrics.selectNewAssignee(taskList = "Blogs Entry: Blogs Entry Title 1");
 		MouseOver(
 			locator1 = "WorkflowAllItems#KEBAB_DROPDOWN",
 			task = "1");
@@ -1044,6 +1218,8 @@ definition {
 		AssertElementPresent(locator1 = "WorkflowReassignModal#REASSIGN_MODAL");
 		Click(locator1 = "WorkflowReassignModal#SEARCH_NEW_ASSIGNEE");
 		WorkflowMetrics.assertNoAssignees();
+
+		Click(locator1 = "WorkflowReassignModal#CLOSE_MODAL_BUTTON");
 
 		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
 		Workflow.approveTaskByActions(
@@ -1169,7 +1345,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -1184,7 +1359,7 @@ definition {
 
 		WorkflowMetrics.executeWorkflowScript(scriptName = "CompleteTasksAssignedToUsers.groovy");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
 			portlet = "Metrics");
@@ -1255,7 +1430,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -1313,6 +1487,360 @@ definition {
 			key_workflowProcessName = "Single Approver");
 	}
 
+	@description = "LRQA-53660 Automate LPS-105495 single-task work"
+	@priority = "5"
+	test SingleTaskWorkflowTransition {
+		property test.name.skip.portal.instance = "WorkflowMetrics#SingleTaskWorkflowTransition";
+		property portal.acceptance = "true";
+
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
+		ProductMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Site Administration",
+			portlet = "Workflow",
+			site = "${siteName}");
+
+		Workflow.configureWorkflow(
+			workflowDefinition = "Single Approver",
+			workflowResourceValue = "Blogs Entry");
+
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry 1 Content",
+			entryTitle = "Blogs Entry Title 1");
+
+		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
+
+		Workflow.assignToMeTaskByActions(
+			workflowAssetTitle = "Blogs Entry Title 1",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Review");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Metrics");
+
+		WorkflowMetrics.goToDashboardAllItemsWithFilter(
+			workflowFilterOption = "PENDING",
+			workflowMetricsTab = "DASHBOARD",
+			workflowProcess = "Single Approver");
+
+		Click(
+			locator1 = "WorkflowAllItems#KEBAB_DROPDOWN",
+			task = "1");
+
+		Click(locator1 = "WorkflowAllItems#APPROVE_DROPDOWN");
+
+		Button.click(button = "Done");
+
+		Alert.viewSuccessMessage();
+
+		Navigator.gotoBack();
+
+		WorkflowMetrics.goToDashboardAllItemsWithFilter(
+			workflowFilterOption = "PENDING",
+			workflowMetricsTab = "DASHBOARD",
+			workflowProcess = "Single Approver");
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "Message#EMPTY_INFO",
+			value1 = "No results were found.");
+
+		WorkflowMetrics.goToDashboardAllItemsWithFilter(
+			workflowFilterOption = "COMPLETED",
+			workflowMetricsTab = "PERFORMANCE",
+			workflowProcess = "Single Approver");
+
+		AssertElementPresent(
+			key_workflowInstanceName = "Blogs Entry Title 1",
+			locator1 = "WorkflowAllItems#WORKFLOW_INSTANCE_NAME");
+
+		Navigator.gotoBack();
+
+		Click(locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_TAB");
+
+		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
+
+		AssertElementPresent(
+			key_workflowAssetTitle = "Blogs Entry Title 1",
+			locator1 = "MyWorkflowTasks#TABLE_GENERIC_ASSET_TITLE");
+
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry 2 Content",
+			entryTitle = "Blogs Entry Title 2");
+
+		WorkflowMetrics.goToDashboardAllItemsWithFilter(
+			workflowFilterOption = "PENDING",
+			workflowMetricsTab = "DASHBOARD",
+			workflowProcess = "Single Approver");
+
+		Click(
+			locator1 = "WorkflowAllItems#KEBAB_DROPDOWN",
+			task = "1");
+
+		AssertElementNotPresent(locator1 = "WorkflowAllItems#APPROVE_DROPDOWN");
+
+		WorkflowMetrics.goToDashboardAllItemsWithFilter(
+			workflowFilterOption = "COMPLETED",
+			workflowMetricsTab = "PERFORMANCE",
+			workflowProcess = "Single Approver");
+
+		AssertElementPresent(locator1 = "WorkflowMetrics#KEBAB_BUTTON_DISABLED");
+
+		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
+
+		Workflow.viewTaskAssignedToMyRoles(
+			workflowAssetTitle = "Blogs Entry Title 2",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Review");
+
+		AssertElementPresent(
+			key_workflowAssetTitle = "Blogs Entry Title 2",
+			locator1 = "MyWorkflowTasks#TABLE_GENERIC_ASSET_TITLE");
+
+		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
+
+		Workflow.assignToMeTaskByActions(
+			workflowAssetTitle = "Blogs Entry Title 2",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Review");
+
+		WorkflowMetrics.goToDashboardAllItemsWithFilter(
+			workflowFilterOption = "PENDING",
+			workflowMetricsTab = "DASHBOARD",
+			workflowProcess = "Single Approver");
+
+		Click(
+			locator1 = "WorkflowAllItems#KEBAB_DROPDOWN",
+			task = "1");
+
+		Click(locator1 = "WorkflowAllItems#APPROVE_DROPDOWN");
+
+		Button.click(button = "Done");
+
+		Alert.viewSuccessMessage();
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Metrics");
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver");
+
+		WorkflowMetrics.goToDashboardAllItemsWithFilter(
+			workflowFilterOption = "COMPLETED",
+			workflowMetricsTab = "PERFORMANCE",
+			workflowProcess = "Single Approver");
+
+		AssertElementPresent(
+			key_workflowInstanceName = "Blogs Entry Title 1",
+			locator1 = "WorkflowAllItems#WORKFLOW_INSTANCE_NAME");
+		AssertElementPresent(
+			key_workflowInstanceName = "Blogs Entry Title 2",
+			locator1 = "WorkflowAllItems#WORKFLOW_INSTANCE_NAME");
+
+		Workflow.duplicateSingleApproverWorkflow(workflowName = "Single Approver Edited");
+
+		KaleoDesigner.deleteNode(nodeNodeLabel = "update");
+
+		Button.clickUpdate();
+
+		ProductMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Site Administration",
+			portlet = "Workflow",
+			site = "${siteName}");
+
+		Workflow.configureWorkflow(
+			workflowDefinition = "Single Approver Edited",
+			workflowResourceValue = "Blogs Entry");
+
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry 3 Content",
+			entryTitle = "Blogs Entry Title 3");
+
+		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
+
+		Workflow.assignToMeTaskByActions(
+			workflowAssetTitle = "Blogs Entry Title 3",
+			workflowAssetType = "Blogs Entry",
+			workflowTask = "Review");
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver Edited");
+
+		WorkflowMetrics.goToDashboardAllItemsWithFilter(
+			workflowFilterOption = "PENDING",
+			workflowMetricsTab = "DASHBOARD",
+			workflowProcess = "Single Approver Edited");
+
+		Click(
+			locator1 = "WorkflowAllItems#KEBAB_DROPDOWN",
+			task = "1");
+
+		Click(locator1 = "WorkflowAllItems#APPROVE_DROPDOWN");
+
+		Button.click(button = "Done");
+
+		Alert.viewSuccessMessage();
+
+		Navigator.gotoBack();
+
+		WorkflowMetrics.goToDashboardAllItemsWithFilter(
+			workflowFilterOption = "PENDING",
+			workflowMetricsTab = "DASHBOARD",
+			workflowProcess = "Single Approver Edited");
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "Message#EMPTY_INFO",
+			value1 = "No results were found.");
+
+		WorkflowMetrics.goToDashboardAllItemsWithFilter(
+			workflowFilterOption = "COMPLETED",
+			workflowMetricsTab = "PERFORMANCE",
+			workflowProcess = "Single Approver Edited");
+
+		AssertElementPresent(
+			key_workflowInstanceName = "Blogs Entry Title 3",
+			locator1 = "WorkflowAllItems#WORKFLOW_INSTANCE_NAME");
+
+		Navigator.gotoBack();
+
+		Click(locator1 = "WorkflowMetrics#METRICS_PERFORMANCE_TAB");
+
+		UserBar.gotoDropdownItem(dropdownItem = "My Workflow Tasks");
+
+		AssertElementPresent(
+			key_workflowAssetTitle = "Blogs Entry Title 3",
+			locator1 = "MyWorkflowTasks#TABLE_GENERIC_ASSET_TITLE");
+	}
+
+	@description = "LRQA-53653 Automate LPS-89014 Update and delete SLA"
+	@priority = "5"
+	test UpdateandDeleteSLA {
+		property portal.acceptance = "true";
+
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Site Administration",
+			portlet = "Workflow");
+
+		Workflow.configureWorkflow(
+			workflowDefinition = "Single Approver",
+			workflowResourceValue = "Blogs Entry");
+
+		Navigator.openURL();
+
+		JSONBlog.addEntry(
+			entryContent = "Blogs Entry Content",
+			entryTitle = "Blogs Entry Title");
+
+		Navigator.openURL();
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Metrics");
+
+		WorkflowMetrics.goToWorkflowSLASettings(workflowProcessName = "Single Approver");
+
+		Click(locator1 = "WorkflowMetricsSLA#ADD_NEW_SLA_BUTTON");
+
+		WorkflowMetrics.fillSLAForm(
+			slaDefinitionDays = "0",
+			slaDefinitionDescription = "SLA Description",
+			slaDefinitionEnd = "Process Ends: Approved",
+			slaDefinitionHours = "0001",
+			slaDefinitionName = "One min",
+			slaDefinitionStart = "Process Begins");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		AssertElementPresent(
+			key_slaTitle = "One min",
+			locator1 = "WorkflowMetricsSLA#SLA_RECORD_TITLE");
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver");
+
+		WorkflowMetrics.waitForSLA(
+			key_expectedValue = "0",
+			key_status = "OVERDUE");
+
+		Navigator.openURL();
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Metrics");
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver");
+
+		WorkflowMetrics.checkPendingWorkflowValues(
+			key_ontime = "0",
+			key_overdue = "1",
+			key_pending = "1",
+			key_untracked = "0");
+
+		Click(locator1 = "WorkflowMetricsSLA#METRICS_MENU_SLA");
+
+		Click(locator1 = "WorkflowMetricsSLA#METRICS_SLA_SETTINGS");
+
+		WorkflowMetrics.goToEditSLA(slaName = "One min");
+
+		WorkflowMetrics.fillSLAForm(
+			slaDefinitionDays = "1",
+			slaDefinitionDescription = "SLA Description",
+			slaDefinitionEnd = "Process Ends: Approved",
+			slaDefinitionHours = "0000",
+			slaDefinitionName = "One day",
+			slaDefinitionStart = "Process Begins");
+
+		Button.clickUpdate();
+
+		Alert.viewSuccessMessage();
+
+		AssertElementPresent(locator1 = "WorkflowMetricsSLA#SLA_UPDATE_MESSAGE");
+
+		AssertElementPresent(
+			key_slaTitle = "One day",
+			locator1 = "WorkflowMetricsSLA#SLA_RECORD_TITLE");
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver");
+
+		WorkflowMetrics.waitForSLA(
+			key_expectedValue = "0",
+			key_status = "ONTIME");
+
+		Navigator.openURL();
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Metrics");
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver");
+
+		Refresh();
+
+		WorkflowMetrics.checkPendingWorkflowValues(
+			key_ontime = "1",
+			key_overdue = "0",
+			key_pending = "1",
+			key_untracked = "0");
+
+		Click(locator1 = "WorkflowMetricsSLA#METRICS_MENU_SLA");
+
+		Click(locator1 = "WorkflowMetricsSLA#METRICS_SLA_SETTINGS");
+
+		WorkflowMetrics.goToDeleteSLA(slaName = "One day");
+
+		AssertElementPresent(locator1 = "WorkflowMetricsSLA#SLA_EMPTY_MESSAGE");
+	}
+
 	@description = "Verify that the filters from All Items page are correctly loaded when accessed via Metrics Pending/Completed cards"
 	@priority = "5"
 	test VerifyAllItemsFilterFromMetrics {
@@ -1326,7 +1854,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -1422,7 +1949,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -1446,7 +1972,7 @@ definition {
 			workflowAssetType = "Blogs Entry",
 			workflowTask = "Review");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
 			portlet = "Metrics");
@@ -1510,7 +2036,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -1542,7 +2067,7 @@ definition {
 			workflowAssetType = "Blogs Entry",
 			workflowTask = "Review");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
 			portlet = "Metrics");
@@ -1571,6 +2096,103 @@ definition {
 			slaBreachedValue = "0 (0%)");
 	}
 
+	@description = "LRQA-53661 Automate LPS-89119: [SLA] Define the SLA timer calendar"
+	@priority = "5"
+	test VerifySLACustomCalendar {
+		property portal.upstream = "quarantine";
+		property test.name.skip.portal.instance = "WorkflowMetrics#VerifySLACustomCalendar";
+
+		var appName = "com.liferay.portal.workflow.metrics.sla.calendar.sample";
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver");
+
+		AssertElementPresent(locator1 = "WorkflowMetrics#METRICS_NO_SLA_MESSAGE");
+
+		WorkflowMetrics.goToWorkflowSLASettings(workflowProcessName = "Single Approver");
+
+		Click(locator1 = "WorkflowMetricsSLA#ADD_NEW_SLA_BUTTON");
+
+		AssertTextEquals(
+			locator1 = "WorkflowMetricsSLA#SLA_FORM_DURATION_FIELD",
+			value1 = "DURATION");
+
+		WorkflowMetrics.verifyCustomCalendarExistOrNot(
+			calendar = "",
+			durationMessage = "Define the SLA duration. By default, the SLA timer runs 24 hours per day, 7 days per week.");
+
+		Click(locator1 = "Button#CANCEL");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "System",
+			panel = "Control Panel",
+			portlet = "App Manager");
+
+		AppManager.uploadAppCP(
+			appName = "${appName}",
+			warFileName = "${appName}.jar");
+
+		AppManager.viewAppCP(
+			appName = "Liferay Portal Workflow Metrics Calendar Sample",
+			appStatus = "Active",
+			searchTerm = "calendar");
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver");
+
+		AssertElementPresent(locator1 = "WorkflowMetrics#METRICS_NO_SLA_MESSAGE");
+
+		WorkflowMetrics.goToWorkflowSLASettings(workflowProcessName = "Single Approver");
+
+		Click(locator1 = "WorkflowMetricsSLA#ADD_NEW_SLA_BUTTON");
+
+		WorkflowMetrics.verifyCustomCalendarExistOrNot(
+			calendar = "Calendar",
+			durationMessage = "Define the SLA duration and calendar format.");
+
+		Click(locator1 = "WorkflowMetricsSLA#SLA_DEFINITION_CALENDAR_SELECT");
+
+		AssertTextEquals(
+			locator1 = "WorkflowMetricsSLA#SLA_DEFINITION_CALENDAR_SELECT_VALUE_DEFAULT",
+			value1 = "Sample Calendar");
+
+		WorkflowMetrics.fillSLAForm(
+			slaDefinitionCalendar = "24/7 (System Default)",
+			slaDefinitionDays = "1",
+			slaDefinitionDescription = "SLA Description",
+			slaDefinitionEnd = "Process Ends: Approved",
+			slaDefinitionHours = "1000",
+			slaDefinitionName = "SLA Name",
+			slaDefinitionStart = "Process Begins");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		AssertElementPresent(
+			key_slaTitle = "SLA Name",
+			locator1 = "WorkflowMetricsSLA#SLA_RECORD_TITLE");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Applications",
+			portlet = "Process Builder");
+
+		Workflow.uploadDefinition(
+			workflowDefinitionFile = "workflow_definition_xss.xml",
+			workflowDefinitionTitle = "New Uploaded Definition");
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "New Uploaded Definition");
+
+		AssertElementPresent(locator1 = "WorkflowMetrics#METRICS_NO_SLA_MESSAGE");
+
+		WorkflowMetrics.goToWorkflowSLASettings(workflowProcessName = "New Uploaded Definition");
+
+		Click(locator1 = "WorkflowMetricsSLA#ADD_NEW_SLA_BUTTON");
+
+		WorkflowMetrics.verifyCustomCalendarExistOrNot(
+			calendar = "Calendar",
+			durationMessage = "Define the SLA duration and calendar format.");
+	}
+
 	@description = "LRQA-53654 Automate LPS-88968: [Reports] View the summary of all pending items and what's their SLA status"
 	@priority = "5"
 	test ViewPendingItems {
@@ -1589,7 +2211,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -1646,7 +2267,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -1736,7 +2356,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -1781,7 +2400,7 @@ definition {
 			workflowAssetType = "Blogs Entry",
 			workflowTask = "Review");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
 			portlet = "Metrics");
@@ -1805,7 +2424,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -1868,7 +2486,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -1901,7 +2518,7 @@ definition {
 
 		WorkflowMetrics.executeWorkflowScript(scriptName = "CompleteTasksAssignedToUsers.groovy");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
 			portlet = "Metrics");
@@ -1936,7 +2553,6 @@ definition {
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
-			panel = "Site Administration",
 			portlet = "Workflow",
 			site = "${siteName}");
 
@@ -1969,7 +2585,7 @@ definition {
 			workflowAssetType = "Blogs Entry",
 			workflowTask = "Review");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
 			portlet = "Metrics");
@@ -2164,6 +2780,32 @@ definition {
 			isNotPresent = "1user user1,2user user2",
 			isPresent = "Blogs Entry Title 3",
 			taskName = "Review");
+	}
+
+	@description = "LRQA-58272 Automate LPS-107777: Move Workflow Metrics reindex actions out of the Search Settings"
+	@priority = "5"
+	test WorkflowMetricsReindex {
+		property portal.acceptance = "true";
+
+		WorkflowMetrics.executeIndexActions(actionDescription = "Workflow Indexes");
+
+		WorkflowMetrics.executeIndexActions(actionDescription = "Workflow Metrics Indexes");
+
+		WorkflowMetrics.executeIndexActions(actionDescription = "Workflow Metrics Nodes");
+
+		WorkflowMetrics.executeIndexActions(actionDescription = "Workflow Metrics Processes");
+
+		WorkflowMetrics.executeIndexActions(actionDescription = "Workflow Metrics Instances");
+
+		WorkflowMetrics.executeIndexActions(actionDescription = "Workflow Metrics Tasks");
+
+		WorkflowMetrics.executeIndexActions(actionDescription = "Workflow Metrics Transitions");
+
+		WorkflowMetrics.executeIndexActions(actionDescription = "Workflow SLA Indexes");
+
+		WorkflowMetrics.executeIndexActions(actionDescription = "Workflow SLA Instance Results");
+
+		WorkflowMetrics.executeIndexActions(actionDescription = "Workflow SLA Task Results");
 	}
 
 }

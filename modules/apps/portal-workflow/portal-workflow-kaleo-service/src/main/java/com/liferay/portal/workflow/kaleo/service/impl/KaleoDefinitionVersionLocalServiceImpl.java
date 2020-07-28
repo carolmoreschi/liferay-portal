@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.workflow.exception.IncompleteWorkflowInstancesException;
+import com.liferay.portal.workflow.kaleo.model.KaleoDefinition;
 import com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion;
 import com.liferay.portal.workflow.kaleo.service.KaleoConditionLocalService;
 import com.liferay.portal.workflow.kaleo.service.KaleoInstanceLocalService;
@@ -159,10 +160,28 @@ public class KaleoDefinitionVersionLocalServiceImpl
 			long companyId, String name, String version)
 		throws PortalException {
 
-		KaleoDefinitionVersion kaleoDefinitionVersion =
-			getKaleoDefinitionVersion(companyId, name, version);
+		kaleoDefinitionVersionLocalService.deleteKaleoDefinitionVersion(
+			getKaleoDefinitionVersion(companyId, name, version));
+	}
 
-		deleteKaleoDefinitionVersion(kaleoDefinitionVersion);
+	@Override
+	public void deleteKaleoDefinitionVersions(KaleoDefinition kaleoDefinition)
+		throws PortalException {
+
+		int kaleoInstancesCount =
+			_kaleoInstanceLocalService.getKaleoDefinitionKaleoInstancesCount(
+				kaleoDefinition.getKaleoDefinitionId(), false);
+
+		if (kaleoInstancesCount > 0) {
+			throw new IncompleteWorkflowInstancesException(kaleoInstancesCount);
+		}
+
+		for (KaleoDefinitionVersion kaleoDefinitionVersion :
+				kaleoDefinition.getKaleoDefinitionVersions()) {
+
+			kaleoDefinitionVersionLocalService.deleteKaleoDefinitionVersion(
+				kaleoDefinitionVersion);
+		}
 	}
 
 	@Override
@@ -173,7 +192,8 @@ public class KaleoDefinitionVersionLocalServiceImpl
 		for (KaleoDefinitionVersion kaleoDefinitionVersion :
 				kaleoDefinitionVersions) {
 
-			deleteKaleoDefinitionVersion(kaleoDefinitionVersion);
+			kaleoDefinitionVersionLocalService.deleteKaleoDefinitionVersion(
+				kaleoDefinitionVersion);
 		}
 	}
 
@@ -181,10 +201,8 @@ public class KaleoDefinitionVersionLocalServiceImpl
 	public void deleteKaleoDefinitionVersions(long companyId, String name)
 		throws PortalException {
 
-		List<KaleoDefinitionVersion> kaleoDefinitionVersions =
-			getKaleoDefinitionVersions(companyId, name);
-
-		deleteKaleoDefinitionVersions(kaleoDefinitionVersions);
+		kaleoDefinitionVersionLocalService.deleteKaleoDefinitionVersions(
+			getKaleoDefinitionVersions(companyId, name));
 	}
 
 	@Override

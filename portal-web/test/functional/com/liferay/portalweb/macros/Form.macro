@@ -234,6 +234,14 @@ definition {
 			value1 = "${fieldValue}");
 	}
 
+	macro editImageDescription {
+		var descriptionPosition = "${descriptionPosition}";
+
+		Type(
+			locator1 = "Form#ADD_IMAGE_DESCRIPTION",
+			value1 = "${descriptionContent}");
+	}
+
 	macro editName {
 		Pause(locator1 = "2000");
 
@@ -382,6 +390,7 @@ definition {
 		AssertClick(
 			locator1 = "Form#SIDEBAR_AUTOCOMPLETE_TAB",
 			value1 = "Autocomplete");
+
 		Pause(locator1 = "1000");
 	}
 
@@ -396,6 +405,7 @@ definition {
 				locator1 = "Form#SIDEBAR_BASIC_TAB",
 				value1 = "Basic");
 		}
+
 		Pause(locator1 = "1000");
 	}
 
@@ -430,6 +440,20 @@ definition {
 		Click(locator1 = "Form#ALT_PAGINATION_PAGE");
 	}
 
+	macro gotoPropertiesTab {
+		if (isSet(key_localeAdvanced)) {
+			AssertClick(
+				locator1 = "Form#SIDEBAR_PROPERTIES_TAB",
+				value1 = "Properties");
+		}
+		else {
+			AssertClick(
+				locator1 = "Form#SIDEBAR_PROPERTIES_TAB",
+				value1 = "Properties");
+		}
+		Pause(locator1 = "1000");
+	}
+
 	macro previewForm {
 		Navigator.selectSpecificWindow(windowTitle = "Form - Forms");
 
@@ -457,11 +481,11 @@ definition {
 	}
 
 	macro publishForm {
-		WaitForElementPresent(locator1 = "Button#PUBLISH");
+		WaitForElementPresent(locator1 = "Form#PUBLISH_FORM_BUTTON");
 
 		AssertElementPresent(locator1 = "Form#NAME_FIELD");
 
-		Click(locator1 = "Button#PUBLISH");
+		Click(locator1 = "Form#PUBLISH_FORM_BUTTON");
 
 		Form.assertFormWasPublished();
 	}
@@ -481,11 +505,11 @@ definition {
 		else {
 			WaitForElementPresent(
 				locator1 = "Form#SAVE_FORM_BUTTON",
-				value1 = "Save Form");
+				value1 = "Save");
 
 			AssertClick(
 				locator1 = "Form#SAVE_FORM_BUTTON",
-				value1 = "Save Form");
+				value1 = "Save");
 		}
 
 		Alert.viewSuccessMessage();
@@ -569,11 +593,11 @@ definition {
 	}
 
 	macro unpublishForm {
-		WaitForElementPresent(locator1 = "Button#UNPUBLISH");
+		WaitForElementPresent(locator1 = "Form#UNPUBLISH_FORM_BUTTON");
 
 		AssertElementPresent(locator1 = "Form#NAME_FIELD");
 
-		Click(locator1 = "Button#UNPUBLISH");
+		Click(locator1 = "Form#UNPUBLISH_FORM_BUTTON");
 
 		var key_uniqueSuccess = "The form was unpublished successfully!";
 

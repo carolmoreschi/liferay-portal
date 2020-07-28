@@ -44,6 +44,10 @@ definition {
 			PortalInstances.tearDownCP();
 		}
 		else {
+			User.logoutAndLoginPG(
+				userLoginEmailAddress = "test@liferay.com",
+				userLoginFullName = "Test Test");
+
 			WikiNode.tearDownCP();
 
 			WikiPage.tearDownCP();
@@ -56,13 +60,11 @@ definition {
 		}
 	}
 
-	// Quarantine flaky test under ticket LPS-108480
-
 	@priority = "5"
 	test ApproveFrontPageUserEdit {
 		property portal.acceptance = "true";
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -73,7 +75,7 @@ definition {
 			userLastName = "userln",
 			userScreenName = "usersn");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -101,6 +103,8 @@ definition {
 		Navigator.gotoPage(pageName = "Wiki Page");
 
 		WikiPage.addFrontPageWithWorkflowPG(wikiPageContent = "Front Page Wiki Content");
+
+		Refresh();
 
 		UserBar.gotoDropdownItem(dropdownItem = "My Submissions");
 
@@ -137,6 +141,8 @@ definition {
 			wikiPageContent = "Front Page Wiki Content",
 			wikiPageTitle = "FrontPage");
 
+		Refresh();
+
 		UserBar.gotoDropdownItem(dropdownItem = "My Submissions");
 
 		Workflow.viewCannotWithdrawTaskByActions(
@@ -152,7 +158,8 @@ definition {
 
 	@priority = "4"
 	test RejectFrontPageUserEdit {
-		GlobalMenu.gotoPortlet(
+
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -163,7 +170,7 @@ definition {
 			userLastName = "userln",
 			userScreenName = "usersn");
 
-		GlobalMenu.gotoPortlet(
+		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
@@ -191,6 +198,8 @@ definition {
 		Navigator.gotoPage(pageName = "Wiki Page");
 
 		WikiPage.addFrontPageWithWorkflowPG(wikiPageContent = "Front Page Wiki Content");
+
+		Refresh();
 
 		UserBar.gotoDropdownItem(dropdownItem = "My Submissions");
 
@@ -223,6 +232,8 @@ definition {
 		Navigator.gotoPage(pageName = "Wiki Page");
 
 		WikiPage.viewFrontPageDefaultCP(wikiPageTitle = "FrontPage");
+
+		Refresh();
 
 		UserBar.gotoDropdownItem(dropdownItem = "My Submissions");
 

@@ -109,7 +109,7 @@ definition {
 	macro assignUserGroupAsMember {
 		Navigator.gotoNavItem(navItem = "User Groups");
 
-		Pause(locator1 = "5000");
+		Pause(locator1 = "3000");
 
 		LexiconEntry.gotoAdd();
 
@@ -190,6 +190,24 @@ definition {
 		}
 
 		Button.click(button = "Done");
+	}
+
+	macro configureDDMStructures {
+		DepotNavigator.gotoEdit(depotName = "${depotName}");
+
+		DepotNavigator.gotoSites(depotName = "${depotName}");
+
+		LexiconTable.clickEllipsisItem(
+			item = "Make Web Content Structures Available",
+			tableEntry = "${siteName}");
+
+		Alert.viewSuccessMessage();
+
+		AssertTextEquals(
+			key_tableEntry = "${siteName}",
+			key_tableEntryText = "${tableEntryText}",
+			locator1 = "LexiconTable#TABLE_ENTRY_TEXT_2",
+			value1 = "${tableEntryText}");
 	}
 
 	macro configureDefaultLanguage {
@@ -536,21 +554,15 @@ definition {
 		if (isSet(noApplication)) {
 			for (var applicationList : list "${applicationList}") {
 				AssertElementNotPresent(
-					key_portlet = "${applicationList}",
-					locator1 = "ProductMenu#PORTLET");
+					key_card = "${applicationList}",
+					locator1 = "LexiconCard#CARD");
 			}
 		}
 		else {
 			for (var applicationList : list "${applicationList}") {
-				if (IsElementPresent(locator1 = "ProductMenu#PRODUCT_MENU_CLOSED")) {
-					Click.clickNoSPARefresh(locator1 = "ProductMenu#TOGGLE");
-				}
-
-				ProductMenuHelper.expandCategory(category = "Content &amp; Data");
-
 				AssertVisible(
-					key_portlet = "${applicationList}",
-					locator1 = "ProductMenu#PORTLET");
+					key_card = "${applicationList}",
+					locator1 = "LexiconCard#CARD");
 			}
 		}
 	}
@@ -567,6 +579,23 @@ definition {
 				locator1 = "LexiconTable#TABLE_ENTRY_TEXT",
 				value1 = "Yes");
 		}
+	}
+
+	macro viewConnectedSiteNumber {
+		LexiconEntry.changeDisplayStyle(displayStyle = "list");
+
+		if ("${connectedSiteNumber}" == "1") {
+			LexiconList.viewListEntrySubtitle(
+				listEntry = "${depotName}",
+				listEntrySubtitle = "${connectedSiteNumber} Connected Site");
+		}
+		else {
+			LexiconList.viewListEntrySubtitle(
+				listEntry = "${depotName}",
+				listEntrySubtitle = "${connectedSiteNumber} Connected Sites");
+		}
+
+		LexiconEntry.changeDisplayStyle(displayStyle = "cards");
 	}
 
 	macro viewCurrentLanguages {

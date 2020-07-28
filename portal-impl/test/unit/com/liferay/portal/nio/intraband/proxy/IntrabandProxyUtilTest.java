@@ -1285,11 +1285,8 @@ public class IntrabandProxyUtilTest {
 
 			String name = proxyMethod.getName();
 
-			proxyMethodSignatures[i] = name.concat(
-				StringPool.DASH
-			).concat(
-				Type.getMethodDescriptor(proxyMethod)
-			);
+			proxyMethodSignatures[i] = StringBundler.concat(
+				name, StringPool.DASH, Type.getMethodDescriptor(proxyMethod));
 		}
 
 		return proxyMethodSignatures;
@@ -1758,7 +1755,7 @@ public class IntrabandProxyUtilTest {
 			_buildProxyMethodSignatures(clazz), proxyMethodSignatures);
 
 		StringBundler sb = new StringBundler(
-			proxyMethodSignatures.length * 4 + 1);
+			(proxyMethodSignatures.length * 4) + 1);
 
 		sb.append(StringPool.OPEN_CURLY_BRACE);
 
@@ -2465,11 +2462,11 @@ public class IntrabandProxyUtilTest {
 			classLoader.getResourceAsStream(name.concat(".class")));
 	}
 
-	private ClassNode _loadClass(InputStream is) {
+	private ClassNode _loadClass(InputStream inputStream) {
 		ClassReader classReader = null;
 
 		try {
-			classReader = new ClassReader(is);
+			classReader = new ClassReader(inputStream);
 		}
 		catch (IOException ioException) {
 			throw new RuntimeException(ioException);

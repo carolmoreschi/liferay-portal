@@ -73,8 +73,8 @@ definition {
 			SignIn.setPasswordReminder();
 		}
 
-		GlobalMenu.gotoPortlet(
-			category = "Configuration",
+		ApplicationsMenu.gotoPortlet(
+			category = "System",
 			panel = "Control Panel",
 			portlet = "Virtual Instances");
 
@@ -114,7 +114,7 @@ definition {
 
 		Pause(locator1 = "3000");
 
-		WaitForElementPresent(locator1 = "//script[contains(@src,'ClayToast.js')]");
+		WaitForElementPresent(locator1 = "//script[contains(@src,'OpenToast.es.js')]");
 
 		Alert.viewSuccessMessage();
 
