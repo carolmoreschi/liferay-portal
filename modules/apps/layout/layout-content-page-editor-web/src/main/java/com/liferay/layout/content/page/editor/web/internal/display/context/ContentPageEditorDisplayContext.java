@@ -203,11 +203,11 @@ public class ContentPageEditorDisplayContext {
 		_fragmentRendererTracker = fragmentRendererTracker;
 		_itemSelector = itemSelector;
 		_pageEditorConfiguration = pageEditorConfiguration;
-		_portletRequest = portletRequest;
 		_renderResponse = renderResponse;
 
 		this.httpServletRequest = httpServletRequest;
 		this.infoItemServiceTracker = infoItemServiceTracker;
+		this.portletRequest = portletRequest;
 
 		themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -252,6 +252,10 @@ public class ContentPageEditorDisplayContext {
 				getFragmentEntryActionURL(
 					"/content_layout/change_master_layout")
 			).put(
+				"changeStyleBookEntryURL",
+				getFragmentEntryActionURL(
+					"/content_layout/change_style_book_entry")
+			).put(
 				"collectionSelectorURL", _getCollectionSelectorURL()
 			).put(
 				"containerItemFlexEnabled",
@@ -262,6 +266,20 @@ public class ContentPageEditorDisplayContext {
 			).put(
 				"defaultLanguageId",
 				LocaleUtil.toLanguageId(themeDisplay.getSiteDefaultLocale())
+			).put(
+				"defaultStyleBookEntryId",
+				() -> {
+					StyleBookEntry styleBookEntry =
+						StyleBookEntryLocalServiceUtil.
+							fetchDefaultStyleBookEntry(
+								themeDisplay.getScopeGroupId());
+
+					if (styleBookEntry == null) {
+						return 0;
+					}
+
+					return styleBookEntry.getStyleBookEntryId();
+				}
 			).put(
 				"deleteFragmentEntryLinkCommentURL",
 				getFragmentEntryActionURL(
@@ -292,12 +310,6 @@ public class ContentPageEditorDisplayContext {
 				"editFragmentEntryLinkURL",
 				getFragmentEntryActionURL(
 					"/content_layout/edit_fragment_entry_link")
-			).put(
-				"getAssetFieldValueURL",
-				getResourceURL("/content_layout/get_asset_field_value")
-			).put(
-				"getAssetMappingFieldsURL",
-				getResourceURL("/content_layout/get_asset_mapping_fields")
 			).put(
 				"getAvailableListItemRenderersURL",
 				getResourceURL(
@@ -334,6 +346,12 @@ public class ContentPageEditorDisplayContext {
 						layoutURL, "p_l_mode", Constants.PREVIEW);
 				}
 			).put(
+				"getInfoItemFieldValueURL",
+				getResourceURL("/content_layout/get_info_item_field_value")
+			).put(
+				"getInfoItemMappingFieldsURL",
+				getResourceURL("/content_layout/get_info_item_mapping_fields")
+			).put(
 				"getPageContentsURL",
 				getResourceURL("/content_layout/get_page_contents")
 			).put(
@@ -347,9 +365,11 @@ public class ContentPageEditorDisplayContext {
 			).put(
 				"layoutConversionWarningMessages",
 				MultiSessionMessages.get(
-					_portletRequest, "layoutConversionWarningMessages")
+					portletRequest, "layoutConversionWarningMessages")
 			).put(
 				"layoutType", String.valueOf(_getLayoutType())
+			).put(
+				"lookAndFeelURL", _getLookAndFeelURL()
 			).put(
 				"mappingFieldsURL",
 				getResourceURL("/content_layout/get_mapping_fields")
@@ -415,6 +435,13 @@ public class ContentPageEditorDisplayContext {
 				getResourceURL("/content_layout/get_fragment_entry_link")
 			).put(
 				"sidebarPanels", getSidebarPanels()
+			).put(
+				"styleBookEntryId",
+				() -> {
+					Layout layout = themeDisplay.getLayout();
+
+					return layout.getStyleBookEntryId();
+				}
 			).put(
 				"styleBooks", _getStyleBooks()
 			).put(
@@ -657,6 +684,7 @@ public class ContentPageEditorDisplayContext {
 
 	protected final HttpServletRequest httpServletRequest;
 	protected final InfoItemServiceTracker infoItemServiceTracker;
+	protected final PortletRequest portletRequest;
 	protected final ThemeDisplay themeDisplay;
 
 	private Map<String, Object> _getAvailableLanguages() {
@@ -1524,6 +1552,38 @@ public class ContentPageEditorDisplayContext {
 		return _layoutType;
 	}
 
+	private Object _getLookAndFeelURL() {
+		PortletURL lookAndFeelURL = PortalUtil.getControlPanelPortletURL(
+			httpServletRequest, LayoutAdminPortletKeys.GROUP_PAGES,
+			PortletRequest.RENDER_PHASE);
+
+		lookAndFeelURL.setParameter(
+			"mvcRenderCommandName", "/layout/edit_layout");
+
+		lookAndFeelURL.setParameter(
+			"redirect",
+			ParamUtil.getString(
+				PortalUtil.getOriginalServletRequest(httpServletRequest),
+				"p_l_back_url"));
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		lookAndFeelURL.setParameter("backURL", themeDisplay.getURLCurrent());
+
+		Layout layout = themeDisplay.getLayout();
+
+		lookAndFeelURL.setParameter(
+			"groupId", String.valueOf(layout.getGroupId()));
+		lookAndFeelURL.setParameter(
+			"selPlid", String.valueOf(layout.getPlid()));
+		lookAndFeelURL.setParameter(
+			"privateLayout", String.valueOf(layout.isPrivateLayout()));
+
+		return lookAndFeelURL.toString();
+	}
+
 	private Set<Map<String, Object>> _getMappedInfoItems() throws Exception {
 		Set<Map<String, Object>> mappedInfoItems = new HashSet<>();
 
@@ -2064,7 +2124,6 @@ public class ContentPageEditorDisplayContext {
 	private Integer _layoutType;
 	private LayoutStructure _masterLayoutStructure;
 	private final PageEditorConfiguration _pageEditorConfiguration;
-	private final PortletRequest _portletRequest;
 	private Layout _publishedLayout;
 	private String _redirect;
 	private final RenderResponse _renderResponse;

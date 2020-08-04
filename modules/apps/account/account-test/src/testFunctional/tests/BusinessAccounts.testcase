@@ -310,17 +310,7 @@ definition {
 
 	@priority = "4"
 	test AddAccountWithMultiDomains {
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "System Settings");
-
-		SystemSettings.gotoConfiguration(
-			configurationCategory = "Accounts",
-			configurationName = "Email Domains",
-			configurationScope = "Virtual Instance Scope");
-
-		PortalSettings.editConfigurationUsersPersonalMenuShowInControlMenu(toggleSwitchLabel = "Enable Email Domain Validation");
+		AccountConfiguration.enableAccountEmailDomain();
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Accounts",
@@ -344,6 +334,72 @@ definition {
 				key_domainName = "${domainName}",
 				locator1 = "Account#DOMAIN_TABLE_NAME");
 		}
+	}
+
+	@priority = "3"
+	test AddBlockedEmailDomain {
+		property custom.properties = "jsonws.web.service.paths.excludes=";
+
+		AccountConfiguration.enableAccountEmailDomain();
+
+		AccountConfiguration.addBlockedEmailDomain(settingValues = "yahoo.com,blocked.com");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Accounts",
+			panel = "Applications",
+			portlet = "Accounts");
+
+		Accounts.addCP(
+			accountDescription = "This is an Account with Multi Domains",
+			accountName = "AM Account",
+			domainNames = "liferay.com,Google.com");
+
+		AccountConfiguration.addAccountManager(
+			accountName = "AM Account",
+			orgName = "AM Organization",
+			orgRoleTitle = "Account Manager",
+			userEmailAddress = "useramea@liferay.com",
+			userFirstName = "useramfn",
+			userLastName = "useramln",
+			userScreenName = "useramsn");
+
+		User.logoutPG();
+
+		User.loginUserPG(
+			password = "test",
+			userEmailAddress = "useramea@liferay.com");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Accounts",
+			panel = "Applications",
+			portlet = "Accounts");
+
+		LexiconEntry.gotoEntry(rowEntry = "AM Account");
+
+		Accounts.gotoAssigneeTab(assigneeTab = "Users");
+
+		Accounts.addAssignee(
+			accountName = "AM Account",
+			addNewAssignee = "true",
+			assigneeName = "userfn",
+			assigneeType = "Users",
+			domainValidation = "Blocked",
+			invalidDomainName = "blocked.com",
+			userEmailAddress = "userea@blocked.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Accounts",
+			panel = "Applications",
+			portlet = "Accounts");
+
+		LexiconEntry.gotoEntry(rowEntry = "AM Account");
+
+		Accounts.gotoAssigneeTab(assigneeTab = "Users");
+
+		LexiconEntry.viewEntryName(rowEntry = "userfn userln");
 	}
 
 	@priority = "4"
@@ -371,19 +427,137 @@ definition {
 			accountType = "Person");
 	}
 
+	@priority = "3"
+	test AddUserWithDifferentDomain {
+		property custom.properties = "jsonws.web.service.paths.excludes=";
+
+		AccountConfiguration.enableAccountEmailDomain();
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Accounts",
+			panel = "Applications",
+			portlet = "Accounts");
+
+		Accounts.addCP(
+			accountDescription = "This is an Account with Multi Domains",
+			accountName = "AM Account",
+			domainNames = "liferay.com,Google.com,9teen.com");
+
+		AccountConfiguration.addAccountManager(
+			accountName = "AM Account",
+			orgName = "AM Organization",
+			orgRoleTitle = "Account Manager",
+			userEmailAddress = "useramea@liferay.com",
+			userFirstName = "useramfn",
+			userLastName = "useramln",
+			userScreenName = "useramsn");
+
+		User.logoutPG();
+
+		User.loginUserPG(
+			password = "test",
+			userEmailAddress = "useramea@liferay.com");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Accounts",
+			panel = "Applications",
+			portlet = "Accounts");
+
+		LexiconEntry.gotoEntry(rowEntry = "AM Account");
+
+		Accounts.gotoAssigneeTab(assigneeTab = "Users");
+
+		Accounts.addAssignee(
+			accountName = "AM Account",
+			addNewAssignee = "true",
+			assigneeName = "userfn",
+			assigneeType = "Users",
+			domainValidation = "Invalid",
+			emailDomainName = "nodomain.com",
+			userEmailAddress = "userea@nodomain.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Accounts",
+			panel = "Applications",
+			portlet = "Accounts");
+
+		LexiconEntry.gotoEntry(rowEntry = "AM Account");
+
+		Accounts.gotoAssigneeTab(assigneeTab = "Users");
+
+		LexiconEntry.viewEntryName(rowEntry = "userfn userln");
+	}
+
+	@priority = "3"
+	test AddUserWithSameDomain {
+		property custom.properties = "jsonws.web.service.paths.excludes=";
+
+		AccountConfiguration.enableAccountEmailDomain();
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Accounts",
+			panel = "Applications",
+			portlet = "Accounts");
+
+		Accounts.addCP(
+			accountDescription = "This is an Account with Multi Domains",
+			accountName = "AM Account",
+			domainNames = "liferay.com,Google.com,9teen.com");
+
+		AccountConfiguration.addAccountManager(
+			accountName = "AM Account",
+			orgName = "AM Organization",
+			orgRoleTitle = "Account Manager",
+			userEmailAddress = "useramea@liferay.com",
+			userFirstName = "useramfn",
+			userLastName = "useramln",
+			userScreenName = "useramsn");
+
+		User.logoutPG();
+
+		User.loginUserPG(
+			password = "test",
+			userEmailAddress = "useramea@liferay.com");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Accounts",
+			panel = "Applications",
+			portlet = "Accounts");
+
+		LexiconEntry.gotoEntry(rowEntry = "AM Account");
+
+		Accounts.gotoAssigneeTab(assigneeTab = "Users");
+
+		Accounts.addAssignee(
+			accountName = "AM Account",
+			addNewAssignee = "true",
+			assigneeName = "userfn",
+			assigneeType = "Users",
+			emailDomainName = "9teen.com",
+			userEmailAddress = "userea@9teen.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn",
+			validDomainNames = "liferay.com,Google.com,9teen.com");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Accounts",
+			panel = "Applications",
+			portlet = "Accounts");
+
+		LexiconEntry.gotoEntry(rowEntry = "AM Account");
+
+		Accounts.gotoAssigneeTab(assigneeTab = "Users");
+
+		LexiconEntry.viewEntryName(rowEntry = "userfn userln");
+	}
+
 	@priority = "4"
 	test AssignExistingUserToAccount {
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "System Settings");
-
-		SystemSettings.gotoConfiguration(
-			configurationCategory = "Accounts",
-			configurationName = "Email Domains",
-			configurationScope = "Virtual Instance Scope");
-
-		PortalSettings.editConfigurationUsersPersonalMenuShowInControlMenu(toggleSwitchLabel = "Enable Email Domain Validation");
+		AccountConfiguration.enableAccountEmailDomain();
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Accounts",
@@ -885,17 +1059,7 @@ definition {
 
 	@priority = "4"
 	test RemoveDomain {
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "System Settings");
-
-		SystemSettings.gotoConfiguration(
-			configurationCategory = "Accounts",
-			configurationName = "Email Domains",
-			configurationScope = "Virtual Instance Scope");
-
-		PortalSettings.editConfigurationUsersPersonalMenuShowInControlMenu(toggleSwitchLabel = "Enable Email Domain Validation");
+		AccountConfiguration.enableAccountEmailDomain();
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Accounts",

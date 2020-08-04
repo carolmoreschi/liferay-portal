@@ -13,23 +13,19 @@ definition {
 		if (isSet(addNewAssignee)) {
 			LexiconEntry.gotoAdd();
 
-			Type(
-				locator1 = "UsersAndOrganizationsEditUser#DETAILS_SCREEN_NAME_FIELD",
-				value1 = "${userScreenName}");
+			AccountUsers.addUserInfos(
+				accountName = "${accountName}",
+				domainValidation = "${domainValidation}",
+				emailDomainName = "${emailDomainName}",
+				userEmailAddress = "${userEmailAddress}",
+				userFirstName = "${userFirstName}",
+				userLastName = "${userLastName}",
+				userScreenName = "${userScreenName}",
+				validDomainNames = "${validDomainNames}");
 
-			Type(
-				locator1 = "UsersAndOrganizationsEditUser#DETAILS_EMAIL_ADDRESS_FIELD",
-				value1 = "${userEmailAddress}");
-
-			Type(
-				locator1 = "UsersAndOrganizationsEditUser#DETAILS_FIRST_NAME_FIELD",
-				value1 = "${userFirstName}");
-
-			Type(
-				locator1 = "UsersAndOrganizationsEditUser#DETAILS_LAST_NAME_FIELD",
-				value1 = "${userLastName}");
-
-			Button.clickSave();
+			AssertClick(
+				locator1 = "Button#SAVE",
+				value1 = "Save");
 		}
 		else {
 			Search.searchCP(searchTerm = "${assigneeName}");
@@ -110,7 +106,7 @@ definition {
 			locator1 = "Account#ACCOUNT_DOMAIN_ADD_Link",
 			value1 = "Add");
 
-		IFrame.selectConfigurationFrame();
+		SelectFrame(locator1 = "IFrame#ADD_DOMAIN");
 
 		PortletEntry.inputText(
 			fieldLabel = "Domain",

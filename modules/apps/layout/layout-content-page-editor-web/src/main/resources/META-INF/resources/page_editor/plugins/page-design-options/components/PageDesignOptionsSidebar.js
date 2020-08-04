@@ -14,11 +14,14 @@
 
 import ClayCard from '@clayui/card';
 import ClayIcon from '@clayui/icon';
+import ClayLink from '@clayui/link';
 import ClayTabs from '@clayui/tabs';
 import classNames from 'classnames';
 import React, {useMemo, useState} from 'react';
 
+import {LAYOUT_TYPES} from '../../../app/config/constants/layoutTypes';
 import {config} from '../../../app/config/index';
+import LayoutService from '../../../app/services/LayoutService';
 import {useDispatch, useSelector} from '../../../app/store/index';
 import changeMasterLayout from '../../../app/thunks/changeMasterLayout';
 import {useId} from '../../../app/utils/useId';
@@ -35,38 +38,7 @@ export default function PageDesignOptionsSidebar() {
 		(state) => state.masterLayout?.masterLayoutPlid
 	);
 
-	const tabs = useMemo(
-		() => [
-			{
-				icon: 'page',
-				label: Liferay.Language.get('master'),
-				options: config.masterLayouts.map((masterLayout) => ({
-					...masterLayout,
-					isActive:
-						masterLayoutPlid === masterLayout.masterLayoutPlid,
-					onClick: (dispatch) =>
-						dispatch(
-							changeMasterLayout({
-								masterLayoutPlid: masterLayout.masterLayoutPlid,
-							})
-						),
-				})),
-				type: OPTIONS_TYPES.master,
-			},
-			{
-				icon: 'magic',
-				label: Liferay.Language.get('style-book'),
-				options: config.styleBooks.map((styleBook) => ({
-					...styleBook,
-					isActive:
-						config.styleBookEntryId === styleBook.styleBookEntryId,
-					onClick: () => {},
-				})),
-				type: OPTIONS_TYPES.styleBook,
-			},
-		],
-		[masterLayoutPlid]
-	);
+	const tabs = useMemo(() => getTabs(masterLayoutPlid), [masterLayoutPlid]);
 	const [activeTabId, setActiveTabId] = useState(0);
 	const tabIdNamespace = useId();
 
@@ -75,8 +47,15 @@ export default function PageDesignOptionsSidebar() {
 
 	return (
 		<>
-			<SidebarPanelHeader>
+			<SidebarPanelHeader className="justify-content-between">
 				{Liferay.Language.get('page-design-options')}
+
+				<ClayLink
+					className="font-weight-normal"
+					href={config.lookAndFeelURL}
+				>
+					{Liferay.Language.get('more')}
+				</ClayLink>
 			</SidebarPanelHeader>
 
 			<SidebarPanelContent>
@@ -125,7 +104,10 @@ const OptionList = ({options = [], icon}) => {
 	return (
 		<ul className="list-unstyled mt-3">
 			{options.map(
-				({imagePreviewURL, isActive, name, onClick}, index) => (
+				(
+					{imagePreviewURL, isActive, isDefault, name, onClick},
+					index
+				) => (
 					<li key={index}>
 						<ClayCard
 							className={classNames({
@@ -158,6 +140,18 @@ const OptionList = ({options = [], icon}) => {
 										<section className="autofit-section">
 											<ClayCard.Description displayType="title">
 												{name}
+
+												{isDefault && (
+													<ClayIcon
+														className={classNames(
+															'ml-2',
+															{
+																'text-primary': isActive,
+															}
+														)}
+														symbol={'check-circle'}
+													/>
+												)}
 											</ClayCard.Description>
 										</section>
 									</div>
@@ -170,3 +164,51 @@ const OptionList = ({options = [], icon}) => {
 		</ul>
 	);
 };
+
+function getTabs(masterLayoutPlid) {
+	const tabs = [
+		{
+			icon: 'magic',
+			label: Liferay.Language.get('style-book'),
+			options: config.styleBooks.map((styleBook) => ({
+				...styleBook,
+				isActive:
+					config.styleBookEntryId === styleBook.styleBookEntryId,
+				isDefault:
+					config.defaultStyleBookEntryId ===
+					styleBook.styleBookEntryId,
+				onClick: () => {
+					LayoutService.changeStyleBookEntry({
+						onNetworkStatus: () => {},
+						styleBookEntryId: styleBook.styleBookEntryId,
+					}).then(() => {
+						Liferay.Util.navigate(window.location.href);
+					});
+				},
+			})),
+			type: OPTIONS_TYPES.styleBook,
+		},
+	];
+
+	if (config.layoutType !== LAYOUT_TYPES.master) {
+		tabs.splice(0, 0, {
+			disabled: config.layoutType === LAYOUT_TYPES.master,
+			icon: 'page',
+			label: Liferay.Language.get('master'),
+			options: config.masterLayouts.map((masterLayout) => ({
+				...masterLayout,
+				isActive: masterLayoutPlid === masterLayout.masterLayoutPlid,
+				isDefault: false,
+				onClick: (dispatch) =>
+					dispatch(
+						changeMasterLayout({
+							masterLayoutPlid: masterLayout.masterLayoutPlid,
+						})
+					),
+			})),
+			type: OPTIONS_TYPES.master,
+		});
+	}
+
+	return tabs;
+}

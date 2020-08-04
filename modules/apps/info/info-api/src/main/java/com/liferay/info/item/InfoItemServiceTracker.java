@@ -14,6 +14,9 @@
 
 package com.liferay.info.item;
 
+import com.liferay.info.exception.CapabilityVerificationException;
+import com.liferay.info.item.capability.InfoItemCapability;
+
 import java.util.List;
 
 import org.osgi.annotation.versioning.ProviderType;
@@ -33,8 +36,22 @@ public interface InfoItemServiceTracker {
 	public <P> P getFirstInfoItemService(
 		Class<P> serviceClass, String itemClassName);
 
+	public List<InfoItemCapability> getInfoItemCapabilities(
+		String itemClassName);
+
+	public InfoItemCapability getInfoItemCapability(
+		String infoItemCapabilityKey);
+
 	public <P> List<InfoItemClassDetails> getInfoItemClassDetails(
 		Class<P> serviceClass);
+
+	public List<InfoItemClassDetails> getInfoItemClassDetails(
+			InfoItemCapability itemCapability)
+		throws CapabilityVerificationException;
+
+	public List<InfoItemClassDetails> getInfoItemClassDetails(
+			String itemCapabilityKey)
+		throws CapabilityVerificationException;
 
 	public <P> List<String> getInfoItemClassNames(Class<P> serviceClass);
 

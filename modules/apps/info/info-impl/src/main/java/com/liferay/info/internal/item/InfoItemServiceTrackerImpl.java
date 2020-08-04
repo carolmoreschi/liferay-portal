@@ -14,16 +14,20 @@
 
 package com.liferay.info.internal.item;
 
+import com.liferay.info.exception.CapabilityVerificationException;
 import com.liferay.info.formatter.InfoCollectionTextFormatter;
 import com.liferay.info.formatter.InfoTextFormatter;
 import com.liferay.info.internal.util.ItemClassNameServiceReferenceMapper;
 import com.liferay.info.item.InfoItemClassDetails;
 import com.liferay.info.item.InfoItemServiceTracker;
-import com.liferay.info.item.provider.InfoItemClassDetailsProvider;
+import com.liferay.info.item.capability.InfoItemCapability;
+import com.liferay.info.item.provider.InfoItemCapabilitiesProvider;
+import com.liferay.info.item.provider.InfoItemDetailsProvider;
 import com.liferay.info.item.provider.InfoItemFieldValuesProvider;
 import com.liferay.info.item.provider.InfoItemFormProvider;
 import com.liferay.info.item.provider.InfoItemFormVariationsProvider;
 import com.liferay.info.item.provider.InfoItemObjectProvider;
+import com.liferay.info.item.provider.InfoItemPermissionProvider;
 import com.liferay.info.item.renderer.InfoItemRenderer;
 import com.liferay.info.item.selector.InfoItemSelector;
 import com.liferay.info.list.provider.InfoListProvider;
@@ -42,6 +46,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -96,35 +102,84 @@ public class InfoItemServiceTrackerImpl implements InfoItemServiceTracker {
 	}
 
 	@Override
+	public List<InfoItemCapability> getInfoItemCapabilities(
+		String itemClassName) {
+
+		InfoItemCapabilitiesProvider infoItemCapabilitiesProvider =
+			getFirstInfoItemService(
+				InfoItemCapabilitiesProvider.class, itemClassName);
+
+		return infoItemCapabilitiesProvider.getInfoItemCapabilities();
+	}
+
+	@Override
+	public InfoItemCapability getInfoItemCapability(
+		String infoItemCapabilityKey) {
+
+		return _infoItemCapabilityServiceTrackerMap.getService(
+			infoItemCapabilityKey);
+	}
+
+	@Override
 	public <P> List<InfoItemClassDetails> getInfoItemClassDetails(
 		Class<P> serviceClass) {
 
-		List<String> itemClassNames = getInfoItemClassNames(serviceClass);
+		List<String> infoItemClassNames = getInfoItemClassNames(serviceClass);
 
-		List<InfoItemClassDetails> infoItemClassDetailsList = new ArrayList<>(
-			itemClassNames.size());
+		Stream<String> infoItemClassNamesStream = infoItemClassNames.stream();
 
-		for (String itemClassName : itemClassNames) {
-			InfoItemClassDetailsProvider infoItemClassDetailsProvider =
+		return infoItemClassNamesStream.map(
+			itemClassName -> _getInfoItemClassDetails(itemClassName)
+		).collect(
+			Collectors.toList()
+		);
+	}
+
+	@Override
+	public List<InfoItemClassDetails> getInfoItemClassDetails(
+			InfoItemCapability infoItemCapability)
+		throws CapabilityVerificationException {
+
+		List<InfoItemClassDetails> infoItemClassDetailsList = new ArrayList<>();
+
+		for (InfoItemClassDetails curInfoItemClassDetails :
+				getInfoItemClassDetails(InfoItemCapabilitiesProvider.class)) {
+
+			InfoItemCapabilitiesProvider infoItemCapabilitiesProvider =
 				getFirstInfoItemService(
-					InfoItemClassDetailsProvider.class, itemClassName);
+					InfoItemCapabilitiesProvider.class,
+					curInfoItemClassDetails.getClassName());
 
-			InfoItemClassDetails infoItemClassDetails;
+			List<InfoItemCapability> infoItemCapabilities =
+				infoItemCapabilitiesProvider.getInfoItemCapabilities();
 
-			if (infoItemClassDetailsProvider != null) {
-				infoItemClassDetails =
-					infoItemClassDetailsProvider.getInfoItemClassDetails();
-			}
-			else {
-				infoItemClassDetails = new InfoItemClassDetails(
-					itemClassName,
-					InfoLocalizedValue.modelResource(itemClassName));
+			if (infoItemCapabilities.contains(infoItemCapability)) {
+				infoItemCapability.verify(
+					curInfoItemClassDetails.getClassName());
 			}
 
-			infoItemClassDetailsList.add(infoItemClassDetails);
+			infoItemClassDetailsList.add(curInfoItemClassDetails);
 		}
 
 		return infoItemClassDetailsList;
+	}
+
+	@Override
+	public List<InfoItemClassDetails> getInfoItemClassDetails(
+			String infoItemCapabilityKey)
+		throws CapabilityVerificationException {
+
+		InfoItemCapability infoItemCapability =
+			_infoItemCapabilityServiceTrackerMap.getService(
+				infoItemCapabilityKey);
+
+		if (infoItemCapability == null) {
+			throw new RuntimeException(
+				"Unable to find info item capability with key " +
+					infoItemCapabilityKey);
+		}
+
+		return getInfoItemClassDetails(infoItemCapability);
 	}
 
 	@Override
@@ -149,13 +204,21 @@ public class InfoItemServiceTrackerImpl implements InfoItemServiceTracker {
 
 	@Activate
 	protected void activate(BundleContext bundleContext) {
+		_infoItemCapabilityServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, InfoItemCapability.class, null,
+				ServiceReferenceMapperFactory.create(
+					bundleContext,
+					(service, emitter) -> emitter.emit(service.getKey())));
+
 		Class<?>[] serviceClasses = new Class<?>[] {
 			InfoCollectionTextFormatter.class, InfoTextFormatter.class,
-			InfoItemClassDetailsProvider.class,
+			InfoItemCapabilitiesProvider.class, InfoItemDetailsProvider.class,
 			InfoItemFieldValuesProvider.class, InfoItemFormProvider.class,
 			InfoItemFormVariationsProvider.class, InfoItemObjectProvider.class,
-			InfoItemRenderer.class, InfoItemSelector.class,
-			InfoListRenderer.class, InfoListProvider.class
+			InfoItemPermissionProvider.class, InfoItemRenderer.class,
+			InfoItemSelector.class, InfoListRenderer.class,
+			InfoListProvider.class
 		};
 
 		for (Class<?> serviceClass : serviceClasses) {
@@ -190,6 +253,29 @@ public class InfoItemServiceTrackerImpl implements InfoItemServiceTracker {
 		}
 	}
 
+	private InfoItemClassDetails _getInfoItemClassDetails(
+		String itemClassName) {
+
+		InfoItemDetailsProvider infoItemDetailsProvider =
+			getFirstInfoItemService(
+				InfoItemDetailsProvider.class, itemClassName);
+
+		InfoItemClassDetails infoItemClassDetails = null;
+
+		if (infoItemDetailsProvider != null) {
+			infoItemClassDetails =
+				infoItemDetailsProvider.getInfoItemClassDetails();
+		}
+		else {
+			infoItemClassDetails = new InfoItemClassDetails(
+				itemClassName, InfoLocalizedValue.modelResource(itemClassName));
+		}
+
+		return infoItemClassDetails;
+	}
+
+	private ServiceTrackerMap<String, InfoItemCapability>
+		_infoItemCapabilityServiceTrackerMap;
 	private final Map<String, ServiceTrackerMap<String, ? extends List<?>>>
 		_itemClassNameInfoItemServiceTrackerMap = new HashMap<>();
 	private final Map<String, ServiceTrackerMap<String, ?>>

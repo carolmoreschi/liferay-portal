@@ -97,7 +97,8 @@ public class AppWorkflowResourceHelper {
 			workflowDefinitionLink.getWorkflowDefinitionVersion());
 	}
 
-	public WorkflowDefinition getWorkflowDefinition(long appId, long companyId)
+	public WorkflowDefinition getLatestWorkflowDefinition(
+			long appId, long companyId)
 		throws PortalException {
 
 		try {
@@ -194,17 +195,17 @@ public class AppWorkflowResourceHelper {
 			long appId, long companyId, long userId)
 		throws PortalException {
 
-		WorkflowDefinition workflowDefinition = getWorkflowDefinition(
+		WorkflowDefinition workflowDefinition = getLatestWorkflowDefinition(
 			appId, companyId);
-
-		_workflowDefinitionManager.undeployWorkflowDefinition(
-			workflowDefinition.getCompanyId(), userId,
-			workflowDefinition.getName(), workflowDefinition.getVersion());
 
 		_workflowDefinitionManager.updateActive(
 			workflowDefinition.getCompanyId(), userId,
 			workflowDefinition.getName(), workflowDefinition.getVersion(),
 			false);
+
+		_workflowDefinitionManager.undeployWorkflowDefinition(
+			workflowDefinition.getCompanyId(), userId,
+			workflowDefinition.getName(), workflowDefinition.getVersion());
 	}
 
 	private void _addTransition(

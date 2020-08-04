@@ -410,6 +410,10 @@ public abstract class BaseTagAttributesCheck extends BaseFileCheck {
 
 				String attributeValue = s.substring(0, x);
 
+				if (attributeName.equals("class")) {
+					attributeValue = StringUtil.trim(attributeValue);
+				}
+
 				if ((attributeValue.startsWith("<%") &&
 					 (getLevel(attributeValue, "<%", "%>") == 0)) ||
 					(!attributeValue.startsWith("<%") &&
