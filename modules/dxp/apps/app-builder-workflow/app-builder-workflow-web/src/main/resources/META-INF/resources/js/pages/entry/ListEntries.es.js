@@ -75,13 +75,17 @@ export default function ListEntries({history}) {
 		totalCount: 0,
 	});
 
-	const [query, setQuery] = useQuery(history, {
-		dataListViewId,
-		keywords: '',
-		page: 1,
-		pageSize: defaultDelta,
-		sort: '',
-	});
+	const [query, setQuery] = useQuery(
+		history,
+		{
+			dataListViewId,
+			keywords: '',
+			page: 1,
+			pageSize: defaultDelta,
+			sort: '',
+		},
+		appId
+	);
 
 	const dispatch = useCallback((action) => setQuery(reducer(query, action)), [
 		query,
@@ -157,7 +161,14 @@ export default function ListEntries({history}) {
 
 	const buildWorkflowItems = (items) => {
 		return items
-			.map(buildEntries(fieldNames, dataDefinition, permissions))
+			.map(
+				buildEntries({
+					dataDefinition,
+					fieldNames,
+					permissions,
+					scope: appId,
+				})
+			)
 			.map((entry) => {
 				const workflowValues = {};
 				const emptyValue = '--';
@@ -238,7 +249,13 @@ export default function ListEntries({history}) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [appWorkflowDefinitionId]);
 
-	const COLUMNS = [...columns, ...WORKFLOW_COLUMNS];
+	const COLUMNS = [
+		...columns.map(({value, ...column}) => ({
+			...column,
+			value: value[themeDisplay.getLanguageId()],
+		})),
+		...WORKFLOW_COLUMNS,
+	];
 
 	const isEmpty = items.length === 0;
 	const showAddButton = showFormView && permissions.add;

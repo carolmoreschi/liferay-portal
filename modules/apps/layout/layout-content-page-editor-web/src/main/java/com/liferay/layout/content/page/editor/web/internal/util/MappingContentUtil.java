@@ -16,6 +16,7 @@ package com.liferay.layout.content.page.editor.web.internal.util;
 
 import com.liferay.document.library.kernel.model.DLFileEntryConstants;
 import com.liferay.info.field.InfoField;
+import com.liferay.info.field.type.InfoFieldType;
 import com.liferay.info.form.InfoForm;
 import com.liferay.info.item.InfoItemServiceTracker;
 import com.liferay.info.item.provider.InfoItemFormProvider;
@@ -70,18 +71,19 @@ public class MappingContentUtil {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
-		InfoForm infoForm = infoItemFormProvider.getInfoForm(formVariationKey);
+		InfoForm infoForm = infoItemFormProvider.getInfoForm(
+			formVariationKey, themeDisplay.getScopeGroupId());
 
 		for (InfoField infoField : infoForm.getAllInfoFields()) {
+			InfoFieldType infoFieldType = infoField.getInfoFieldType();
+
 			jsonArray.put(
 				JSONUtil.put(
 					"key", infoField.getName()
 				).put(
 					"label", infoField.getLabel(themeDisplay.getLocale())
 				).put(
-					"type",
-					infoField.getInfoFieldType(
-					).getName()
+					"type", infoFieldType.getName()
 				));
 		}
 

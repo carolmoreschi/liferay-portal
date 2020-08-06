@@ -112,6 +112,18 @@ public class DocumentResourceImpl
 	}
 
 	@Override
+	public Page<Document> getAssetLibraryDocumentsPage(
+			Long assetLibraryId, Boolean flatten, String search,
+			Aggregation aggregation, Filter filter, Pagination pagination,
+			Sort[] sorts)
+		throws Exception {
+
+		return getSiteDocumentsPage(
+			assetLibraryId, flatten, search, aggregation, filter, pagination,
+			sorts);
+	}
+
+	@Override
 	public Document getDocument(Long documentId) throws Exception {
 		return _toDocument(_dlAppService.getFileEntry(documentId));
 	}
@@ -260,6 +272,14 @@ public class DocumentResourceImpl
 						DLFileEntry.class.getName(), documentId),
 					existingFileEntry.getFolderId(), documentOptional,
 					existingFileEntry.getGroupId())));
+	}
+
+	@Override
+	public Document postAssetLibraryDocument(
+			Long assetLibraryId, MultipartBody multipartBody)
+		throws Exception {
+
+		return postSiteDocument(assetLibraryId, multipartBody);
 	}
 
 	@Override

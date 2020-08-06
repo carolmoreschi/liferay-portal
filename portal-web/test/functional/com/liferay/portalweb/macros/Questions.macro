@@ -172,6 +172,16 @@ definition {
 		Pause(locator1 = "1000");
 	}
 
+	macro configureTagsFilter {
+		Click(locator1 = "Questions#QUESTIONS_TAGS_SELECT_FILTER");
+
+		Pause(locator1 = "1000");
+
+		Click(
+			key_filter = "${filterBy}",
+			locator1 = "Questions#QUESTIONS_SELECT_FILTER_VALUE");
+	}
+
 	macro createSomethingInMessageBoards {
 		LexiconEntry.gotoAdd();
 
@@ -358,6 +368,26 @@ definition {
 			AssertTextEquals(
 				locator1 = "Questions#QUESTIONS_DEFAULT_SUBSCRIPTION_TOPICS",
 				value1 = "There are no results.");
+		}
+	}
+
+	macro viewTags {
+		if (isSet(noTagResults)) {
+			AssertTextEquals(
+				locator1 = "Questions#TAGS_LIST_TAB_NO_RESULTS",
+				value1 = "There are no results.");
+		}
+		else {
+			AssertElementPresent(
+				key_tagName = "${tagName}",
+				locator1 = "Questions#TAGS_LIST_TAB_NAMES");
+		}
+
+		if (isSet(amountOfUsedTimes)) {
+			AssertElementPresent(
+				key_amountOfUsedTimes = "${amountOfUsedTimes}",
+				key_tagName = "${tagName}",
+				locator1 = "Questions#TAGS_LIST_TAB_USED_TIMES");
 		}
 	}
 

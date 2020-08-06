@@ -32,7 +32,9 @@ export default function ViewEntry({
 		params: {entryIndex},
 	},
 }) {
-	const {appId, dataDefinitionId, dataLayoutId} = useContext(AppContext);
+	const {appId, dataDefinitionId, dataLayoutId, dataListViewId} = useContext(
+		AppContext
+	);
 	const [dataLayoutIds, setDataLayoutIds] = useState([]);
 
 	const getDataLayoutIds = (tasks) => {
@@ -79,7 +81,7 @@ export default function ViewEntry({
 	const doFetch = () => {
 		getItem(
 			`/o/data-engine/v2.0/data-definitions/${dataDefinitionId}/data-records`,
-			{...query, page: entryIndex, pageSize: 1}
+			{...query, dataListViewId, page: entryIndex, pageSize: 1}
 		)
 			.then(({items = [], ...response}) => {
 				if (items.length > 0) {

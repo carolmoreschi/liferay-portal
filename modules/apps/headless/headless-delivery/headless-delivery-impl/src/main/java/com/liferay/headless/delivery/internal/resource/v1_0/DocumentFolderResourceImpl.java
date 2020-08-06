@@ -71,6 +71,18 @@ public class DocumentFolderResourceImpl
 	}
 
 	@Override
+	public Page<DocumentFolder> getAssetLibraryDocumentFoldersPage(
+			Long assetLibraryId, Boolean flatten, String search,
+			Aggregation aggregation, Filter filter, Pagination pagination,
+			Sort[] sorts)
+		throws Exception {
+
+		return getSiteDocumentFoldersPage(
+			assetLibraryId, flatten, search, aggregation, filter, pagination,
+			sorts);
+	}
+
+	@Override
 	public DocumentFolder getDocumentFolder(Long documentFolderId)
 		throws Exception {
 
@@ -166,6 +178,14 @@ public class DocumentFolderResourceImpl
 	}
 
 	@Override
+	public DocumentFolder postAssetLibraryDocumentFolder(
+			Long assetLibraryId, DocumentFolder documentFolder)
+		throws Exception {
+
+		return postSiteDocumentFolder(assetLibraryId, documentFolder);
+	}
+
+	@Override
 	public DocumentFolder postDocumentFolderDocumentFolder(
 			Long parentDocumentFolderId, DocumentFolder documentFolder)
 		throws Exception {
@@ -235,7 +255,7 @@ public class DocumentFolderResourceImpl
 
 	private Page<DocumentFolder> _getDocumentFoldersPage(
 			Map<String, Map<String, String>> actions,
-			Long parentDocumentFolderId, Long siteId, Boolean flatten,
+			Long parentDocumentFolderId, Long groupId, Boolean flatten,
 			String keywords, Aggregation aggregation, Filter filter,
 			Pagination pagination, Sort[] sorts)
 		throws Exception {
@@ -269,7 +289,7 @@ public class DocumentFolderResourceImpl
 			searchContext -> {
 				searchContext.addVulcanAggregation(aggregation);
 				searchContext.setCompanyId(contextCompany.getCompanyId());
-				searchContext.setGroupIds(new long[] {siteId});
+				searchContext.setGroupIds(new long[] {groupId});
 			},
 			sorts,
 			document -> _toDocumentFolder(

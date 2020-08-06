@@ -74,6 +74,19 @@ public class StructuredContentFolderResourceImpl
 	}
 
 	@Override
+	public Page<StructuredContentFolder>
+			getAssetLibraryStructuredContentFoldersPage(
+				Long assetLibraryId, Boolean flatten, String search,
+				Aggregation aggregation, Filter filter, Pagination pagination,
+				Sort[] sorts)
+		throws Exception {
+
+		return getSiteStructuredContentFoldersPage(
+			assetLibraryId, flatten, search, aggregation, filter, pagination,
+			sorts);
+	}
+
+	@Override
 	public EntityModel getEntityModel(MultivaluedMap multivaluedMap) {
 		return new StructuredContentFolderEntityModel(
 			EntityFieldsUtil.getEntityFields(
@@ -156,6 +169,16 @@ public class StructuredContentFolderResourceImpl
 			).build(),
 			parentStructuredContentFolderId, journalFolder.getGroupId(), search,
 			aggregation, filter, pagination, sorts);
+	}
+
+	@Override
+	public StructuredContentFolder postAssetLibraryStructuredContentFolder(
+			Long assetLibraryId,
+			StructuredContentFolder structuredContentFolder)
+		throws Exception {
+
+		return postSiteStructuredContentFolder(
+			assetLibraryId, structuredContentFolder);
 	}
 
 	@Override

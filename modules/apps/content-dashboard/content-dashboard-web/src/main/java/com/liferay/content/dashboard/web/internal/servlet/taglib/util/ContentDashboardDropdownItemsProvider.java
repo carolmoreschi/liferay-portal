@@ -113,6 +113,15 @@ public class ContentDashboardDropdownItemsProvider {
 					return dropdownItem;
 				}));
 
+		dropdownItemList.addAll(
+			TransformUtil.transform(
+				(List<ContentDashboardItemAction>)
+					contentDashboardItem.getContentDashboardItemActions(
+						httpServletRequest,
+						ContentDashboardItemAction.Type.VIEW_IN_PANEL),
+				contentDashboardItemAction -> _toViewInPanelDropdownItem(
+					contentDashboardItem, contentDashboardItemAction, locale)));
+
 		return dropdownItemList;
 	}
 
@@ -137,6 +146,29 @@ public class ContentDashboardDropdownItemsProvider {
 
 		dropdownItem.setHref(
 			_getURLWithBackURL(contentDashboardItemAction.getURL(locale)));
+		dropdownItem.setIcon(contentDashboardItemAction.getIcon());
+		dropdownItem.setLabel(contentDashboardItemAction.getLabel(locale));
+		dropdownItem.setQuickAction(true);
+
+		return dropdownItem;
+	}
+
+	private DropdownItem _toViewInPanelDropdownItem(
+		ContentDashboardItem contentDashboardItem,
+		ContentDashboardItemAction contentDashboardItemAction, Locale locale) {
+
+		DropdownItem dropdownItem = new DropdownItem();
+
+		dropdownItem.setData(
+			HashMapBuilder.<String, Object>put(
+				"action", "showMetrics"
+			).put(
+				"className", contentDashboardItem.getClassName()
+			).put(
+				"classPK", contentDashboardItem.getClassPK()
+			).put(
+				"fetchURL", contentDashboardItemAction.getURL(locale)
+			).build());
 		dropdownItem.setIcon(contentDashboardItemAction.getIcon());
 		dropdownItem.setLabel(contentDashboardItemAction.getLabel(locale));
 		dropdownItem.setQuickAction(true);

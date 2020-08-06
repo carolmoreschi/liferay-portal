@@ -325,9 +325,10 @@ public class WebServerServlet extends HttpServlet {
 			PortalUtil.sendError(
 				exception, httpServletRequest, httpServletResponse);
 		}
-		catch (Throwable t) {
+		catch (Throwable throwable) {
 			PortalUtil.sendError(
-				new Exception(t), httpServletRequest, httpServletResponse);
+				new Exception(throwable), httpServletRequest,
+				httpServletResponse);
 		}
 	}
 
@@ -522,10 +523,11 @@ public class WebServerServlet extends HttpServlet {
 		else {
 			String uuid = ParamUtil.getString(httpServletRequest, "uuid");
 			long groupId = ParamUtil.getLong(httpServletRequest, "groupId");
-			boolean igSmallImage = ParamUtil.getBoolean(
-				httpServletRequest, "igSmallImage");
 
 			if (Validator.isNotNull(uuid) && (groupId > 0)) {
+				boolean igSmallImage = ParamUtil.getBoolean(
+					httpServletRequest, "igSmallImage");
+
 				try {
 					FileEntry fileEntry =
 						DLAppServiceUtil.getFileEntryByUuidAndGroupId(

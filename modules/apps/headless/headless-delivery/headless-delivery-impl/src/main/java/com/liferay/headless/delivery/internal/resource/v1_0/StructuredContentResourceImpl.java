@@ -145,6 +145,18 @@ public class StructuredContentResourceImpl
 	}
 
 	@Override
+	public Page<StructuredContent> getAssetLibraryStructuredContentsPage(
+			Long assetLibraryId, Boolean flatten, String search,
+			Aggregation aggregation, Filter filter, Pagination pagination,
+			Sort[] sorts)
+		throws Exception {
+
+		return getSiteStructuredContentsPage(
+			assetLibraryId, flatten, search, aggregation, filter, pagination,
+			sorts);
+	}
+
+	@Override
 	public Page<StructuredContent> getContentStructureStructuredContentsPage(
 			Long contentStructureId, String search, Aggregation aggregation,
 			Filter filter, Pagination pagination, Sort[] sorts)
@@ -408,6 +420,14 @@ public class StructuredContentResourceImpl
 					_getExpandoBridgeAttributes(structuredContent),
 					journalArticle.getGroupId(),
 					structuredContent.getViewableByAsString())));
+	}
+
+	@Override
+	public StructuredContent postAssetLibraryStructuredContent(
+			Long assetLibraryId, StructuredContent structuredContent)
+		throws Exception {
+
+		return postSiteStructuredContent(assetLibraryId, structuredContent);
 	}
 
 	@Override

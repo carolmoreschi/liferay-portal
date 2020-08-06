@@ -282,9 +282,34 @@ public class EntityModelFieldMapper {
 			}
 		}
 		else if (expandoColumn.getType() ==
+					ExpandoColumnConstants.FLOAT_ARRAY) {
+
+			for (float value : (float[])expandoColumn.getDefaultValue()) {
+				fieldOptions.add(
+					new Field.Option(
+						String.valueOf(value), String.valueOf(value)));
+			}
+		}
+		else if (expandoColumn.getType() ==
 					ExpandoColumnConstants.INTEGER_ARRAY) {
 
 			for (int value : (int[])expandoColumn.getDefaultValue()) {
+				fieldOptions.add(
+					new Field.Option(
+						String.valueOf(value), String.valueOf(value)));
+			}
+		}
+		else if (expandoColumn.getType() == ExpandoColumnConstants.LONG_ARRAY) {
+			for (long value : (long[])expandoColumn.getDefaultValue()) {
+				fieldOptions.add(
+					new Field.Option(
+						String.valueOf(value), String.valueOf(value)));
+			}
+		}
+		else if (expandoColumn.getType() ==
+					ExpandoColumnConstants.SHORT_ARRAY) {
+
+			for (short value : (short[])expandoColumn.getDefaultValue()) {
 				fieldOptions.add(
 					new Field.Option(
 						String.valueOf(value), String.valueOf(value)));

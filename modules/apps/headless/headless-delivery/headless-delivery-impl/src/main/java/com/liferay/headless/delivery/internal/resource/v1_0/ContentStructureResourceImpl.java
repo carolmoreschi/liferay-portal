@@ -53,6 +53,16 @@ public class ContentStructureResourceImpl
 	extends BaseContentStructureResourceImpl implements EntityModelResource {
 
 	@Override
+	public Page<ContentStructure> getAssetLibraryContentStructuresPage(
+			Long assetLibraryId, String search, Aggregation aggregation,
+			Filter filter, Pagination pagination, Sort[] sorts)
+		throws Exception {
+
+		return getSiteContentStructuresPage(
+			assetLibraryId, search, aggregation, filter, pagination, sorts);
+	}
+
+	@Override
 	public ContentStructure getContentStructure(Long contentStructureId)
 		throws Exception {
 

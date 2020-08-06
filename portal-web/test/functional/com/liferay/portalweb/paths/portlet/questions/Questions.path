@@ -159,6 +159,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>QUESTIONS_TAGS_SELECT_FILTER</td>
+	<td>//select[contains(@id,'tagsOrderBy')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>QUESTIONS_SELECT_FILTER_VALUE</td>
 	<td>//option[contains(text(),'${key_filter}')]</td>
 	<td></td>
@@ -186,6 +191,11 @@
 <tr>
 	<td>TAGS_LIST_TAB_NAMES</td>
 	<td>//a[contains(@href, '${key_tagName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>TAGS_LIST_TAB_NO_RESULTS</td>
+	<td>//div[contains(@class,'container')]//div[contains(@class,'questions')]//span[@class='text-truncate']</td>
 	<td></td>
 </tr>
 <tr>
